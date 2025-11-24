@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::fmt::{self, Debug, Formatter};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
 pub enum TokenKind {
@@ -60,7 +60,7 @@ impl<'a> Token<'a> {
 }
 
 impl Debug for Token<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "[{:?}: {}]", self.kind, self.slice)
     }
 }

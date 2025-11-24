@@ -1,4 +1,4 @@
-use lang::lexer::Lexer;
+use lang::{lexer::Lexer, parser::Parser};
 use std::{
     fs,
     io::{self, Write, stdin, stdout},
@@ -8,6 +8,12 @@ fn compile(source: &str) {
     for token in Lexer::new(source) {
         println!("{token:?}");
     }
+
+    let ast = Parser::new(Lexer::new(source)).parse().unwrap();
+
+    println!("====");
+    println!("=> AST:");
+    println!("{}", serde_yaml::to_string(&ast).unwrap());
 }
 
 fn repl() -> io::Result<()> {
