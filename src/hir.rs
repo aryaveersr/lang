@@ -84,10 +84,10 @@ pub enum ExprKind {
     },
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Clone)]
 #[serde(tag = "kind")]
 pub enum Type {
     Void,
     Bool,
-    Number,
+    Num,
 }

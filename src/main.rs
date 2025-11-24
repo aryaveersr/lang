@@ -1,4 +1,4 @@
-use lang::{lexer::Lexer, parser::Parser};
+use lang::{builder::Builder, lexer::Lexer, parser::Parser};
 use std::{
     fs,
     io::{self, Write, stdin, stdout},
@@ -14,6 +14,12 @@ fn compile(source: &str) {
     println!("====");
     println!("=> AST:");
     println!("{}", serde_yaml::to_string(&ast).unwrap());
+
+    let hir = Builder::new().build_hir(ast).unwrap();
+
+    println!("====");
+    println!("=> HIR:");
+    println!("{}", serde_yaml::to_string(&hir).unwrap());
 }
 
 fn repl() -> io::Result<()> {
