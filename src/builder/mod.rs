@@ -1,14 +1,12 @@
 mod errors;
 mod expr;
-mod scope;
 mod stmt;
 mod ty;
 
 pub use errors::BuilderError;
 
-use crate::{ast, hir::*, ops::*};
+use crate::{ast, hir::*, ops::*, scope::*};
 use errors::*;
-use scope::*;
 use std::collections::HashMap;
 
 type Be = BuilderError;
