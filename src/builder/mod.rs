@@ -25,25 +25,25 @@ impl Builder {
         Self::default()
     }
 
-    fn lower_function(&mut self, fun: ast::Function) -> Result<Function> {
+    fn lower_function(&mut self, fun: ast::Fun) -> Result<Fun> {
         let ty = self.lower_ty_opt(fun.ty)?.unwrap_or(Type::Void);
 
         self.expected_return_type = Some(ty.clone());
 
         let body = self.lower_block(fun.body)?;
 
-        Ok(Function { body, ty })
+        Ok(Fun { body, ty })
     }
 
     pub fn build_hir(&mut self, ast: ast::Ast) -> Result<Module> {
-        let functions: HashMap<_, _> = ast
-            .functions
+        let funs: HashMap<_, _> = ast
+            .funs
             .into_iter()
             .map(|f| Ok((f.name.clone(), self.lower_function(f)?)))
             .collect::<Result<_>>()?;
 
-        if functions.contains_key("main") {
-            Ok(Module { functions })
+        if funs.contains_key("main") {
+            Ok(Module { funs })
         } else {
             Err(Be::MainNotFound)
         }

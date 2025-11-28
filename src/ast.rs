@@ -3,11 +3,11 @@ use serde::Serialize;
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct Ast {
-    pub functions: Vec<Function>,
+    pub funs: Vec<Fun>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
-pub struct Function {
+pub struct Fun {
     pub name: String,
     pub ty: Option<Type>,
     pub body: Vec<Stmt>,

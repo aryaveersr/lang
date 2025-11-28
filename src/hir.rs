@@ -4,11 +4,11 @@ use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct Module {
-    pub functions: HashMap<String, Function>,
+    pub funs: HashMap<String, Fun>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
-pub struct Function {
+pub struct Fun {
     pub ty: Type,
     pub body: Block,
 }

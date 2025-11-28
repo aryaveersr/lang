@@ -24,7 +24,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_function(&mut self) -> Result<Function> {
+    fn parse_function(&mut self) -> Result<Fun> {
         let name = self.expect(To::Identifier, Pe::MissingFunName)?;
 
         self.expect(To::LeftParen, Pe::MissingFunLeftParen)?;
@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
 
         let body = self.parse_body(true)?;
 
-        Ok(Function {
+        Ok(Fun {
             name: name.slice.to_owned(),
             ty,
             body,
@@ -44,15 +44,15 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse(&mut self) -> Result<Ast> {
-        let mut functions = Vec::new();
+        let mut funs = Vec::new();
 
         while let Ok(token) = self.next() {
             match token.kind {
-                To::Fun => functions.push(self.parse_function()?),
+                To::Fun => funs.push(self.parse_function()?),
                 _ => panic!("Expected EOF or declaration."),
             }
         }
 
-        Ok(Ast { functions })
+        Ok(Ast { funs })
     }
 }
