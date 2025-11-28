@@ -15,7 +15,7 @@ fn compile(source: &str) {
     println!("=> AST:");
     println!("{}", serde_yaml::to_string(&ast).unwrap());
 
-    let hir = Builder::new().build_hir(ast).unwrap();
+    let hir = Builder::new().build_hir(ast);
 
     println!("====");
     println!("=> HIR:");

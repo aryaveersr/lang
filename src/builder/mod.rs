@@ -1,15 +1,9 @@
-mod errors;
 mod expr;
 mod stmt;
 mod ty;
 
-pub use errors::BuilderError;
-
 use crate::{ast, hir::*, ops::*, scope::*};
-use errors::*;
 use std::collections::HashMap;
-
-type Be = BuilderError;
 
 #[derive(Default)]
 pub struct Builder {
@@ -23,27 +17,25 @@ impl Builder {
         Self::default()
     }
 
-    fn lower_function(&mut self, fun: ast::Fun) -> Result<Fun> {
-        let ty = self.lower_ty_opt(fun.ty)?.unwrap_or(Type::Void);
+    fn lower_function(&mut self, fun: ast::Fun) -> Fun {
+        let ty = fun.ty.map(|t| self.lower_ty(t)).unwrap_or(Type::Void);
 
         self.expected_return_type = Some(ty.clone());
 
-        let body = self.lower_block(fun.body)?;
+        let body = self.lower_block(fun.body);
 
-        Ok(Fun { body, ty })
+        Fun { body, ty }
     }
 
-    pub fn build_hir(&mut self, ast: ast::Ast) -> Result<Module> {
+    pub fn build_hir(&mut self, ast: ast::Ast) -> Module {
         let funs: HashMap<_, _> = ast
             .funs
             .into_iter()
-            .map(|f| Ok((f.name.clone(), self.lower_function(f)?)))
-            .collect::<Result<_>>()?;
+            .map(|f| (f.name.clone(), self.lower_function(f)))
+            .collect();
 
-        if funs.contains_key("main") {
-            Ok(Module { funs })
-        } else {
-            Err(Be::MainNotFound)
-        }
+        assert!(funs.contains_key("main"), "No `main()` function found.");
+
+        Module { funs }
     }
 }

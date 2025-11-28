@@ -2,62 +2,57 @@ use super::*;
 use std::collections::HashMap;
 
 impl Builder {
-    pub(super) fn lower_block(&mut self, stmts: Vec<ast::Stmt>) -> Result<Block> {
+    pub(super) fn lower_block(&mut self, stmts: Vec<ast::Stmt>) -> Block {
         self.scope.create();
 
-        let stmts = stmts
-            .into_iter()
-            .map(|s| self.lower_stmt(s))
-            .collect::<Result<_>>()?;
-
+        let stmts = stmts.into_iter().map(|s| self.lower_stmt(s)).collect();
         let scope = self.scope.pop();
 
-        Ok(Block { scope, stmts })
+        Block { scope, stmts }
     }
 
-    fn lower_stmt_block(&mut self, body: Vec<ast::Stmt>) -> Result<Stmt> {
-        Ok(Stmt::Block(self.lower_block(body)?))
+    fn lower_stmt_block(&mut self, body: Vec<ast::Stmt>) -> Stmt {
+        Stmt::Block(self.lower_block(body))
     }
 
-    fn lower_stmt_break(&mut self) -> Result<Stmt> {
-        if self.in_loop {
-            Ok(Stmt::Break)
-        } else {
-            Err(Be::BreakOutsideLoop)
-        }
+    fn lower_stmt_break(&mut self) -> Stmt {
+        assert!(self.in_loop, "Cannot use `break` outside a loop.");
+        Stmt::Break
     }
 
-    fn lower_stmt_loop(&mut self, body: Vec<ast::Stmt>) -> Result<Stmt> {
+    fn lower_stmt_loop(&mut self, body: Vec<ast::Stmt>) -> Stmt {
         self.in_loop = true;
-        let body = self.lower_block(body)?;
+        let body = self.lower_block(body);
         self.in_loop = false;
 
-        Ok(Stmt::Loop { body })
+        Stmt::Loop { body }
     }
 
-    fn lower_stmt_return(&mut self, expr: Option<Box<ast::Expr>>) -> Result<Stmt> {
-        let expr = expr.map(|e| self.lower_expr(*e)).transpose()?;
+    fn lower_stmt_return(&mut self, expr: Option<Box<ast::Expr>>) -> Stmt {
+        let expr = expr.map(|e| self.lower_expr(*e));
         let expected = self.expected_return_type.as_ref();
 
         if !match &expr {
             Some(expr) => expected == Some(&expr.ty),
             None => expected == Some(&Type::Void),
         } {
-            return Err(Be::WrongReturnType);
+            panic!("Expression returned doesn't match function's return type.");
         }
 
-        Ok(Stmt::Return { expr })
+        Stmt::Return { expr }
     }
 
-    fn lower_stmt_while(&mut self, cond: ast::Expr, body: Vec<ast::Stmt>) -> Result<Stmt> {
-        let cond = self.lower_expr(cond)?;
+    fn lower_stmt_while(&mut self, cond: ast::Expr, body: Vec<ast::Stmt>) -> Stmt {
+        let cond = self.lower_expr(cond);
 
-        if cond.ty != Type::Bool {
-            return Err(Be::ExpectedBool);
-        }
+        assert_eq!(
+            cond.ty,
+            Type::Bool,
+            "Expected condition expression to be a boolean."
+        );
 
         self.in_loop = true;
-        let mut body = self.lower_block(body)?;
+        let mut body = self.lower_block(body);
         self.in_loop = false;
 
         let if_stmt = Stmt::If {
@@ -77,7 +72,7 @@ impl Builder {
 
         body.stmts.insert(0, if_stmt);
 
-        Ok(Stmt::Loop { body })
+        Stmt::Loop { body }
     }
 
     fn lower_stmt_if(
@@ -85,16 +80,18 @@ impl Builder {
         cond: ast::Expr,
         body: Vec<ast::Stmt>,
         else_: Option<Vec<ast::Stmt>>,
-    ) -> Result<Stmt> {
-        let cond = self.lower_expr(cond)?;
-        let body = self.lower_block(body)?;
-        let else_ = else_.map(|s| self.lower_block(s)).transpose()?;
+    ) -> Stmt {
+        let cond = self.lower_expr(cond);
+        let body = self.lower_block(body);
+        let else_ = else_.map(|s| self.lower_block(s));
 
-        if cond.ty == Type::Bool {
-            Ok(Stmt::If { cond, body, else_ })
-        } else {
-            Err(Be::ExpectedBool)
-        }
+        assert_eq!(
+            cond.ty,
+            Type::Bool,
+            "Expected condition expression to be a boolean."
+        );
+
+        Stmt::If { cond, body, else_ }
     }
 
     fn lower_stmt_let(
@@ -102,24 +99,24 @@ impl Builder {
         name: String,
         ty: Option<ast::Type>,
         expr: Option<Box<ast::Expr>>,
-    ) -> Result<Stmt> {
-        let expr = expr.map(|e| self.lower_expr(*e)).transpose()?;
+    ) -> Stmt {
+        let expr = expr.map(|e| self.lower_expr(*e));
         let value_ty = expr.as_ref().map(|e| e.ty.clone());
 
-        let ty = match (self.lower_ty_opt(ty)?, value_ty) {
+        let ty = match (ty.map(|t| self.lower_ty(t)), value_ty) {
             (Some(ty), None) | (None, Some(ty)) => ty,
             (Some(a), Some(b)) if a == b => a,
 
-            (None, None) => return Err(Be::CannotInferType),
-            _ => return Err(Be::TypeMismatch),
+            (None, None) => panic!("Cannot infer type in assignment."),
+            _ => panic!("Type annotation in assignment doesn't match the expression."),
         };
 
         self.scope.set(&name, &ty);
 
-        Ok(Stmt::Let { name, expr, ty })
+        Stmt::Let { name, expr, ty }
     }
 
-    pub(super) fn lower_stmt(&mut self, stmt: ast::Stmt) -> Result<Stmt> {
+    pub(super) fn lower_stmt(&mut self, stmt: ast::Stmt) -> Stmt {
         match stmt {
             ast::Stmt::Break => self.lower_stmt_break(),
             ast::Stmt::Loop { body } => self.lower_stmt_loop(body),

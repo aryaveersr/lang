@@ -1,85 +1,71 @@
 use super::*;
 
 impl Builder {
-    fn type_unary(&self, op: UnOp, expr: &Expr) -> Result<Type> {
+    fn type_unary(&self, op: UnOp, expr: &Expr) -> Type {
         match op {
             UnOp::Negate => {
-                if expr.ty == Type::Num {
-                    Ok(Type::Num)
-                } else {
-                    Err(Be::ExpectedNum)
-                }
+                assert_eq!(expr.ty, Type::Num, "Expected number operand in negation.");
+                Type::Num
             }
 
             UnOp::Not => {
-                if expr.ty == Type::Bool {
-                    Ok(Type::Bool)
-                } else {
-                    Err(Be::ExpectedBool)
-                }
+                assert_eq!(expr.ty, Type::Bool, "Expected boolean operand in not.");
+                Type::Bool
             }
         }
     }
 
-    fn type_binary(&self, op: BinOp, lhs: &Expr, rhs: &Expr) -> Result<Type> {
-        if lhs.ty != rhs.ty {
-            return Err(Be::OperandsNotSameType);
-        }
+    fn type_binary(&self, op: BinOp, lhs: &Expr, rhs: &Expr) -> Type {
+        assert_eq!(
+            lhs.ty, rhs.ty,
+            "Cannot perform binary operation on expressions of different type."
+        );
 
         match op {
             BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div => {
-                if lhs.ty == Type::Num {
-                    Ok(Type::Num)
-                } else {
-                    Err(Be::ExpectedNum)
-                }
+                assert_eq!(lhs.ty, Type::Num, "Expected number operands for binary op");
+                Type::Num
             }
 
             BinOp::Lesser | BinOp::LesserEq | BinOp::Greater | BinOp::GreaterEq => {
-                if lhs.ty == Type::Num {
-                    Ok(Type::Bool)
-                } else {
-                    Err(Be::ExpectedNum)
-                }
+                assert_eq!(lhs.ty, Type::Num, "Expected number operands for binary op");
+                Type::Bool
             }
 
             BinOp::And | BinOp::Or => {
-                if lhs.ty == Type::Bool {
-                    Ok(Type::Bool)
-                } else {
-                    Err(Be::ExpectedBool)
-                }
+                assert_eq!(lhs.ty, Type::Bool, "Expected bool operands for binary op");
+                Type::Bool
             }
 
-            BinOp::Eq | BinOp::NotEq => Ok(Type::Bool),
+            BinOp::Eq | BinOp::NotEq => Type::Bool,
         }
     }
 
-    fn lower_expr_unary(&mut self, op: UnOp, expr: ast::Expr) -> Result<Expr> {
-        let expr = self.lower_expr(expr)?;
-        let ty = self.type_unary(op, &expr)?;
+    fn lower_expr_unary(&mut self, op: UnOp, expr: ast::Expr) -> Expr {
+        let expr = self.lower_expr(expr);
+        let ty = self.type_unary(op, &expr);
 
-        Ok(Expr {
+        Expr {
             ty,
             kind: ExprKind::Unary { op, expr },
-        })
+        }
     }
 
-    fn lower_expr_binary(&mut self, op: BinOp, lhs: ast::Expr, rhs: ast::Expr) -> Result<Expr> {
-        let lhs = self.lower_expr(lhs)?;
-        let rhs = self.lower_expr(rhs)?;
-        let ty = self.type_binary(op, &lhs, &rhs)?;
+    fn lower_expr_binary(&mut self, op: BinOp, lhs: ast::Expr, rhs: ast::Expr) -> Expr {
+        let lhs = self.lower_expr(lhs);
+        let rhs = self.lower_expr(rhs);
+        let ty = self.type_binary(op, &lhs, &rhs);
 
-        Ok(Expr {
+        Expr {
             ty,
             kind: ExprKind::Binary { op, lhs, rhs },
-        })
+        }
     }
 
-    pub(super) fn lower_expr(&mut self, expr: ast::Expr) -> Result<Box<Expr>> {
+    pub(super) fn lower_expr(&mut self, expr: ast::Expr) -> Box<Expr> {
         let expr = match expr {
-            ast::Expr::Unary { op, expr } => self.lower_expr_unary(op, *expr)?,
-            ast::Expr::Binary { op, lhs, rhs } => self.lower_expr_binary(op, *lhs, *rhs)?,
+            ast::Expr::Unary { op, expr } => self.lower_expr_unary(op, *expr),
+            ast::Expr::Binary { op, lhs, rhs } => self.lower_expr_binary(op, *lhs, *rhs),
 
             ast::Expr::Num { value } => Expr {
                 ty: Type::Num,
@@ -92,11 +78,11 @@ impl Builder {
             },
 
             ast::Expr::Var { name } => Expr {
-                ty: self.scope.get(&name).ok_or(Be::VarNotFound)?,
+                ty: self.scope.get(&name).expect("Variable not found in scope."),
                 kind: ExprKind::Var { name },
             },
         };
 
-        Ok(Box::new(expr))
+        Box::new(expr)
     }
 }
