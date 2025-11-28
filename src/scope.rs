@@ -18,12 +18,8 @@ impl<T: Clone> Scope<T> {
         last.insert(name.to_owned(), value.to_owned());
     }
 
-    pub fn get(&mut self, name: &str) -> Option<T> {
-        self.scopes
-            .iter()
-            .rev()
-            .find_map(|s| s.get(name))
-            .map(|value| value.to_owned())
+    pub fn get(&self, name: &str) -> Option<&T> {
+        self.scopes.iter().rev().find_map(|s| s.get(name))
     }
 }
 

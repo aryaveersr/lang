@@ -78,7 +78,11 @@ impl AstToHir {
             },
 
             ast::Expr::Var { name } => Expr {
-                ty: self.scope.get(&name).expect("Variable not found in scope."),
+                ty: self
+                    .scope
+                    .get(&name)
+                    .expect("Variable not found in scope.")
+                    .to_owned(),
                 kind: ExprKind::Var { name },
             },
         };
