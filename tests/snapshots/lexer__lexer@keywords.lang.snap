@@ -5,17 +5,33 @@ input_file: tests/lexer/keywords.lang
 ---
 - kind: Return
   slice: return
+  line: 1
+  column: 1
 - kind: Fun
   slice: fun
+  line: 1
+  column: 8
 - kind: Numeric
   slice: "12"
+  line: 1
+  column: 12
 - kind: Identifier
   slice: hello
+  line: 1
+  column: 15
 - kind: Semicolon
   slice: ;
+  line: 1
+  column: 21
 - kind: "True"
   slice: "true"
+  line: 2
+  column: 1
 - kind: "False"
   slice: "false"
+  line: 2
+  column: 6
 - kind: Identifier
   slice: "True"
+  line: 2
+  column: 12

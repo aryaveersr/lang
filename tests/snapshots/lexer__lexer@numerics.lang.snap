@@ -5,17 +5,33 @@ input_file: tests/lexer/numerics.lang
 ---
 - kind: Numeric
   slice: "12"
+  line: 1
+  column: 1
 - kind: Plus
   slice: +
+  line: 1
+  column: 4
 - kind: Numeric
   slice: "4"
+  line: 1
+  column: 6
 - kind: Numeric
   slice: "18"
+  line: 2
+  column: 1
 - kind: Star
   slice: "*"
+  line: 2
+  column: 4
 - kind: Numeric
   slice: "3"
+  line: 2
+  column: 6
 - kind: Slash
   slice: /
+  line: 2
+  column: 8
 - kind: Numeric
   slice: "2"
+  line: 2
+  column: 10

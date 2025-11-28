@@ -48,20 +48,42 @@ pub enum TokenKind {
     Invalid,
 }
 
-#[derive(PartialEq, Eq, Clone, Copy, Default, Serialize)]
+#[derive(PartialEq, Eq, Clone, Copy, Serialize)]
 pub struct Token<'a> {
     pub kind: TokenKind,
     pub slice: &'a str,
+    pub line: usize,
+    pub column: usize,
+}
+
+impl<'a> Default for Token<'a> {
+    fn default() -> Self {
+        Self {
+            kind: TokenKind::default(),
+            slice: "",
+            line: 1,
+            column: 1,
+        }
+    }
 }
 
 impl<'a> Token<'a> {
-    pub fn new(kind: TokenKind, slice: &'a str) -> Self {
-        Self { kind, slice }
+    pub fn new(kind: TokenKind, slice: &'a str, line: usize, column: usize) -> Self {
+        Self {
+            kind,
+            slice,
+            line,
+            column,
+        }
     }
 }
 
 impl Debug for Token<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "[{:?}: {}]", self.kind, self.slice)
+        write!(
+            f,
+            "[{:?}: {} at {}:{}]",
+            self.kind, self.slice, self.line, self.column
+        )
     }
 }

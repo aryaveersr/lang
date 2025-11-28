@@ -2,11 +2,17 @@ use crate::token::{Token, TokenKind};
 
 pub struct Lexer<'a> {
     source: &'a str,
+    line: usize,
+    column: usize,
 }
 
 impl<'a> Lexer<'a> {
     pub fn new(source: &'a str) -> Self {
-        Self { source }
+        Self {
+            source,
+            line: 1,
+            column: 1,
+        }
     }
 
     /// Consume until a condition is met, and return the slice upto that point.
@@ -16,51 +22,105 @@ impl<'a> Lexer<'a> {
             None => (self.source, &self.source[self.source.len()..]),
         };
 
+        for c in slice.chars() {
+            if c == '\n' {
+                self.line += 1;
+                self.column = 1;
+            } else {
+                self.column += 1;
+            }
+        }
+
         self.source = source;
         slice
     }
 
+    /// Consume whitespace and comments.
     fn consume_whitespace(&mut self) {
-        self.source = self.source.trim_ascii_start();
+        while let Some(c) = self.source.chars().next() {
+            if c.is_ascii_whitespace() {
+                self.source = &self.source[1..];
+                if c == '\n' {
+                    self.line += 1;
+                    self.column = 1;
+                } else {
+                    self.column += 1;
+                }
+            } else {
+                break;
+            }
+        }
 
-        // Consume all characters until newline if this is a single line comment (starts with '//').
-        // While the next lines also begin with a comment, consume those as well.
         while self.source.len() > 1 && &self.source[0..2] == "//" {
             self.until(|i| i == '\n');
-            self.source = self.source[1..].trim_ascii_start();
+
+            if !self.source.is_empty() && self.source.chars().next() == Some('\n') {
+                self.source = &self.source[1..];
+                self.line += 1;
+                self.column = 1;
+            }
+
+            while let Some(c) = self.source.chars().next() {
+                if c.is_ascii_whitespace() {
+                    self.source = &self.source[1..];
+                    if c == '\n' {
+                        self.line += 1;
+                        self.column = 1;
+                    } else {
+                        self.column += 1;
+                    }
+                } else {
+                    break;
+                }
+            }
         }
     }
 
     fn consume_char(&mut self, kind: TokenKind) -> Token<'a> {
+        let line = self.line;
+        let column = self.column;
         let (slice, source) = self.source.split_at(1);
+
+        if slice == "\n" {
+            self.line += 1;
+            self.column = 1;
+        } else {
+            self.column += 1;
+        }
+
         self.source = source;
-        Token { kind, slice }
+        Token::new(kind, slice, line, column)
     }
 
     fn consume_numeric(&mut self) -> Token<'a> {
-        Token {
-            kind: TokenKind::Numeric,
-            slice: self.until(|i| !i.is_ascii_digit()),
-        }
+        let line = self.line;
+        let column = self.column;
+        let slice = self.until(|i| !i.is_ascii_digit());
+
+        Token::new(TokenKind::Numeric, slice, line, column)
     }
 
     fn consume_identifier(&mut self) -> Token<'a> {
+        let line = self.line;
+        let column = self.column;
         let identifier = self.until(|i| !is_valid_in_identifier(i));
-        Token {
-            kind: match_kind(identifier),
-            slice: identifier,
-        }
+
+        Token::new(match_kind(identifier), identifier, line, column)
     }
 
     fn consume_eq(&mut self, not_eq: TokenKind, eq: TokenKind) -> Token<'a> {
+        let line = self.line;
+        let column = self.column;
         let (idx, kind) = match self.source.chars().nth(1) {
             Some('=') => (2, eq),
             _ => (1, not_eq),
         };
 
         let (slice, source) = self.source.split_at(idx);
+        self.column += idx;
         self.source = source;
-        Token { kind, slice }
+
+        Token::new(kind, slice, line, column)
     }
 }
 

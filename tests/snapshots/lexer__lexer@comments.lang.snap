@@ -5,9 +5,17 @@ input_file: tests/lexer/comments.lang
 ---
 - kind: Identifier
   slice: hello
+  line: 1
+  column: 1
 - kind: Identifier
   slice: world
+  line: 1
+  column: 7
 - kind: RightBrace
   slice: "}"
+  line: 4
+  column: 1
 - kind: LeftBrace
   slice: "{"
+  line: 6
+  column: 1
