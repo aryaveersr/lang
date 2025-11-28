@@ -9,7 +9,7 @@ fn compile(source: &str) {
         println!("{token:?}");
     }
 
-    let ast = Parser::new(Lexer::new(source)).parse().unwrap();
+    let ast = Parser::new(Lexer::new(source)).parse();
 
     println!("====");
     println!("=> AST:");

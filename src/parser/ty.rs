@@ -1,11 +1,11 @@
 use super::*;
 
 impl Parser<'_> {
-    pub(super) fn parse_type(&mut self) -> Result<Type> {
-        let token = self.expect(To::Identifier, Pe::MissingTypeName)?;
+    pub(super) fn parse_type(&mut self) -> Type {
+        let token = self.expect(To::Identifier, "Missing type expression.");
 
-        Ok(Type::Simple {
+        Type::Simple {
             name: token.slice.to_owned(),
-        })
+        }
     }
 }

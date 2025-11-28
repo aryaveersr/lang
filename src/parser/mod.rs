@@ -1,17 +1,12 @@
-mod errors;
 mod expr;
 mod stmt;
 mod ty;
 mod utils;
 
-pub use errors::ParseError;
-
 use crate::{ast::*, lexer::*, ops::*, token::*};
-use errors::*;
 use std::{iter::Peekable, panic};
 
 type To = TokenKind;
-type Pe = ParseError;
 
 pub struct Parser<'a> {
     lexer: Peekable<Lexer<'a>>,
@@ -24,35 +19,35 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_function(&mut self) -> Result<Fun> {
-        let name = self.expect(To::Identifier, Pe::MissingFunName)?;
+    fn parse_function(&mut self) -> Fun {
+        let name = self.expect(To::Identifier, "Missing function name.");
 
-        self.expect(To::LeftParen, Pe::MissingFunLeftParen)?;
-        self.expect(To::RightParen, Pe::MissingFunRightParen)?;
+        self.expect(To::LeftParen, "Missing '('.");
+        self.expect(To::RightParen, "Missing ')'.");
 
-        let ty = self.eat(To::Colon).map(|_| self.parse_type()).transpose()?;
+        let ty = self.eat(To::Colon).map(|_| self.parse_type());
 
-        self.expect(To::LeftBrace, Pe::MissingFunBody)?;
+        self.expect(To::LeftBrace, "Missing function body.");
 
-        let body = self.parse_body(true)?;
+        let body = self.parse_body(true);
 
-        Ok(Fun {
+        Fun {
             name: name.slice.to_owned(),
             ty,
             body,
-        })
+        }
     }
 
-    pub fn parse(&mut self) -> Result<Ast> {
+    pub fn parse(&mut self) -> Ast {
         let mut funs = Vec::new();
 
-        while let Ok(token) = self.next() {
+        while let Some(token) = self.lexer.next() {
             match token.kind {
-                To::Fun => funs.push(self.parse_function()?),
+                To::Fun => funs.push(self.parse_function()),
                 _ => panic!("Expected EOF or declaration."),
             }
         }
 
-        Ok(Ast { funs })
+        Ast { funs }
     }
 }

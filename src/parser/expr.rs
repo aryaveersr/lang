@@ -1,86 +1,86 @@
 use super::*;
 
 impl Parser<'_> {
-    fn parse_expr_numeric(&mut self, token: Token) -> Result<Box<Expr>> {
-        let value = token.slice.parse().map_err(|_| Pe::NumberTooLarge)?;
+    fn parse_expr_numeric(&mut self, token: Token) -> Box<Expr> {
+        let value = token.slice.parse().expect("Number too large.");
 
-        Ok(Box::new(Expr::Num { value }))
+        Box::new(Expr::Num { value })
     }
 
-    fn parse_expr_group(&mut self) -> Result<Box<Expr>> {
-        let expr = self.parse_expr()?;
+    fn parse_expr_group(&mut self) -> Box<Expr> {
+        let expr = self.parse_expr();
 
-        self.expect(To::RightParen, Pe::MissingClosingParen)?;
+        self.expect(To::RightParen, "Missing ')'.");
 
-        Ok(expr)
+        expr
     }
 
-    fn parse_expr_identifier(&mut self, token: Token) -> Result<Box<Expr>> {
+    fn parse_expr_identifier(&mut self, token: Token) -> Box<Expr> {
         let name = token.slice.to_owned();
 
-        Ok(Box::new(Expr::Var { name }))
+        Box::new(Expr::Var { name })
     }
 
-    fn parse_expr_primary(&mut self) -> Result<Box<Expr>> {
-        let next = self.next()?;
+    fn parse_expr_primary(&mut self) -> Box<Expr> {
+        let next = self.next();
 
         match next.kind {
             To::Numeric => self.parse_expr_numeric(next),
             To::Identifier => self.parse_expr_identifier(next),
             To::LeftParen => self.parse_expr_group(),
-            To::True => Ok(Box::new(Expr::Bool { value: true })),
-            To::False => Ok(Box::new(Expr::Bool { value: false })),
+            To::True => Box::new(Expr::Bool { value: true }),
+            To::False => Box::new(Expr::Bool { value: false }),
 
-            _ => Err(Pe::InvalidExpr),
+            _ => panic!("Invalid expression: {next:?}."),
         }
     }
 
-    fn parse_expr_unary(&mut self) -> Result<Box<Expr>> {
+    fn parse_expr_unary(&mut self) -> Box<Expr> {
         if let Some(op) = self.map(|kind| match kind {
             To::Minus => Some(UnOp::Negate),
             To::Not => Some(UnOp::Not),
             _ => None,
         }) {
-            let expr = self.parse_expr_primary()?;
+            let expr = self.parse_expr_primary();
 
-            Ok(Box::new(Expr::Unary { op, expr }))
+            Box::new(Expr::Unary { op, expr })
         } else {
             self.parse_expr_primary()
         }
     }
 
-    fn parse_expr_factor(&mut self) -> Result<Box<Expr>> {
-        let mut lhs = self.parse_expr_unary()?;
+    fn parse_expr_factor(&mut self) -> Box<Expr> {
+        let mut lhs = self.parse_expr_unary();
 
         while let Some(op) = self.map(|kind| match kind {
             To::Star => Some(BinOp::Mul),
             To::Slash => Some(BinOp::Div),
             _ => None,
         }) {
-            let rhs = self.parse_expr_unary()?;
+            let rhs = self.parse_expr_unary();
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        Ok(lhs)
+        lhs
     }
 
-    fn parse_expr_term(&mut self) -> Result<Box<Expr>> {
-        let mut lhs = self.parse_expr_factor()?;
+    fn parse_expr_term(&mut self) -> Box<Expr> {
+        let mut lhs = self.parse_expr_factor();
 
         while let Some(op) = self.map(|kind| match kind {
             To::Plus => Some(BinOp::Add),
             To::Minus => Some(BinOp::Sub),
             _ => None,
         }) {
-            let rhs = self.parse_expr_factor()?;
+            let rhs = self.parse_expr_factor();
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        Ok(lhs)
+        lhs
     }
 
-    fn parse_expr_comparison(&mut self) -> Result<Box<Expr>> {
-        let mut lhs = self.parse_expr_term()?;
+    fn parse_expr_comparison(&mut self) -> Box<Expr> {
+        let mut lhs = self.parse_expr_term();
 
         if let Some(op) = self.map(|kind| match kind {
             To::EqualEqual => Some(BinOp::Eq),
@@ -91,33 +91,33 @@ impl Parser<'_> {
             To::GreaterEqual => Some(BinOp::GreaterEq),
             _ => None,
         }) {
-            let rhs = self.parse_expr_term()?;
+            let rhs = self.parse_expr_term();
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        Ok(lhs)
+        lhs
     }
 
-    fn parse_expr_equality(&mut self) -> Result<Box<Expr>> {
-        let mut lhs = self.parse_expr_comparison()?;
+    fn parse_expr_equality(&mut self) -> Box<Expr> {
+        let mut lhs = self.parse_expr_comparison();
 
         if let Some(op) = self.map(|kind| match kind {
             To::EqualEqual => Some(BinOp::Eq),
             To::NotEqual => Some(BinOp::NotEq),
             _ => None,
         }) {
-            let rhs = self.parse_expr_comparison()?;
+            let rhs = self.parse_expr_comparison();
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        Ok(lhs)
+        lhs
     }
 
-    fn parse_expr_and(&mut self) -> Result<Box<Expr>> {
-        let mut lhs = self.parse_expr_equality()?;
+    fn parse_expr_and(&mut self) -> Box<Expr> {
+        let mut lhs = self.parse_expr_equality();
 
         if self.eat(To::And).is_some() {
-            let rhs = self.parse_expr_equality()?;
+            let rhs = self.parse_expr_equality();
 
             lhs = Box::new(Expr::Binary {
                 op: BinOp::And,
@@ -126,14 +126,14 @@ impl Parser<'_> {
             });
         }
 
-        Ok(lhs)
+        lhs
     }
 
-    fn parse_expr_or(&mut self) -> Result<Box<Expr>> {
-        let mut lhs = self.parse_expr_and()?;
+    fn parse_expr_or(&mut self) -> Box<Expr> {
+        let mut lhs = self.parse_expr_and();
 
         if self.eat(To::Or).is_some() {
-            let rhs = self.parse_expr_and()?;
+            let rhs = self.parse_expr_and();
 
             lhs = Box::new(Expr::Binary {
                 op: BinOp::Or,
@@ -142,10 +142,10 @@ impl Parser<'_> {
             });
         }
 
-        Ok(lhs)
+        lhs
     }
 
-    pub(super) fn parse_expr(&mut self) -> Result<Box<Expr>> {
+    pub(super) fn parse_expr(&mut self) -> Box<Expr> {
         self.parse_expr_or()
     }
 }
