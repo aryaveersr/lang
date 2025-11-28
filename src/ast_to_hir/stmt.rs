@@ -1,7 +1,7 @@
 use super::*;
 use std::collections::HashMap;
 
-impl Builder {
+impl AstToHir {
     pub(super) fn lower_block(&mut self, stmts: Vec<ast::Stmt>) -> Block {
         self.scope.create();
 

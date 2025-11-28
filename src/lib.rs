@@ -1,5 +1,5 @@
 pub mod ast;
-pub mod builder;
+pub mod ast_to_hir;
 pub mod hir;
 pub mod lexer;
 pub mod ops;

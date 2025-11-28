@@ -1,4 +1,4 @@
-use lang::{builder::Builder, lexer::Lexer, parser::Parser};
+use lang::{ast_to_hir::AstToHir, lexer::Lexer, parser::Parser};
 use std::{
     fs,
     io::{self, Write, stdin, stdout},
@@ -15,7 +15,7 @@ fn compile(source: &str) {
     println!("=> AST:");
     println!("{}", serde_yaml::to_string(&ast).unwrap());
 
-    let hir = Builder::new().build_hir(ast);
+    let hir = AstToHir::new().build_hir(ast);
 
     println!("====");
     println!("=> HIR:");

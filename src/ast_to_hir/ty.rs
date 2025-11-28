@@ -1,6 +1,6 @@
 use super::*;
 
-impl Builder {
+impl AstToHir {
     pub(super) fn lower_ty(&mut self, ty: ast::Type) -> Type {
         match ty {
             ast::Type::Simple { name } => match name.as_str() {

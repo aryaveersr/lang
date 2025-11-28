@@ -6,13 +6,13 @@ use crate::{ast, hir::*, ops::*, scope::*};
 use std::collections::HashMap;
 
 #[derive(Default)]
-pub struct Builder {
+pub struct AstToHir {
     scope: Scope<Type>,
     expected_return_type: Option<Type>,
     in_loop: bool,
 }
 
-impl Builder {
+impl AstToHir {
     pub fn new() -> Self {
         Self::default()
     }

@@ -1,6 +1,6 @@
 use super::*;
 
-impl Builder {
+impl AstToHir {
     fn type_unary(&self, op: UnOp, expr: &Expr) -> Type {
         match op {
             UnOp::Negate => {
