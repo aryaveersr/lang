@@ -1,0 +1,23 @@
+---
+source: tests/lexer.rs
+expression: "lexer.collect::<Vec<_>>()"
+input_file: tests/lexer/two_chars.lang
+---
+- kind: Equal
+  slice: "="
+- kind: EqualEqual
+  slice: "=="
+- kind: NotEqual
+  slice: "!="
+- kind: Not
+  slice: "!"
+- kind: Lesser
+  slice: "<"
+- kind: LesserEqual
+  slice: "<="
+- kind: Greater
+  slice: ">"
+- kind: Not
+  slice: "!"
+- kind: Equal
+  slice: "="

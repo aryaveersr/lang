@@ -1,0 +1,21 @@
+---
+source: tests/lexer.rs
+expression: "lexer.collect::<Vec<_>>()"
+input_file: tests/lexer/numerics.lang
+---
+- kind: Numeric
+  slice: "12"
+- kind: Plus
+  slice: +
+- kind: Numeric
+  slice: "4"
+- kind: Numeric
+  slice: "18"
+- kind: Star
+  slice: "*"
+- kind: Numeric
+  slice: "3"
+- kind: Slash
+  slice: /
+- kind: Numeric
+  slice: "2"

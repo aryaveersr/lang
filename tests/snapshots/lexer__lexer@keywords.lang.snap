@@ -1,0 +1,21 @@
+---
+source: tests/lexer.rs
+expression: "lexer.collect::<Vec<_>>()"
+input_file: tests/lexer/keywords.lang
+---
+- kind: Return
+  slice: return
+- kind: Fun
+  slice: fun
+- kind: Numeric
+  slice: "12"
+- kind: Identifier
+  slice: hello
+- kind: Semicolon
+  slice: ;
+- kind: "True"
+  slice: "true"
+- kind: "False"
+  slice: "false"
+- kind: Identifier
+  slice: "True"

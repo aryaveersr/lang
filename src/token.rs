@@ -1,6 +1,7 @@
+use serde::Serialize;
 use std::fmt::{self, Debug, Formatter};
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize)]
 pub enum TokenKind {
     // Single-characters.
     LeftParen,
@@ -47,7 +48,7 @@ pub enum TokenKind {
     Invalid,
 }
 
-#[derive(PartialEq, Eq, Clone, Copy, Default)]
+#[derive(PartialEq, Eq, Clone, Copy, Default, Serialize)]
 pub struct Token<'a> {
     pub kind: TokenKind,
     pub slice: &'a str,

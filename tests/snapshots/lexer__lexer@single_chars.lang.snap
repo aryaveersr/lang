@@ -1,0 +1,33 @@
+---
+source: tests/lexer.rs
+expression: "lexer.collect::<Vec<_>>()"
+input_file: tests/lexer/single_chars.lang
+---
+- kind: LeftBrace
+  slice: "{"
+- kind: RightBrace
+  slice: "}"
+- kind: LeftParen
+  slice: (
+- kind: RightParen
+  slice: )
+- kind: Semicolon
+  slice: ;
+- kind: LeftBrace
+  slice: "{"
+- kind: LeftBrace
+  slice: "{"
+- kind: RightBrace
+  slice: "}"
+- kind: Star
+  slice: "*"
+- kind: Star
+  slice: "*"
+- kind: Lesser
+  slice: "<"
+- kind: Equal
+  slice: "="
+- kind: Not
+  slice: "!"
+- kind: Greater
+  slice: ">"

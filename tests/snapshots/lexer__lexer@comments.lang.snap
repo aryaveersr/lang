@@ -1,0 +1,13 @@
+---
+source: tests/lexer.rs
+expression: "lexer.collect::<Vec<_>>()"
+input_file: tests/lexer/comments.lang
+---
+- kind: Identifier
+  slice: hello
+- kind: Identifier
+  slice: world
+- kind: RightBrace
+  slice: "}"
+- kind: LeftBrace
+  slice: "{"
