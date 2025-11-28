@@ -83,8 +83,6 @@ impl Parser<'_> {
         let mut lhs = self.parse_expr_term();
 
         if let Some(op) = self.map(|kind| match kind {
-            To::EqualEqual => Some(BinOp::Eq),
-            To::NotEqual => Some(BinOp::NotEq),
             To::Lesser => Some(BinOp::Lesser),
             To::LesserEqual => Some(BinOp::LesserEq),
             To::Greater => Some(BinOp::Greater),
@@ -116,7 +114,7 @@ impl Parser<'_> {
     fn parse_expr_and(&mut self) -> Box<Expr> {
         let mut lhs = self.parse_expr_equality();
 
-        if self.eat(To::And).is_some() {
+        while self.eat(To::And).is_some() {
             let rhs = self.parse_expr_equality();
 
             lhs = Box::new(Expr::Binary {
@@ -132,7 +130,7 @@ impl Parser<'_> {
     fn parse_expr_or(&mut self) -> Box<Expr> {
         let mut lhs = self.parse_expr_and();
 
-        if self.eat(To::Or).is_some() {
+        while self.eat(To::Or).is_some() {
             let rhs = self.parse_expr_and();
 
             lhs = Box::new(Expr::Binary {
