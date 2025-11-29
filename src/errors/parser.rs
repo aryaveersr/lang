@@ -1,7 +1,5 @@
-use crate::{
-    errors::Position,
-    token::{Token, TokenKind},
-};
+use super::Position;
+use crate::token::{Token, TokenKind};
 use serde::Serialize;
 use thiserror::Error;
 
@@ -29,6 +27,9 @@ pub enum ParseError {
 
     #[error("Invalid type: {found} at {pos}.")]
     InvalidType { found: TokenKind, pos: Position },
+
+    #[error("Invalid declaration: {found} at {pos}.")]
+    InvalidDecl { found: TokenKind, pos: Position },
 
     #[error("Duplicate function: {name} at {pos}.")]
     DuplicateFunction { name: String, pos: Position },
@@ -64,6 +65,13 @@ impl ParseError {
 
     pub fn invalid_type(found: Token) -> Self {
         Self::InvalidType {
+            found: found.kind,
+            pos: found.pos,
+        }
+    }
+
+    pub fn invalid_decl(found: Token) -> Self {
+        Self::InvalidDecl {
             found: found.kind,
             pos: found.pos,
         }

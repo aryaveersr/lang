@@ -63,7 +63,7 @@ impl<'a> Parser<'a> {
                     funs.insert(name, fun);
                 }
 
-                _ => return Err(ParseError::eof("declaration")),
+                _ => return Err(ParseError::invalid_decl(token)),
             }
         }
 
