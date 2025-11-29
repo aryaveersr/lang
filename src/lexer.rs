@@ -69,14 +69,9 @@ impl<'a> Lexer<'a> {
         let column = self.column;
         let (slice, source) = self.source.split_at(1);
 
-        if slice == "\n" {
-            self.line += 1;
-            self.column = 1;
-        } else {
-            self.column += 1;
-        }
-
+        self.column += 1;
         self.source = source;
+
         Token::new(kind, slice, line, column)
     }
 
@@ -161,7 +156,14 @@ impl<'a> Iterator for Lexer<'a> {
             c if c.is_ascii_digit() => self.consume_numeric(),
             c if is_valid_in_identifier(c) => self.consume_identifier(),
 
-            _ => self.consume_char(TokenKind::Invalid),
+            c => {
+                if c == '\n' {
+                    self.line += 1;
+                    self.column = 1;
+                }
+
+                self.consume_char(TokenKind::Invalid)
+            }
         })
     }
 }
