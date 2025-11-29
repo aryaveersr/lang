@@ -1,0 +1,11 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/13_duplicate_function.lang
+---
+Err:
+  DuplicateFunction:
+    name: helper
+    pos:
+      line: 5
+      column: 1

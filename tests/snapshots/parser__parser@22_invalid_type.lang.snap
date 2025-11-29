@@ -1,0 +1,11 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/22_invalid_type.lang
+---
+Err:
+  InvalidType:
+    found: Identifier
+    pos:
+      line: 2
+      column: 12

@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/20_missing_if_condition.lang
+---
+Err:
+  UnexpectedToken:
+    expected: (
+    found: LeftBrace
+    pos:
+      line: 2
+      column: 8

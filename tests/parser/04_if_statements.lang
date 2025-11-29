@@ -1,0 +1,63 @@
+fun main() {
+    if (true) {
+        let x: num = 1;
+    }
+
+    if (false) {
+        let a: num = 1;
+    } else {
+        let b: num = 2;
+    }
+
+    if (5 > 3) {
+        let result: bool = true;
+    }
+
+    if (true and false) {
+        let x: num = 1;
+    }
+
+    if (true or false) {
+        let y: num = 2;
+    }
+
+    if (true) {
+        if (false) {
+            let inner: num = 1;
+        } else {
+            let inner2: num = 2;
+        }
+    }
+
+    if (10 >= 5) {
+        let comp: num = 10;
+    }
+
+    if (5 <= 10) {
+        let comp2: num = 5;
+    }
+
+    if (5 == 5) {
+        let equal: bool = true;
+    }
+
+    if (5 != 10) {
+        let notequal: bool = true;
+    }
+
+    if (false) {
+        let x: num = 1;
+    } else {
+        if (true) {
+            let y: num = 2;
+        } else {
+            let z: num = 3;
+        }
+    }
+
+    if (true) {
+        let a: num = 1;
+        let b: num = 2;
+        let c: num = 3;
+    }
+}

@@ -1,0 +1,10 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/11_break_outside_loop.lang
+---
+Err:
+  BreakOutsideLoop:
+    pos:
+      line: 3
+      column: 5

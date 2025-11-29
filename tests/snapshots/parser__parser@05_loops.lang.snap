@@ -1,0 +1,203 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/05_loops.lang
+---
+Ok:
+  funs:
+    main:
+      return_ty: ~
+      body:
+        - kind: Loop
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+        - kind: Loop
+          body:
+            - kind: Let
+              name: counter
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 0
+            - kind: Break
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Bool
+                value: true
+              body:
+                - kind: Break
+              else: ~
+            - kind: Let
+              name: y
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Bool
+                  value: true
+              body:
+                - kind: Break
+              else: ~
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Binary
+                  op: Lesser
+                  lhs:
+                    kind: Num
+                    value: 5
+                  rhs:
+                    kind: Num
+                    value: 10
+              body:
+                - kind: Break
+              else: ~
+            - kind: Let
+              name: result
+              ty:
+                kind: Bool
+              expr:
+                kind: Bool
+                value: true
+        - kind: Loop
+          body:
+            - kind: Loop
+              body:
+                - kind: Break
+            - kind: Break
+        - kind: Loop
+          body:
+            - kind: Let
+              name: a
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+            - kind: Let
+              name: b
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+            - kind: If
+              cond:
+                kind: Bool
+                value: true
+              body:
+                - kind: Break
+              else: ~
+            - kind: Let
+              name: c
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 3
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Binary
+                  op: And
+                  lhs:
+                    kind: Bool
+                    value: true
+                  rhs:
+                    kind: Bool
+                    value: false
+              body:
+                - kind: Break
+              else: ~
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 42
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Binary
+                  op: And
+                  lhs:
+                    kind: Binary
+                    op: Greater
+                    lhs:
+                      kind: Num
+                      value: 5
+                    rhs:
+                      kind: Num
+                      value: 3
+                  rhs:
+                    kind: Binary
+                    op: Lesser
+                    lhs:
+                      kind: Num
+                      value: 10
+                    rhs:
+                      kind: Num
+                      value: 20
+              body:
+                - kind: Break
+              else: ~
+            - kind: Let
+              name: result
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Bool
+                value: false
+              body:
+                - kind: Let
+                  name: x
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 1
+              else:
+                - kind: Break

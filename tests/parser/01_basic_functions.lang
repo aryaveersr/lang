@@ -1,0 +1,15 @@
+fun simple() {
+    let x: num = 42;
+}
+
+fun with_return(): num {
+    return 5;
+}
+
+fun explicit_void(): void {
+    return;
+}
+
+fun main() {
+    let y: bool = true;
+}

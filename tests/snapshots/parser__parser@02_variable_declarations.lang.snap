@@ -1,0 +1,74 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/02_variable_declarations.lang
+---
+Ok:
+  funs:
+    main:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 42
+        - kind: Let
+          name: y
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+        - kind: Let
+          name: z
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: false
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr: ~
+        - kind: Let
+          name: b
+          ty:
+            kind: Bool
+          expr: ~
+        - kind: Let
+          name: c
+          ty: ~
+          expr:
+            kind: Num
+            value: 100
+        - kind: Let
+          name: d
+          ty: ~
+          expr:
+            kind: Bool
+            value: false
+        - kind: Let
+          name: e
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: f
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 2
+        - kind: Let
+          name: g
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 3

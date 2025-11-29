@@ -1,0 +1,74 @@
+fun no_return() {
+    let x: num = 42;
+}
+
+fun return_void(): void {
+    return;
+}
+
+fun return_value(): num {
+    return 42;
+}
+
+fun return_bool(): bool {
+    return true;
+}
+
+fun return_expression(): num {
+    return 5 + 10;
+}
+
+fun return_complex(): num {
+    return (10 + 5) * 3 - 2;
+}
+
+fun return_comparison(): bool {
+    return 5 < 10;
+}
+
+fun return_logical(): bool {
+    return true and false;
+}
+
+fun early_return(): num {
+    if (true) {
+        return 1;
+    }
+    return 2;
+}
+
+fun conditional_return(): num {
+    let x: num = 10;
+    if (x > 5) {
+        return 100;
+    } else {
+        return 200;
+    }
+}
+
+fun return_variable(): num {
+    let result: num = 42;
+    return result;
+}
+
+fun return_unary(): num {
+    return -5;
+}
+
+fun return_not(): bool {
+    return !false;
+}
+
+fun multiple_early_returns(): num {
+    if (true) {
+        return 1;
+    }
+    if (false) {
+        return 2;
+    }
+    return 3;
+}
+
+fun main() {
+    return;
+}

@@ -1,0 +1,235 @@
+fun empty_function() {
+}
+
+fun single_statement() {
+    return;
+}
+
+fun deeply_nested(): num {
+    if (true) {
+        if (true) {
+            if (true) {
+                if (true) {
+                    if (true) {
+                        return 42;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+fun many_variables() {
+    let a: num = 1;
+    let b: num = 2;
+    let c: num = 3;
+    let d: num = 4;
+    let e: num = 5;
+    let f: num = 6;
+    let g: num = 7;
+    let h: num = 8;
+    let i: num = 9;
+    let j: num = 10;
+}
+
+fun complex_expressions(): num {
+    let x: num = ((((5))));
+    let y: num = -(-(-(-5)));
+    let z: bool = !!!!!!true;
+    let w: num = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10;
+    return x + y;
+}
+
+fun nested_loops_and_conditionals() {
+    loop {
+        if (true) {
+            loop {
+                if (false) {
+                    break;
+                } else {
+                    if (true) {
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+    }
+}
+
+fun all_comparison_operators(): bool {
+    let lt: bool = 1 < 2;
+    let lte: bool = 2 <= 2;
+    let gt: bool = 3 > 2;
+    let gte: bool = 3 >= 3;
+    let eq: bool = 4 == 4;
+    let neq: bool = 5 != 6;
+    return lt and lte and gt and gte and eq and neq;
+}
+
+fun all_arithmetic_operators(): num {
+    let a: num = 10 + 5;
+    let b: num = 10 - 5;
+    let c: num = 10 * 5;
+    let d: num = 10 / 5;
+    return a + b + c + d;
+}
+
+fun shadow_like_names() {
+    let x: num = 1;
+    {
+        let x: num = 2;
+        {
+            let x: num = 3;
+        }
+    }
+    let x: num = 4;
+}
+
+fun keywords_as_identifiers_prefix() {
+    let returns: num = 1;
+    let iff: num = 2;
+    let loops: num = 3;
+    let truee: bool = true;
+    let falsee: bool = false;
+}
+
+fun unicode_identifiers() {
+    let hello: num = 42;
+    let world: num = 100;
+    let foo_bar_baz: num = 1;
+    let _underscore: num = 2;
+    let with123numbers: num = 3;
+    let MixedCase: num = 4;
+    let ALLCAPS: num = 5;
+}
+
+fun zero_and_large_numbers() {
+    let zero: num = 0;
+    let small: num = 1;
+    let medium: num = 12345;
+    let large: num = 999999;
+}
+
+fun boolean_edge_cases(): bool {
+    let t: bool = true;
+    let f: bool = false;
+    let and_chain: bool = true and true and true and true;
+    let or_chain: bool = false or false or false or true;
+    let mixed: bool = true and false or true and false;
+    return t and !f;
+}
+
+fun empty_blocks() {
+    {}
+    {}
+    {}
+    if (true) {}
+    if (false) {} else {}
+    loop { break; }
+}
+
+fun sequential_returns(): num {
+    if (true) {
+        return 1;
+    }
+    if (false) {
+        return 2;
+    }
+    return 3;
+}
+
+fun minimal_while() {
+    while (false) {}
+}
+
+fun while_with_break() {
+    while (true) {
+        break;
+    }
+}
+
+fun if_without_braces_body() {
+    if (true) return;
+}
+
+fun loop_without_braces_body() {
+    loop break;
+}
+
+fun while_without_braces_body() {
+    while (false) return;
+}
+
+fun mixed_statement_types() {
+    let x: num = 1;
+    {
+        let y: num = 2;
+    }
+    if (true) {
+        let z: num = 3;
+    }
+    loop {
+        let w: num = 4;
+        break;
+    }
+    return;
+}
+
+fun expression_as_statement_context(): num {
+    let a: num = 5;
+    let b: num = a;
+    let c: num = (a);
+    let d: num = ((a));
+    return d;
+}
+
+fun all_unary_positions(): num {
+    let a: num = -5;
+    let b: num = --5;
+    let c: num = ---5;
+    let d: num = -(5);
+    let e: num = -(-5);
+    return a + b + c + d + e;
+}
+
+fun all_logical_combinations(): bool {
+    let a: bool = true and true;
+    let b: bool = true and false;
+    let c: bool = false and true;
+    let d: bool = false and false;
+    let e: bool = true or true;
+    let f: bool = true or false;
+    let g: bool = false or true;
+    let h: bool = false or false;
+    return a or b or c or d or e or f or g or h;
+}
+
+fun type_annotations_everywhere() {
+    let a: num = 1;
+    let b: bool = true;
+    let c: num = 2;
+    let d: bool = false;
+    let e: num = a + c;
+    let f: bool = b and d;
+}
+
+fun no_type_annotations() {
+    let a = 1;
+    let b = true;
+    let c = 2 + 3;
+    let d = false or true;
+}
+
+fun mixed_annotations() {
+    let a: num = 1;
+    let b = 2;
+    let c: bool = true;
+    let d = false;
+    let e = a + b;
+}
+
+fun main() {
+    return;
+}

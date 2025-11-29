@@ -1,0 +1,15 @@
+fun main() {
+    let x: num = 42;
+    let y: bool = true;
+    let z: bool = false;
+
+    let a: num;
+    let b: bool;
+
+    let c = 100;
+    let d = false;
+
+    let e: num = 1;
+    let f: num = 2;
+    let g: num = 3;
+}

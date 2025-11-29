@@ -1,0 +1,795 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/08_operator_precedence.lang
+---
+Ok:
+  funs:
+    main:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: expr1
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Num
+              value: 1
+            rhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+        - kind: Let
+          name: expr2
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Binary
+              op: Div
+              lhs:
+                kind: Num
+                value: 6
+              rhs:
+                kind: Num
+                value: 2
+        - kind: Let
+          name: expr3
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 4
+              rhs:
+                kind: Num
+                value: 5
+        - kind: Let
+          name: expr4
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Div
+              lhs:
+                kind: Num
+                value: 10
+              rhs:
+                kind: Num
+                value: 2
+            rhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 3
+              rhs:
+                kind: Num
+                value: 4
+        - kind: Let
+          name: assoc1
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Binary
+              op: Sub
+              lhs:
+                kind: Num
+                value: 10
+              rhs:
+                kind: Num
+                value: 5
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Let
+          name: assoc2
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Div
+            lhs:
+              kind: Binary
+              op: Div
+              lhs:
+                kind: Num
+                value: 20
+              rhs:
+                kind: Num
+                value: 4
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Let
+          name: assoc3
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 1
+              rhs:
+                kind: Num
+                value: 2
+            rhs:
+              kind: Num
+              value: 3
+        - kind: Let
+          name: assoc4
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Num
+              value: 4
+        - kind: Let
+          name: unary1
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Num
+                value: 5
+            rhs:
+              kind: Num
+              value: 3
+        - kind: Let
+          name: unary2
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Num
+                value: 5
+        - kind: Let
+          name: unary3
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Bool
+                value: true
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Let
+          name: comp1
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Lesser
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 1
+              rhs:
+                kind: Num
+                value: 2
+            rhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 3
+              rhs:
+                kind: Num
+                value: 4
+        - kind: Let
+          name: comp2
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 4
+              rhs:
+                kind: Num
+                value: 1
+        - kind: Let
+          name: comp3
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Eq
+            lhs:
+              kind: Binary
+              op: Sub
+              lhs:
+                kind: Num
+                value: 10
+              rhs:
+                kind: Num
+                value: 5
+            rhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+        - kind: Let
+          name: logic1
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Bool
+                value: false
+              rhs:
+                kind: Bool
+                value: false
+        - kind: Let
+          name: logic2
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Bool
+                value: false
+              rhs:
+                kind: Bool
+                value: true
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: logic3
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Num
+                value: 5
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Binary
+              op: Lesser
+              lhs:
+                kind: Num
+                value: 10
+              rhs:
+                kind: Num
+                value: 20
+        - kind: Let
+          name: logic4
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Binary
+              op: Eq
+              lhs:
+                kind: Num
+                value: 1
+              rhs:
+                kind: Num
+                value: 1
+            rhs:
+              kind: Binary
+              op: Eq
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+        - kind: Let
+          name: complex1
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Binary
+                op: Mul
+                lhs:
+                  kind: Num
+                  value: 3
+                rhs:
+                  kind: Num
+                  value: 4
+            rhs:
+              kind: Binary
+              op: Div
+              lhs:
+                kind: Num
+                value: 5
+              rhs:
+                kind: Num
+                value: 5
+        - kind: Let
+          name: complex2
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Binary
+                op: Greater
+                lhs:
+                  kind: Num
+                  value: 10
+                rhs:
+                  kind: Num
+                  value: 5
+              rhs:
+                kind: Binary
+                op: Lesser
+                lhs:
+                  kind: Num
+                  value: 3
+                rhs:
+                  kind: Num
+                  value: 8
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Let
+          name: complex3
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Num
+                value: 2
+            rhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Num
+                value: 3
+              rhs:
+                kind: Unary
+                op: Negate
+                expr:
+                  kind: Num
+                  value: 4
+        - kind: Let
+          name: paren1
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 1
+              rhs:
+                kind: Num
+                value: 2
+            rhs:
+              kind: Num
+              value: 3
+        - kind: Let
+          name: paren2
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Div
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 2
+              rhs:
+                kind: Num
+                value: 3
+        - kind: Let
+          name: paren3
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Binary
+              op: Or
+              lhs:
+                kind: Bool
+                value: true
+              rhs:
+                kind: Bool
+                value: false
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: paren4
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Binary
+              op: Sub
+              lhs:
+                kind: Num
+                value: 10
+              rhs:
+                kind: Num
+                value: 5
+            rhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 3
+              rhs:
+                kind: Num
+                value: 2
+        - kind: Let
+          name: nested1
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Num
+                  value: 1
+                rhs:
+                  kind: Num
+                  value: 2
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Num
+              value: 4
+        - kind: Let
+          name: nested2
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Num
+              value: 2
+            rhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 3
+              rhs:
+                kind: Binary
+                op: Mul
+                lhs:
+                  kind: Num
+                  value: 4
+                rhs:
+                  kind: Num
+                  value: 5
+        - kind: Let
+          name: nested3
+          ty:
+            kind: Bool
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Binary
+                op: Greater
+                lhs:
+                  kind: Num
+                  value: 5
+                rhs:
+                  kind: Num
+                  value: 3
+              rhs:
+                kind: Binary
+                op: Lesser
+                lhs:
+                  kind: Num
+                  value: 2
+                rhs:
+                  kind: Num
+                  value: 4
+        - kind: Let
+          name: unary_paren1
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Num
+                value: 5
+              rhs:
+                kind: Num
+                value: 3
+        - kind: Let
+          name: unary_paren2
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Binary
+                op: Sub
+                lhs:
+                  kind: Num
+                  value: 10
+                rhs:
+                  kind: Num
+                  value: 5
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Let
+          name: unary_paren3
+          ty:
+            kind: Bool
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Bool
+                value: true
+              rhs:
+                kind: Bool
+                value: false
+        - kind: Let
+          name: unary_paren4
+          ty:
+            kind: Bool
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Num
+                value: 5
+              rhs:
+                kind: Num
+                value: 10
+        - kind: Let
+          name: chain1
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Eq
+            lhs:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Num
+                value: 5
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: chain2
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: NotEq
+            lhs:
+              kind: Binary
+              op: GreaterEq
+              lhs:
+                kind: Num
+                value: 10
+              rhs:
+                kind: Num
+                value: 5
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Let
+          name: ultimate
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Unary
+                  op: Negate
+                  expr:
+                    kind: Num
+                    value: 5
+                rhs:
+                  kind: Binary
+                  op: Mul
+                  lhs:
+                    kind: Num
+                    value: 10
+                  rhs:
+                    kind: Num
+                    value: 2
+              rhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Num
+                  value: 3
+                rhs:
+                  kind: Num
+                  value: 4
+            rhs:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Binary
+                op: Or
+                lhs:
+                  kind: Bool
+                  value: false
+                rhs:
+                  kind: Binary
+                  op: Eq
+                  lhs:
+                    kind: Bool
+                    value: true
+                  rhs:
+                    kind: Bool
+                    value: false

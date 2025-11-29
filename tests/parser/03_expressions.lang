@@ -1,0 +1,35 @@
+fun main() {
+    let a: num = 42;
+    let b: num = 0;
+    let c: bool = true;
+    let d: bool = false;
+
+    let x: num = a;
+    let y: bool = c;
+
+    let add: num = 10 + 5;
+    let sub: num = 10 - 5;
+    let mul: num = 10 * 5;
+    let div: num = 10 / 5;
+
+    let lt: bool = 5 < 10;
+    let lte: bool = 5 <= 10;
+    let gt: bool = 10 > 5;
+    let gte: bool = 10 >= 5;
+    let eq: bool = 5 == 5;
+    let neq: bool = 5 != 10;
+
+    let and_expr: bool = true and false;
+    let or_expr: bool = true or false;
+
+    let neg: num = -42;
+    let not_expr: bool = !true;
+
+    let complex1: num = (10 + 5) * 3;
+    let complex2: num = 10 + 5 * 3;
+    let complex3: bool = (5 < 10) and (10 > 3);
+    let complex4: num = -(-5);
+    let complex5: bool = !(true or false);
+
+    let calc: num = 1 + 2 - 3 * 4 / 5;
+}

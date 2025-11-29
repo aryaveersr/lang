@@ -1,0 +1,262 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/04_if_statements.lang
+---
+Ok:
+  funs:
+    main:
+      return_ty: ~
+      body:
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+          else: ~
+        - kind: If
+          cond:
+            kind: Bool
+            value: false
+          body:
+            - kind: Let
+              name: a
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+          else:
+            - kind: Let
+              name: b
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+        - kind: If
+          cond:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 3
+          body:
+            - kind: Let
+              name: result
+              ty:
+                kind: Bool
+              expr:
+                kind: Bool
+                value: true
+          else: ~
+        - kind: If
+          cond:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: false
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+          else: ~
+        - kind: If
+          cond:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: false
+          body:
+            - kind: Let
+              name: y
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+          else: ~
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: If
+              cond:
+                kind: Bool
+                value: false
+              body:
+                - kind: Let
+                  name: inner
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 1
+              else:
+                - kind: Let
+                  name: inner2
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 2
+          else: ~
+        - kind: If
+          cond:
+            kind: Binary
+            op: GreaterEq
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Num
+              value: 5
+          body:
+            - kind: Let
+              name: comp
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 10
+          else: ~
+        - kind: If
+          cond:
+            kind: Binary
+            op: LesserEq
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 10
+          body:
+            - kind: Let
+              name: comp2
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 5
+          else: ~
+        - kind: If
+          cond:
+            kind: Binary
+            op: Eq
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 5
+          body:
+            - kind: Let
+              name: equal
+              ty:
+                kind: Bool
+              expr:
+                kind: Bool
+                value: true
+          else: ~
+        - kind: If
+          cond:
+            kind: Binary
+            op: NotEq
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 10
+          body:
+            - kind: Let
+              name: notequal
+              ty:
+                kind: Bool
+              expr:
+                kind: Bool
+                value: true
+          else: ~
+        - kind: If
+          cond:
+            kind: Bool
+            value: false
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+          else:
+            - kind: If
+              cond:
+                kind: Bool
+                value: true
+              body:
+                - kind: Let
+                  name: y
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 2
+              else:
+                - kind: Let
+                  name: z
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 3
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Let
+              name: a
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+            - kind: Let
+              name: b
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+            - kind: Let
+              name: c
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 3
+          else: ~

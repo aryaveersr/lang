@@ -1,0 +1,4 @@
+fun main() {
+    let x: num = 42;
+    break;
+}

@@ -1,0 +1,11 @@
+fun helper() {
+    let x: num = 1;
+}
+
+fun helper() {
+    let y: num = 2;
+}
+
+fun main() {
+    return;
+}

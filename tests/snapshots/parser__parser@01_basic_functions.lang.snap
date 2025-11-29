@@ -1,0 +1,41 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/01_basic_functions.lang
+---
+Ok:
+  funs:
+    explicit_void:
+      return_ty:
+        kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    main:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: y
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+    simple:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 42
+    with_return:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Num
+            value: 5

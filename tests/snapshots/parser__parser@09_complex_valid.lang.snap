@@ -1,0 +1,1327 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/09_complex_valid.lang
+---
+Ok:
+  funs:
+    all_arithmetic_operators:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Num
+              value: 5
+        - kind: Let
+          name: b
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Num
+              value: 5
+        - kind: Let
+          name: c
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Num
+              value: 5
+        - kind: Let
+          name: d
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Div
+            lhs:
+              kind: Num
+              value: 10
+            rhs:
+              kind: Num
+              value: 5
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Var
+                  name: a
+                rhs:
+                  kind: Var
+                  name: b
+              rhs:
+                kind: Var
+                name: c
+            rhs:
+              kind: Var
+              name: d
+    all_comparison_operators:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Let
+          name: lt
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Lesser
+            lhs:
+              kind: Num
+              value: 1
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Let
+          name: lte
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: LesserEq
+            lhs:
+              kind: Num
+              value: 2
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Let
+          name: gt
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Num
+              value: 3
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Let
+          name: gte
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: GreaterEq
+            lhs:
+              kind: Num
+              value: 3
+            rhs:
+              kind: Num
+              value: 3
+        - kind: Let
+          name: eq
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Eq
+            lhs:
+              kind: Num
+              value: 4
+            rhs:
+              kind: Num
+              value: 4
+        - kind: Let
+          name: neq
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: NotEq
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 6
+        - kind: Return
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Binary
+                op: And
+                lhs:
+                  kind: Binary
+                  op: And
+                  lhs:
+                    kind: Binary
+                    op: And
+                    lhs:
+                      kind: Var
+                      name: lt
+                    rhs:
+                      kind: Var
+                      name: lte
+                  rhs:
+                    kind: Var
+                    name: gt
+                rhs:
+                  kind: Var
+                  name: gte
+              rhs:
+                kind: Var
+                name: eq
+            rhs:
+              kind: Var
+              name: neq
+    all_logical_combinations:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: b
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Let
+          name: c
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Bool
+              value: false
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: d
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Bool
+              value: false
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Let
+          name: e
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: f
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Let
+          name: g
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: false
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: h
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: false
+            rhs:
+              kind: Bool
+              value: false
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Binary
+              op: Or
+              lhs:
+                kind: Binary
+                op: Or
+                lhs:
+                  kind: Binary
+                  op: Or
+                  lhs:
+                    kind: Binary
+                    op: Or
+                    lhs:
+                      kind: Binary
+                      op: Or
+                      lhs:
+                        kind: Binary
+                        op: Or
+                        lhs:
+                          kind: Var
+                          name: a
+                        rhs:
+                          kind: Var
+                          name: b
+                      rhs:
+                        kind: Var
+                        name: c
+                    rhs:
+                      kind: Var
+                      name: d
+                  rhs:
+                    kind: Var
+                    name: e
+                rhs:
+                  kind: Var
+                  name: f
+              rhs:
+                kind: Var
+                name: g
+            rhs:
+              kind: Var
+              name: h
+    all_unary_positions:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Num
+              value: 5
+        - kind: Let
+          name: b
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Num
+                value: 5
+        - kind: Let
+          name: c
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Unary
+                op: Negate
+                expr:
+                  kind: Num
+                  value: 5
+        - kind: Let
+          name: d
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Num
+              value: 5
+        - kind: Let
+          name: e
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Num
+                value: 5
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Binary
+                  op: Add
+                  lhs:
+                    kind: Var
+                    name: a
+                  rhs:
+                    kind: Var
+                    name: b
+                rhs:
+                  kind: Var
+                  name: c
+              rhs:
+                kind: Var
+                name: d
+            rhs:
+              kind: Var
+              name: e
+    boolean_edge_cases:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Let
+          name: t
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+        - kind: Let
+          name: f
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: false
+        - kind: Let
+          name: and_chain
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Binary
+                op: And
+                lhs:
+                  kind: Bool
+                  value: true
+                rhs:
+                  kind: Bool
+                  value: true
+              rhs:
+                kind: Bool
+                value: true
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: or_chain
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Binary
+              op: Or
+              lhs:
+                kind: Binary
+                op: Or
+                lhs:
+                  kind: Bool
+                  value: false
+                rhs:
+                  kind: Bool
+                  value: false
+              rhs:
+                kind: Bool
+                value: false
+            rhs:
+              kind: Bool
+              value: true
+        - kind: Let
+          name: mixed
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Bool
+                value: true
+              rhs:
+                kind: Bool
+                value: false
+            rhs:
+              kind: Binary
+              op: And
+              lhs:
+                kind: Bool
+                value: true
+              rhs:
+                kind: Bool
+                value: false
+        - kind: Return
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Var
+              name: t
+            rhs:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Var
+                name: f
+    complex_expressions:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 5
+        - kind: Let
+          name: y
+          ty:
+            kind: Num
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Unary
+              op: Negate
+              expr:
+                kind: Unary
+                op: Negate
+                expr:
+                  kind: Unary
+                  op: Negate
+                  expr:
+                    kind: Num
+                    value: 5
+        - kind: Let
+          name: z
+          ty:
+            kind: Bool
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Unary
+                  op: Not
+                  expr:
+                    kind: Unary
+                    op: Not
+                    expr:
+                      kind: Unary
+                      op: Not
+                      expr:
+                        kind: Bool
+                        value: true
+        - kind: Let
+          name: w
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Binary
+                  op: Add
+                  lhs:
+                    kind: Binary
+                    op: Add
+                    lhs:
+                      kind: Binary
+                      op: Add
+                      lhs:
+                        kind: Binary
+                        op: Add
+                        lhs:
+                          kind: Binary
+                          op: Add
+                          lhs:
+                            kind: Binary
+                            op: Add
+                            lhs:
+                              kind: Num
+                              value: 1
+                            rhs:
+                              kind: Num
+                              value: 2
+                          rhs:
+                            kind: Num
+                            value: 3
+                        rhs:
+                          kind: Num
+                          value: 4
+                      rhs:
+                        kind: Num
+                        value: 5
+                    rhs:
+                      kind: Num
+                      value: 6
+                  rhs:
+                    kind: Num
+                    value: 7
+                rhs:
+                  kind: Num
+                  value: 8
+              rhs:
+                kind: Num
+                value: 9
+            rhs:
+              kind: Num
+              value: 10
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Var
+              name: y
+    deeply_nested:
+      return_ty:
+        kind: Num
+      body:
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: If
+              cond:
+                kind: Bool
+                value: true
+              body:
+                - kind: If
+                  cond:
+                    kind: Bool
+                    value: true
+                  body:
+                    - kind: If
+                      cond:
+                        kind: Bool
+                        value: true
+                      body:
+                        - kind: If
+                          cond:
+                            kind: Bool
+                            value: true
+                          body:
+                            - kind: Return
+                              expr:
+                                kind: Num
+                                value: 42
+                          else: ~
+                      else: ~
+                  else: ~
+              else: ~
+          else: ~
+        - kind: Return
+          expr:
+            kind: Num
+            value: 0
+    empty_blocks:
+      return_ty: ~
+      body:
+        - kind: Block
+          body: []
+        - kind: Block
+          body: []
+        - kind: Block
+          body: []
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body: []
+          else: ~
+        - kind: If
+          cond:
+            kind: Bool
+            value: false
+          body: []
+          else: []
+        - kind: Loop
+          body:
+            - kind: Break
+    empty_function:
+      return_ty: ~
+      body: []
+    expression_as_statement_context:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 5
+        - kind: Let
+          name: b
+          ty:
+            kind: Num
+          expr:
+            kind: Var
+            name: a
+        - kind: Let
+          name: c
+          ty:
+            kind: Num
+          expr:
+            kind: Var
+            name: a
+        - kind: Let
+          name: d
+          ty:
+            kind: Num
+          expr:
+            kind: Var
+            name: a
+        - kind: Return
+          expr:
+            kind: Var
+            name: d
+    if_without_braces_body:
+      return_ty: ~
+      body:
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Return
+              expr: ~
+          else: ~
+    keywords_as_identifiers_prefix:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: returns
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: iff
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 2
+        - kind: Let
+          name: loops
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 3
+        - kind: Let
+          name: truee
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+        - kind: Let
+          name: falsee
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: false
+    loop_without_braces_body:
+      return_ty: ~
+      body:
+        - kind: Loop
+          body:
+            - kind: Break
+    main:
+      return_ty: ~
+      body:
+        - kind: Return
+          expr: ~
+    many_variables:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: b
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 2
+        - kind: Let
+          name: c
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 3
+        - kind: Let
+          name: d
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 4
+        - kind: Let
+          name: e
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 5
+        - kind: Let
+          name: f
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 6
+        - kind: Let
+          name: g
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 7
+        - kind: Let
+          name: h
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 8
+        - kind: Let
+          name: i
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 9
+        - kind: Let
+          name: j
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 10
+    minimal_while:
+      return_ty: ~
+      body:
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Bool
+                  value: false
+              body:
+                - kind: Break
+              else: ~
+    mixed_annotations:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: b
+          ty: ~
+          expr:
+            kind: Num
+            value: 2
+        - kind: Let
+          name: c
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+        - kind: Let
+          name: d
+          ty: ~
+          expr:
+            kind: Bool
+            value: false
+        - kind: Let
+          name: e
+          ty: ~
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b
+    mixed_statement_types:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Block
+          body:
+            - kind: Let
+              name: y
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Let
+              name: z
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 3
+          else: ~
+        - kind: Loop
+          body:
+            - kind: Let
+              name: w
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 4
+            - kind: Break
+        - kind: Return
+          expr: ~
+    nested_loops_and_conditionals:
+      return_ty: ~
+      body:
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Bool
+                value: true
+              body:
+                - kind: Loop
+                  body:
+                    - kind: If
+                      cond:
+                        kind: Bool
+                        value: false
+                      body:
+                        - kind: Break
+                      else:
+                        - kind: If
+                          cond:
+                            kind: Bool
+                            value: true
+                          body:
+                            - kind: Break
+                          else: ~
+                - kind: Break
+              else: ~
+    no_type_annotations:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: a
+          ty: ~
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: b
+          ty: ~
+          expr:
+            kind: Bool
+            value: true
+        - kind: Let
+          name: c
+          ty: ~
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Num
+              value: 2
+            rhs:
+              kind: Num
+              value: 3
+        - kind: Let
+          name: d
+          ty: ~
+          expr:
+            kind: Binary
+            op: Or
+            lhs:
+              kind: Bool
+              value: false
+            rhs:
+              kind: Bool
+              value: true
+    sequential_returns:
+      return_ty:
+        kind: Num
+      body:
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 1
+          else: ~
+        - kind: If
+          cond:
+            kind: Bool
+            value: false
+          body:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 2
+          else: ~
+        - kind: Return
+          expr:
+            kind: Num
+            value: 3
+    shadow_like_names:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Block
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+            - kind: Block
+              body:
+                - kind: Let
+                  name: x
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 3
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 4
+    single_statement:
+      return_ty: ~
+      body:
+        - kind: Return
+          expr: ~
+    type_annotations_everywhere:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: b
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+        - kind: Let
+          name: c
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 2
+        - kind: Let
+          name: d
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: false
+        - kind: Let
+          name: e
+          ty:
+            kind: Num
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: c
+        - kind: Let
+          name: f
+          ty:
+            kind: Bool
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Var
+              name: b
+            rhs:
+              kind: Var
+              name: d
+    unicode_identifiers:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: hello
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 42
+        - kind: Let
+          name: world
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 100
+        - kind: Let
+          name: foo_bar_baz
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: _underscore
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 2
+        - kind: Let
+          name: with123numbers
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 3
+        - kind: Let
+          name: MixedCase
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 4
+        - kind: Let
+          name: ALLCAPS
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 5
+    while_with_break:
+      return_ty: ~
+      body:
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Bool
+                  value: true
+              body:
+                - kind: Break
+              else: ~
+            - kind: Break
+    while_without_braces_body:
+      return_ty: ~
+      body:
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Bool
+                  value: false
+              body:
+                - kind: Break
+              else: ~
+            - kind: Return
+              expr: ~
+    zero_and_large_numbers:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: zero
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 0
+        - kind: Let
+          name: small
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 1
+        - kind: Let
+          name: medium
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 12345
+        - kind: Let
+          name: large
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 999999

@@ -1,0 +1,11 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/25_empty_while_condition.lang
+---
+Err:
+  InvalidExpr:
+    found: RightParen
+    pos:
+      line: 2
+      column: 12

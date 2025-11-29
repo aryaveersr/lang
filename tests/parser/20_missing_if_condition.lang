@@ -1,0 +1,5 @@
+fun main() {
+    if {
+        let x: num = 42;
+    }
+}

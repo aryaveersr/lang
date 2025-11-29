@@ -1,0 +1,48 @@
+fun main() {
+    let expr1: num = 1 + 2 * 3;
+    let expr2: num = 10 - 6 / 2;
+    let expr3: num = 2 * 3 + 4 * 5;
+    let expr4: num = 10 / 2 + 3 * 4;
+
+    let assoc1: num = 10 - 5 - 2;
+    let assoc2: num = 20 / 4 / 2;
+    let assoc3: num = 1 + 2 + 3;
+    let assoc4: num = 2 * 3 * 4;
+
+    let unary1: num = -5 * 3;
+    let unary2: num = 10 + -5;
+    let unary3: bool = !true or false;
+
+    let comp1: bool = 1 + 2 < 3 + 4;
+    let comp2: bool = 2 * 3 > 4 + 1;
+    let comp3: bool = 10 - 5 == 2 + 3;
+
+    let logic1: bool = true or false and false;
+    let logic2: bool = false and true or true;
+
+    let logic3: bool = 5 > 3 and 10 < 20;
+    let logic4: bool = 1 == 1 or 2 == 3;
+
+    let complex1: num = 2 + 3 * 4 - 5 / 5;
+    let complex2: bool = 10 > 5 and 3 < 8 or false;
+    let complex3: num = -2 + 3 * -4;
+
+    let paren1: num = (1 + 2) * 3;
+    let paren2: num = 10 / (2 + 3);
+    let paren3: bool = (true or false) and true;
+    let paren4: num = (10 - 5) * (3 + 2);
+
+    let nested1: num = ((1 + 2) * 3) + 4;
+    let nested2: num = 2 * (3 + (4 * 5));
+    let nested3: bool = !((5 > 3) and (2 < 4));
+
+    let unary_paren1: num = -(5 + 3);
+    let unary_paren2: num = -(10 - 5) * 2;
+    let unary_paren3: bool = !(true and false);
+    let unary_paren4: bool = !(5 > 10);
+
+    let chain1: bool = 5 > 3 == true;
+    let chain2: bool = 10 >= 5 != false;
+
+    let ultimate: bool = -5 + 10 * 2 > 3 + 4 and !(false or true == false);
+}

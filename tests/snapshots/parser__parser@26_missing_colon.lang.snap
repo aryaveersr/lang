@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/26_missing_colon.lang
+---
+Err:
+  UnexpectedToken:
+    expected: ;
+    found: Identifier
+    pos:
+      line: 2
+      column: 11

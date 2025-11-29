@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/19_unclosed_paren.lang
+---
+Err:
+  UnexpectedToken:
+    expected: )
+    found: Semicolon
+    pos:
+      line: 2
+      column: 24

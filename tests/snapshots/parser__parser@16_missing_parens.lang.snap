@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/16_missing_parens.lang
+---
+Err:
+  UnexpectedToken:
+    expected: (
+    found: LeftBrace
+    pos:
+      line: 1
+      column: 10

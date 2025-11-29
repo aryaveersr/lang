@@ -1,0 +1,14 @@
+---
+source: tests/parser.rs
+expression: hir
+input_file: tests/parser/hello.lang
+---
+Ok:
+  funs:
+    main:
+      return_ty: ~
+      body:
+        - kind: Return
+          expr:
+            kind: Num
+            value: 0

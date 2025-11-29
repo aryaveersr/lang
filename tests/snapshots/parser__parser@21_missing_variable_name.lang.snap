@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/21_missing_variable_name.lang
+---
+Err:
+  UnexpectedToken:
+    expected: variable name
+    found: Colon
+    pos:
+      line: 2
+      column: 9

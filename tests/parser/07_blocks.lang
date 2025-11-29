@@ -1,0 +1,63 @@
+fun main() {
+    {
+        let x: num = 1;
+    }
+
+    {
+        let a: num = 1;
+        {
+            let b: num = 2;
+            {
+                let c: num = 3;
+            }
+        }
+    }
+
+    {
+        let x: num = 1;
+        let y: num = 2;
+        let z: num = 3;
+    }
+
+    {
+        if (true) {
+            let result: bool = true;
+        }
+    }
+
+    {
+        loop {
+            break;
+        }
+    }
+
+    {
+        let first: num = 1;
+    }
+    {
+        let second: num = 2;
+    }
+    {
+        let third: num = 3;
+    }
+
+    if (true) {
+        {
+            let nested: num = 42;
+        }
+    }
+
+    loop {
+        {
+            let inner: num = 1;
+        }
+        break;
+    }
+
+    {
+    }
+
+    {
+        return;
+    }
+}

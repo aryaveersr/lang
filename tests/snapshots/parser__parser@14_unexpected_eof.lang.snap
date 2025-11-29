@@ -1,0 +1,8 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/14_unexpected_eof.lang
+---
+Err:
+  UnexpectedEOF:
+    expected: statement

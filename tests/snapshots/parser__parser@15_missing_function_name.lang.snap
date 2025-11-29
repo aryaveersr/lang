@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/15_missing_function_name.lang
+---
+Err:
+  UnexpectedToken:
+    expected: function name
+    found: LeftParen
+    pos:
+      line: 1
+      column: 5

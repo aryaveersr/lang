@@ -1,0 +1,7 @@
+fun helper() {
+    let x: num = 42;
+}
+
+fun another() {
+    return;
+}

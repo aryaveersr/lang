@@ -1,0 +1,226 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/06_return_statements.lang
+---
+Ok:
+  funs:
+    conditional_return:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 10
+        - kind: If
+          cond:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Num
+              value: 5
+          body:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 100
+          else:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 200
+    early_return:
+      return_ty:
+        kind: Num
+      body:
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 1
+          else: ~
+        - kind: Return
+          expr:
+            kind: Num
+            value: 2
+    main:
+      return_ty: ~
+      body:
+        - kind: Return
+          expr: ~
+    multiple_early_returns:
+      return_ty:
+        kind: Num
+      body:
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 1
+          else: ~
+        - kind: If
+          cond:
+            kind: Bool
+            value: false
+          body:
+            - kind: Return
+              expr:
+                kind: Num
+                value: 2
+          else: ~
+        - kind: Return
+          expr:
+            kind: Num
+            value: 3
+    no_return:
+      return_ty: ~
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 42
+    return_bool:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Bool
+            value: true
+    return_comparison:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Lesser
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 10
+    return_complex:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Binary
+                op: Add
+                lhs:
+                  kind: Num
+                  value: 10
+                rhs:
+                  kind: Num
+                  value: 5
+              rhs:
+                kind: Num
+                value: 3
+            rhs:
+              kind: Num
+              value: 2
+    return_expression:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Num
+              value: 5
+            rhs:
+              kind: Num
+              value: 10
+    return_logical:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Bool
+              value: true
+            rhs:
+              kind: Bool
+              value: false
+    return_not:
+      return_ty:
+        kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Bool
+              value: false
+    return_unary:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Num
+              value: 5
+    return_value:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Num
+            value: 42
+    return_variable:
+      return_ty:
+        kind: Num
+      body:
+        - kind: Let
+          name: result
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 42
+        - kind: Return
+          expr:
+            kind: Var
+            name: result
+    return_void:
+      return_ty:
+        kind: Void
+      body:
+        - kind: Return
+          expr: ~

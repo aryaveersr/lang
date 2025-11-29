@@ -1,0 +1,7 @@
+fun () {
+    let x: num = 42;
+}
+
+fun main() {
+    return;
+}

@@ -1,0 +1,12 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/17_missing_semicolon.lang
+---
+Err:
+  UnexpectedToken:
+    expected: ;
+    found: Let
+    pos:
+      line: 3
+      column: 5

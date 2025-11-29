@@ -1,0 +1,2 @@
+fun main() {
+    let x: num = 42;

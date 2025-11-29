@@ -1,0 +1,149 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/07_blocks.lang
+---
+Ok:
+  funs:
+    main:
+      return_ty: ~
+      body:
+        - kind: Block
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+        - kind: Block
+          body:
+            - kind: Let
+              name: a
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+            - kind: Block
+              body:
+                - kind: Let
+                  name: b
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 2
+                - kind: Block
+                  body:
+                    - kind: Let
+                      name: c
+                      ty:
+                        kind: Num
+                      expr:
+                        kind: Num
+                        value: 3
+        - kind: Block
+          body:
+            - kind: Let
+              name: x
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+            - kind: Let
+              name: y
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+            - kind: Let
+              name: z
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 3
+        - kind: Block
+          body:
+            - kind: If
+              cond:
+                kind: Bool
+                value: true
+              body:
+                - kind: Let
+                  name: result
+                  ty:
+                    kind: Bool
+                  expr:
+                    kind: Bool
+                    value: true
+              else: ~
+        - kind: Block
+          body:
+            - kind: Loop
+              body:
+                - kind: Break
+        - kind: Block
+          body:
+            - kind: Let
+              name: first
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 1
+        - kind: Block
+          body:
+            - kind: Let
+              name: second
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 2
+        - kind: Block
+          body:
+            - kind: Let
+              name: third
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 3
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Block
+              body:
+                - kind: Let
+                  name: nested
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 42
+          else: ~
+        - kind: Loop
+          body:
+            - kind: Block
+              body:
+                - kind: Let
+                  name: inner
+                  ty:
+                    kind: Num
+                  expr:
+                    kind: Num
+                    value: 1
+            - kind: Break
+        - kind: Block
+          body: []
+        - kind: Block
+          body:
+            - kind: Return
+              expr: ~
