@@ -52,6 +52,14 @@ impl<'a> Parser<'a> {
             match token.kind {
                 TokenKind::Fun => {
                     let (name, fun) = self.parse_function()?;
+
+                    if funs.contains_key(&name) {
+                        return Err(ParseError::DuplicateFunction {
+                            name,
+                            pos: token.pos,
+                        });
+                    }
+
                     funs.insert(name, fun);
                 }
 
