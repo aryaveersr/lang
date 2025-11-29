@@ -13,12 +13,12 @@ input_file: tests/lexer/invalids.lang
   pos:
     line: 1
     column: 3
-- kind: Invalid
+- kind: Unknown
   slice: "~"
   pos:
     line: 1
     column: 5
-- kind: Invalid
+- kind: Unknown
   slice: ^
   pos:
     line: 1
