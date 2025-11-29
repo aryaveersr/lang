@@ -117,7 +117,7 @@ impl TypeResolver {
 
             (ty @ None, Some(inferred_ty)) => {
                 *ty = Some(inferred_ty.clone());
-                inferred_ty.clone()
+                inferred_ty
             }
 
             (Some(annotated_ty), Some(inferred_ty)) => {
@@ -143,10 +143,9 @@ impl TypeResolver {
     }
 
     fn resolve_stmt_return(&mut self, expr: &mut Option<Box<Expr>>) {
-        let return_ty = match expr {
-            Some(e) => self.resolve_expr_type(e).clone(),
-            None => Type::Void,
-        };
+        let return_ty = expr
+            .as_mut()
+            .map_or(Type::Void, |e| self.resolve_expr_type(e));
 
         let expected = self.expected_return_type.as_ref().unwrap();
 

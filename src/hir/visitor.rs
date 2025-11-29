@@ -51,28 +51,21 @@ impl Walkable for Vec<Stmt> {
 impl Walkable for Stmt {
     fn walk<V: HirVisitor + ?Sized>(&mut self, visitor: &mut V) {
         match self {
-            Stmt::Break => {}
-            Stmt::Loop { body } => visitor.visit_block(body),
-            Stmt::Block { body } => visitor.visit_block(body),
+            Self::Break => {}
+            Self::Loop { body } | Self::Block { body } => visitor.visit_block(body),
 
-            Stmt::Return { expr } => {
+            Self::Return { expr } | Self::Let { expr, .. } => {
                 if let Some(expr) = expr {
                     visitor.visit_expr(expr);
                 }
             }
 
-            Stmt::If { cond, body, else_ } => {
+            Self::If { cond, body, else_ } => {
                 visitor.visit_expr(cond);
                 visitor.visit_block(body);
 
                 if let Some(else_block) = else_ {
                     visitor.visit_block(else_block);
-                }
-            }
-
-            Stmt::Let { expr, .. } => {
-                if let Some(expr) = expr {
-                    visitor.visit_expr(expr);
                 }
             }
         }
@@ -82,12 +75,10 @@ impl Walkable for Stmt {
 impl Walkable for Expr {
     fn walk<V: HirVisitor + ?Sized>(&mut self, visitor: &mut V) {
         match self {
-            Expr::Bool { .. } => {}
-            Expr::Num { .. } => {}
-            Expr::Var { .. } => {}
-            Expr::Unary { expr, .. } => visitor.visit_expr(expr),
+            Self::Bool { .. } | Self::Num { .. } | Self::Var { .. } => {}
+            Self::Unary { expr, .. } => visitor.visit_expr(expr),
 
-            Expr::Binary { lhs, rhs, .. } => {
+            Self::Binary { lhs, rhs, .. } => {
                 visitor.visit_expr(lhs);
                 visitor.visit_expr(rhs);
             }

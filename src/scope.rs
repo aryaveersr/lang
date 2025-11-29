@@ -26,7 +26,7 @@ impl<T: Clone> Scope<T> {
 impl<T> Default for Scope<T> {
     fn default() -> Self {
         Self {
-            scopes: Default::default(),
+            scopes: Vec::default(),
         }
     }
 }
