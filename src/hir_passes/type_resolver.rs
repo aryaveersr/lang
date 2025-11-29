@@ -15,12 +15,12 @@ impl TypeResolver {
         self.visit_module(module);
     }
 
-    fn resolve_expr_type(&mut self, expr: &mut Expr) -> Type {
+    fn resolve_expr(&mut self, expr: &mut Expr) -> Type {
         match expr {
             Expr::Bool { .. } => Type::Bool,
             Expr::Num { .. } => Type::Num,
-            Expr::Unary { op, expr } => self.resolve_unary(*op, expr),
-            Expr::Binary { op, lhs, rhs } => self.resolve_binary(*op, lhs, rhs),
+            Expr::Unary { op, expr } => self.resolve_expr_unary(*op, expr),
+            Expr::Binary { op, lhs, rhs } => self.resolve_expr_binary(*op, lhs, rhs),
 
             Expr::Var { name } => match self.scope.get(name) {
                 Some(ty) => ty.clone(),
@@ -31,8 +31,8 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_unary(&mut self, op: UnOp, expr: &mut Expr) -> Type {
-        let expr_ty = self.resolve_expr_type(expr);
+    fn resolve_expr_unary(&mut self, op: UnOp, expr: &mut Expr) -> Type {
+        let expr_ty = self.resolve_expr(expr);
 
         match op {
             UnOp::Negate => {
@@ -55,9 +55,9 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_binary(&mut self, op: BinOp, lhs: &mut Expr, rhs: &mut Expr) -> Type {
-        let lhs_ty = self.resolve_expr_type(lhs);
-        let rhs_ty = self.resolve_expr_type(rhs);
+    fn resolve_expr_binary(&mut self, op: BinOp, lhs: &mut Expr, rhs: &mut Expr) -> Type {
+        let lhs_ty = self.resolve_expr(lhs);
+        let rhs_ty = self.resolve_expr(rhs);
 
         if lhs_ty != rhs_ty {
             panic!(
@@ -110,7 +110,7 @@ impl TypeResolver {
         ty: &mut Option<Type>,
         expr: &mut Option<Box<Expr>>,
     ) {
-        let expr_ty = expr.as_mut().map(|e| self.resolve_expr_type(e));
+        let expr_ty = expr.as_mut().map(|e| self.resolve_expr(e));
 
         let resolved_ty = match (ty, expr_ty) {
             (Some(annotated_ty), None) => annotated_ty.clone(),
@@ -143,10 +143,7 @@ impl TypeResolver {
     }
 
     fn resolve_stmt_return(&mut self, expr: &mut Option<Box<Expr>>) {
-        let return_ty = expr
-            .as_mut()
-            .map_or(Type::Void, |e| self.resolve_expr_type(e));
-
+        let return_ty = expr.as_mut().map_or(Type::Void, |e| self.resolve_expr(e));
         let expected = self.expected_return_type.as_ref().unwrap();
 
         if return_ty != *expected {
@@ -163,7 +160,7 @@ impl TypeResolver {
         body: &mut Vec<Stmt>,
         else_: &mut Option<Vec<Stmt>>,
     ) {
-        let cond_ty = self.resolve_expr_type(cond);
+        let cond_ty = self.resolve_expr(cond);
         if cond_ty != Type::Bool {
             panic!(
                 "Expected boolean condition in if statement, found {:?}",
@@ -172,10 +169,7 @@ impl TypeResolver {
         }
 
         self.visit_block(body);
-
-        if let Some(else_block) = else_ {
-            self.visit_block(else_block);
-        }
+        else_.as_mut().map(|block| self.visit_block(block));
     }
 
     fn resolve_stmt_loop(&mut self, body: &mut Vec<Stmt>) {
@@ -184,12 +178,6 @@ impl TypeResolver {
 }
 
 impl HirVisitor for TypeResolver {
-    fn visit_module(&mut self, module: &mut Module) {
-        for (name, fun) in &mut module.funs {
-            self.visit_fun(name, fun);
-        }
-    }
-
     fn visit_fun(&mut self, _name: &str, fun: &mut Fun) {
         self.expected_return_type = Some(fun.return_ty.get_or_insert(Type::Void).clone());
         self.visit_block(&mut fun.body);
@@ -199,11 +187,12 @@ impl HirVisitor for TypeResolver {
     fn visit_stmt(&mut self, stmt: &mut Stmt) {
         match stmt {
             Stmt::Break => {}
+            Stmt::Block { body } => self.visit_block(body),
+
             Stmt::Return { expr } => self.resolve_stmt_return(expr),
             Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, expr),
             Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
             Stmt::Loop { body } => self.resolve_stmt_loop(body),
-            Stmt::Block { body } => self.visit_block(body),
         }
     }
 
@@ -214,6 +203,6 @@ impl HirVisitor for TypeResolver {
     }
 
     fn visit_expr(&mut self, expr: &mut Expr) {
-        self.resolve_expr_type(expr);
+        self.resolve_expr(expr);
     }
 }
