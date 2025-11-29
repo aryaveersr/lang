@@ -1,4 +1,4 @@
-use crate::errors::Position;
+use crate::position::Position;
 use serde::Serialize;
 use std::fmt::{self, Debug, Display, Formatter};
 

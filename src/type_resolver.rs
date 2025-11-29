@@ -1,5 +1,8 @@
-use super::*;
-use crate::errors::{TypeError, TypeResult};
+mod error;
+
+pub use error::*;
+
+use crate::{hir::*, ops::*, scope::Scope};
 
 type Result<T> = TypeResult<T>;
 

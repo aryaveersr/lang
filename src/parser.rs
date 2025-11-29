@@ -1,15 +1,12 @@
+mod error;
 mod expr;
 mod stmt;
 mod ty;
 mod utils;
 
-use crate::{
-    errors::{ParseError, ParseResult},
-    hir::*,
-    lexer::*,
-    ops::*,
-    token::*,
-};
+pub use error::*;
+
+use crate::{hir::*, lexer::*, ops::*, token::*};
 use std::{collections::HashMap, iter::Peekable};
 
 type Result<T> = ParseResult<T>;

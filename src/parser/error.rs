@@ -1,5 +1,7 @@
-use super::Position;
-use crate::token::{Token, TokenKind};
+use crate::{
+    position::Position,
+    token::{Token, TokenKind},
+};
 use serde::Serialize;
 use thiserror::Error;
 

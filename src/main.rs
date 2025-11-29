@@ -1,4 +1,4 @@
-use lang::{hir_passes::TypeResolver, lexer::Lexer, parser::Parser};
+use lang::{lexer::Lexer, parser::Parser, type_resolver::TypeResolver};
 use std::{
     fs,
     io::{self, Write, stdin, stdout},

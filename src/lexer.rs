@@ -1,5 +1,5 @@
 use crate::{
-    errors::Position,
+    position::Position,
     token::{Token, TokenKind},
 };
 
