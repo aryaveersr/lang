@@ -19,7 +19,9 @@ fn compile(source: &str) {
     println!("\n== HIR ==");
     println!("{}", serde_yaml::to_string(&hir).unwrap());
 
-    TypeResolver::new().resolve(&mut hir);
+    if let Err(err) = TypeResolver::new().resolve(&mut hir) {
+        return println!("Type Resolver Error:\n{err}");
+    }
 }
 
 fn repl() -> io::Result<()> {
