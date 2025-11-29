@@ -1,7 +1,3 @@
-mod visitor;
-
-pub use visitor::*;
-
 use crate::ops::{BinOp, UnOp};
 use serde::Serialize;
 use std::collections::HashMap;
