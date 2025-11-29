@@ -1,10 +1,6 @@
 use super::*;
 
 impl<'a> Parser<'a> {
-    pub(super) fn next(&mut self) -> Token<'a> {
-        self.lexer.next().expect("Unexpected EOF.")
-    }
-
     pub(super) fn eat(&mut self, kind: TokenKind) -> Option<Token<'a>> {
         self.lexer.next_if(|i| i.kind == kind)
     }
@@ -16,7 +12,13 @@ impl<'a> Parser<'a> {
             .and_then(f)
     }
 
-    pub(super) fn expect(&mut self, kind: TokenKind, err: &str) -> Token<'a> {
-        self.eat(kind).expect(err)
+    pub(super) fn expect(&mut self, kind: TokenKind, expected: &str) -> Result<Token<'a>> {
+        let next = self.lexer.next().ok_or(ParseError::eof(expected))?;
+
+        if next.kind == kind {
+            Ok(next)
+        } else {
+            Err(ParseError::unexpected_token(expected, next))
+        }
     }
 }

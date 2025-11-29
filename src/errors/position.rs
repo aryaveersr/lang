@@ -1,7 +1,7 @@
 use serde::Serialize;
 use std::fmt::{self, Display, Formatter};
 
-#[derive(PartialEq, Eq, Clone, Copy, Serialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize)]
 pub struct Position {
     pub line: usize,
     pub column: usize,

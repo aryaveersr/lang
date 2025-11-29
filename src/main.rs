@@ -11,14 +11,15 @@ fn compile(source: &str) {
         println!("{token:?}");
     }
 
-    let mut hir = Parser::new(Lexer::new(source)).parse();
+    let mut hir = match Parser::new(Lexer::new(source)).parse() {
+        Ok(hir) => hir,
+        Err(err) => return println!("Parse Error:\n{err}"),
+    };
 
     println!("\n== HIR ==");
     println!("{}", serde_yaml::to_string(&hir).unwrap());
 
-    let mut type_resolver = TypeResolver::new();
-
-    type_resolver.resolve(&mut hir);
+    TypeResolver::new().resolve(&mut hir);
 }
 
 fn repl() -> io::Result<()> {

@@ -3,10 +3,16 @@ mod stmt;
 mod ty;
 mod utils;
 
-use crate::{hir::*, lexer::*, ops::*, token::*};
-use std::{collections::HashMap, iter::Peekable, panic};
+use crate::{
+    errors::{ParseError, ParseResult},
+    hir::*,
+    lexer::*,
+    ops::*,
+    token::*,
+};
+use std::{collections::HashMap, iter::Peekable};
 
-type To = TokenKind;
+type Result<T> = ParseResult<T>;
 
 pub struct Parser<'a> {
     lexer: Peekable<Lexer<'a>>,
@@ -21,37 +27,42 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_function(&mut self) -> (String, Fun) {
-        let name = self.expect(To::Identifier, "Missing function name.");
+    fn parse_function(&mut self) -> Result<(String, Fun)> {
+        let name = self.expect(TokenKind::Identifier, "function name")?;
 
-        self.expect(To::LeftParen, "Missing '('.");
-        self.expect(To::RightParen, "Missing ')'.");
+        self.expect(TokenKind::LeftParen, "(")?;
+        self.expect(TokenKind::RightParen, ")")?;
 
-        let return_ty = self.eat(To::Colon).map(|_| self.parse_type());
+        let return_ty = self
+            .eat(TokenKind::Colon)
+            .map(|_| self.parse_type())
+            .transpose()?;
 
-        self.expect(To::LeftBrace, "Missing function body.");
+        self.expect(TokenKind::LeftBrace, "function body")?;
 
-        let body = self.parse_body(true);
+        let body = self.parse_body(true)?;
 
-        (name.slice.to_owned(), Fun { return_ty, body })
+        Ok((name.slice.to_owned(), Fun { return_ty, body }))
     }
 
-    pub fn parse(&mut self) -> Module {
+    pub fn parse(&mut self) -> Result<Module> {
         let mut funs = HashMap::new();
 
         while let Some(token) = self.lexer.next() {
             match token.kind {
-                To::Fun => {
-                    let (name, fun) = self.parse_function();
+                TokenKind::Fun => {
+                    let (name, fun) = self.parse_function()?;
                     funs.insert(name, fun);
                 }
 
-                _ => panic!("Expected EOF or declaration."),
+                _ => return Err(ParseError::eof("declaration")),
             }
         }
 
-        assert!(funs.contains_key("main"), "No `main()` function found.");
-
-        Module { funs }
+        if funs.contains_key("main") {
+            Ok(Module { funs })
+        } else {
+            Err(ParseError::MissingMainFunction)
+        }
     }
 }

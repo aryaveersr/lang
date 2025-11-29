@@ -1,15 +1,15 @@
 use super::*;
 
 impl Parser<'_> {
-    pub(super) fn parse_type(&mut self) -> Type {
-        let token = self.expect(To::Identifier, "Expected type name.");
+    pub(super) fn parse_type(&mut self) -> Result<Type> {
+        let token = self.expect(TokenKind::Identifier, "type name")?;
 
-        match token.slice {
+        Ok(match token.slice {
             "bool" => Type::Bool,
             "num" => Type::Num,
             "void" => Type::Void,
 
-            _ => panic!("Unknown type: {}", token.slice),
-        }
+            _ => return Err(ParseError::invalid_type(token)),
+        })
     }
 }

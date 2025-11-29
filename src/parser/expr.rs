@@ -1,15 +1,15 @@
 use super::*;
 
 impl Parser<'_> {
-    pub(super) fn parse_expr(&mut self) -> Box<Expr> {
+    pub(super) fn parse_expr(&mut self) -> Result<Box<Expr>> {
         self.parse_expr_or()
     }
 
-    fn parse_expr_or(&mut self) -> Box<Expr> {
-        let mut lhs = self.parse_expr_and();
+    fn parse_expr_or(&mut self) -> Result<Box<Expr>> {
+        let mut lhs = self.parse_expr_and()?;
 
-        while self.eat(To::Or).is_some() {
-            let rhs = self.parse_expr_and();
+        while self.eat(TokenKind::Or).is_some() {
+            let rhs = self.parse_expr_and()?;
             lhs = Box::new(Expr::Binary {
                 op: BinOp::Or,
                 lhs,
@@ -17,14 +17,14 @@ impl Parser<'_> {
             });
         }
 
-        lhs
+        Ok(lhs)
     }
 
-    fn parse_expr_and(&mut self) -> Box<Expr> {
-        let mut lhs = self.parse_expr_eq();
+    fn parse_expr_and(&mut self) -> Result<Box<Expr>> {
+        let mut lhs = self.parse_expr_eq()?;
 
-        while self.eat(To::And).is_some() {
-            let rhs = self.parse_expr_eq();
+        while self.eat(TokenKind::And).is_some() {
+            let rhs = self.parse_expr_eq()?;
             lhs = Box::new(Expr::Binary {
                 op: BinOp::And,
                 lhs,
@@ -32,111 +32,114 @@ impl Parser<'_> {
             });
         }
 
-        lhs
+        Ok(lhs)
     }
 
-    fn parse_expr_eq(&mut self) -> Box<Expr> {
-        let mut lhs = self.parse_expr_cmp();
+    fn parse_expr_eq(&mut self) -> Result<Box<Expr>> {
+        let mut lhs = self.parse_expr_cmp()?;
 
         while let Some(op) = self.eat_map(|kind| match kind {
-            To::EqualEqual => Some(BinOp::Eq),
-            To::NotEqual => Some(BinOp::NotEq),
+            TokenKind::EqualEqual => Some(BinOp::Eq),
+            TokenKind::NotEqual => Some(BinOp::NotEq),
             _ => None,
         }) {
-            let rhs = self.parse_expr_cmp();
+            let rhs = self.parse_expr_cmp()?;
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        lhs
+        Ok(lhs)
     }
 
-    fn parse_expr_cmp(&mut self) -> Box<Expr> {
-        let mut lhs = self.parse_expr_term();
+    fn parse_expr_cmp(&mut self) -> Result<Box<Expr>> {
+        let mut lhs = self.parse_expr_term()?;
 
         while let Some(op) = self.eat_map(|kind| match kind {
-            To::Lesser => Some(BinOp::Lesser),
-            To::LesserEqual => Some(BinOp::LesserEq),
-            To::Greater => Some(BinOp::Greater),
-            To::GreaterEqual => Some(BinOp::GreaterEq),
+            TokenKind::Lesser => Some(BinOp::Lesser),
+            TokenKind::LesserEqual => Some(BinOp::LesserEq),
+            TokenKind::Greater => Some(BinOp::Greater),
+            TokenKind::GreaterEqual => Some(BinOp::GreaterEq),
             _ => None,
         }) {
-            let rhs = self.parse_expr_term();
+            let rhs = self.parse_expr_term()?;
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        lhs
+        Ok(lhs)
     }
 
-    fn parse_expr_term(&mut self) -> Box<Expr> {
-        let mut lhs = self.parse_expr_factor();
+    fn parse_expr_term(&mut self) -> Result<Box<Expr>> {
+        let mut lhs = self.parse_expr_factor()?;
 
         while let Some(op) = self.eat_map(|kind| match kind {
-            To::Plus => Some(BinOp::Add),
-            To::Minus => Some(BinOp::Sub),
+            TokenKind::Plus => Some(BinOp::Add),
+            TokenKind::Minus => Some(BinOp::Sub),
             _ => None,
         }) {
-            let rhs = self.parse_expr_factor();
+            let rhs = self.parse_expr_factor()?;
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        lhs
+        Ok(lhs)
     }
 
-    fn parse_expr_factor(&mut self) -> Box<Expr> {
-        let mut lhs = self.parse_expr_unary();
+    fn parse_expr_factor(&mut self) -> Result<Box<Expr>> {
+        let mut lhs = self.parse_expr_unary()?;
 
         while let Some(op) = self.eat_map(|kind| match kind {
-            To::Star => Some(BinOp::Mul),
-            To::Slash => Some(BinOp::Div),
+            TokenKind::Star => Some(BinOp::Mul),
+            TokenKind::Slash => Some(BinOp::Div),
             _ => None,
         }) {
-            let rhs = self.parse_expr_unary();
+            let rhs = self.parse_expr_unary()?;
             lhs = Box::new(Expr::Binary { op, lhs, rhs });
         }
 
-        lhs
+        Ok(lhs)
     }
 
-    fn parse_expr_unary(&mut self) -> Box<Expr> {
+    fn parse_expr_unary(&mut self) -> Result<Box<Expr>> {
         if let Some(op) = self.eat_map(|kind| match kind {
-            To::Minus => Some(UnOp::Negate),
-            To::Not => Some(UnOp::Not),
+            TokenKind::Minus => Some(UnOp::Negate),
+            TokenKind::Not => Some(UnOp::Not),
             _ => None,
         }) {
-            let expr = self.parse_expr_unary();
-            return Box::new(Expr::Unary { op, expr });
+            let expr = self.parse_expr_unary()?;
+            Ok(Box::new(Expr::Unary { op, expr }))
+        } else {
+            self.parse_expr_primary()
         }
-
-        self.parse_expr_primary()
     }
 
-    fn parse_expr_primary(&mut self) -> Box<Expr> {
-        let token = self.next();
+    fn parse_expr_primary(&mut self) -> Result<Box<Expr>> {
+        let next = self.lexer.next().ok_or(ParseError::eof("expression"))?;
 
-        match token.kind {
-            To::True => Box::new(Expr::Bool { value: true }),
-            To::False => Box::new(Expr::Bool { value: false }),
+        Ok(match next.kind {
+            TokenKind::True => Box::new(Expr::Bool { value: true }),
+            TokenKind::False => Box::new(Expr::Bool { value: false }),
 
-            To::Identifier => Box::new(Expr::Var {
-                name: token.slice.into(),
-            }),
+            TokenKind::Identifier => {
+                let name = next.slice.to_string();
 
-            To::Numeric => {
-                let value = token
+                Box::new(Expr::Var { name })
+            }
+
+            TokenKind::Numeric => {
+                let value = next
                     .slice
                     .parse()
-                    .expect("Failed to parse numeric literal");
+                    .map_err(|_| ParseError::NumberTooLarge { pos: next.pos })?;
 
                 Box::new(Expr::Num { value })
             }
 
-            To::LeftParen => {
-                let expr = self.parse_expr();
-                self.expect(To::RightParen, "Missing closing parenthesis.");
+            TokenKind::LeftParen => {
+                let expr = self.parse_expr()?;
+                self.expect(TokenKind::RightParen, ")")?;
+
                 expr
             }
 
-            _ => panic!("Unexpected token in expression: {:?}", token),
-        }
+            _ => return Err(ParseError::invalid_expr(next)),
+        })
     }
 }

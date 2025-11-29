@@ -1,5 +1,5 @@
 use crate::{
-    error::Position,
+    errors::Position,
     token::{Token, TokenKind},
 };
 
@@ -141,7 +141,7 @@ impl<'a> Iterator for Lexer<'a> {
             c if c.is_ascii_digit() => self.consume_numeric(),
             c if is_valid_in_identifier(c) => self.consume_identifier(),
 
-            _ => self.consume_char(TokenKind::Invalid),
+            _ => self.consume_char(TokenKind::Unknown),
         })
     }
 }

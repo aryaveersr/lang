@@ -1,4 +1,4 @@
-pub mod error;
+pub mod errors;
 pub mod hir;
 pub mod hir_passes;
 pub mod lexer;
