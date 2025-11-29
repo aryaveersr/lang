@@ -21,7 +21,7 @@ impl TypeResolver {
         self.visit_module(module)
     }
 
-    fn resolve_expr(&mut self, expr: &mut Expr) -> Result<Type> {
+    fn resolve_expr(&self, expr: &Expr) -> Result<Type> {
         match expr {
             Expr::Bool { .. } => Ok(Type::Bool),
             Expr::Num { .. } => Ok(Type::Num),
@@ -37,7 +37,7 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_expr_unary(&mut self, op: UnOp, expr: &mut Expr) -> Result<Type> {
+    fn resolve_expr_unary(&self, op: UnOp, expr: &Expr) -> Result<Type> {
         let ty = self.resolve_expr(expr)?;
 
         match (op, &ty) {
@@ -48,7 +48,7 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_expr_binary(&mut self, op: BinOp, lhs: &mut Expr, rhs: &mut Expr) -> Result<Type> {
+    fn resolve_expr_binary(&self, op: BinOp, lhs: &Expr, rhs: &Expr) -> Result<Type> {
         let lhs = self.resolve_expr(lhs)?;
         let rhs = self.resolve_expr(rhs)?;
 
@@ -73,9 +73,9 @@ impl TypeResolver {
         &mut self,
         name: &str,
         ty: &mut Option<Type>,
-        expr: &mut Option<Box<Expr>>,
+        expr: &Option<Box<Expr>>,
     ) -> Result<()> {
-        let expr_ty = expr.as_mut().map(|e| self.resolve_expr(e)).transpose()?;
+        let expr_ty = expr.as_ref().map(|e| self.resolve_expr(e)).transpose()?;
 
         let resolved_ty = match (ty, expr_ty) {
             (Some(annotated_ty), None) => annotated_ty.clone(),
@@ -109,28 +109,27 @@ impl TypeResolver {
         Ok(())
     }
 
-    fn resolve_stmt_return(&mut self, expr: &mut Option<Box<Expr>>) -> Result<()> {
-        let return_ty = expr
-            .as_mut()
+    fn resolve_stmt_return(&self, expr: &Option<Box<Expr>>) -> Result<()> {
+        let fun_ty = self.expected_return_type.as_ref().unwrap();
+        let expr_ty = expr
+            .as_ref()
             .map(|e| self.resolve_expr(e))
             .transpose()?
             .unwrap_or(Type::Void);
 
-        let expected = self.expected_return_type.as_ref().unwrap();
-
-        if return_ty == *expected {
+        if expr_ty == *fun_ty {
             Ok(())
         } else {
             Err(TypeError::TypeMismatch {
-                expected: expected.clone(),
-                found: return_ty,
+                expected: fun_ty.clone(),
+                found: expr_ty,
             })
         }
     }
 
     fn resolve_stmt_if(
         &mut self,
-        cond: &mut Expr,
+        cond: &Expr,
         body: &mut Vec<Stmt>,
         else_: &mut Option<Vec<Stmt>>,
     ) -> Result<()> {
