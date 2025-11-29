@@ -5,57 +5,71 @@ input_file: tests/lexer/single_chars.lang
 ---
 - kind: LeftBrace
   slice: "{"
-  line: 1
-  column: 1
+  pos:
+    line: 1
+    column: 1
 - kind: RightBrace
   slice: "}"
-  line: 1
-  column: 2
+  pos:
+    line: 1
+    column: 2
 - kind: LeftParen
   slice: (
-  line: 1
-  column: 3
+  pos:
+    line: 1
+    column: 3
 - kind: RightParen
   slice: )
-  line: 1
-  column: 4
+  pos:
+    line: 1
+    column: 4
 - kind: Semicolon
   slice: ;
-  line: 1
-  column: 5
+  pos:
+    line: 1
+    column: 5
 - kind: LeftBrace
   slice: "{"
-  line: 1
-  column: 7
+  pos:
+    line: 1
+    column: 7
 - kind: LeftBrace
   slice: "{"
-  line: 2
-  column: 1
+  pos:
+    line: 2
+    column: 1
 - kind: RightBrace
   slice: "}"
-  line: 2
-  column: 5
+  pos:
+    line: 2
+    column: 5
 - kind: Star
   slice: "*"
-  line: 3
-  column: 1
+  pos:
+    line: 3
+    column: 1
 - kind: Star
   slice: "*"
-  line: 3
-  column: 2
+  pos:
+    line: 3
+    column: 2
 - kind: Lesser
   slice: "<"
-  line: 3
-  column: 4
+  pos:
+    line: 3
+    column: 4
 - kind: Equal
   slice: "="
-  line: 3
-  column: 6
+  pos:
+    line: 3
+    column: 6
 - kind: Not
   slice: "!"
-  line: 4
-  column: 1
+  pos:
+    line: 4
+    column: 1
 - kind: Greater
   slice: ">"
-  line: 4
-  column: 2
+  pos:
+    line: 4
+    column: 2

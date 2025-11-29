@@ -1,0 +1,25 @@
+---
+source: tests/lexer.rs
+expression: "lexer.collect::<Vec<_>>()"
+input_file: tests/lexer/invalids.lang
+---
+- kind: Lesser
+  slice: "<"
+  pos:
+    line: 1
+    column: 1
+- kind: Not
+  slice: "!"
+  pos:
+    line: 1
+    column: 3
+- kind: Invalid
+  slice: "~"
+  pos:
+    line: 1
+    column: 5
+- kind: Invalid
+  slice: ^
+  pos:
+    line: 1
+    column: 7

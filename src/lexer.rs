@@ -1,17 +1,18 @@
-use crate::token::{Token, TokenKind};
+use crate::{
+    error::Position,
+    token::{Token, TokenKind},
+};
 
 pub struct Lexer<'a> {
     source: &'a str,
-    line: usize,
-    column: usize,
+    pos: Position,
 }
 
 impl<'a> Lexer<'a> {
     pub fn new(source: &'a str) -> Self {
         Self {
             source,
-            line: 1,
-            column: 1,
+            pos: Position::default(),
         }
     }
 
@@ -22,14 +23,7 @@ impl<'a> Lexer<'a> {
             None => (self.source, &self.source[self.source.len()..]),
         };
 
-        for c in slice.chars() {
-            if c == '\n' {
-                self.line += 1;
-                self.column = 1;
-            } else {
-                self.column += 1;
-            }
-        }
+        slice.chars().for_each(|c| self.pos.take_char(c));
 
         self.source = source;
         slice
@@ -42,12 +36,7 @@ impl<'a> Lexer<'a> {
                 && c.is_ascii_whitespace()
             {
                 self.source = &self.source[1..];
-                if c == '\n' {
-                    self.line += 1;
-                    self.column = 1;
-                } else {
-                    self.column += 1;
-                }
+                self.pos.take_char(c);
             }
 
             if !self.source.starts_with("//") {
@@ -58,52 +47,48 @@ impl<'a> Lexer<'a> {
 
             if self.source.starts_with('\n') {
                 self.source = &self.source[1..];
-                self.line += 1;
-                self.column = 1;
+                self.pos.newline();
             }
         }
     }
 
     fn consume_char(&mut self, kind: TokenKind) -> Token<'a> {
-        let line = self.line;
-        let column = self.column;
+        let pos = self.pos;
         let (slice, source) = self.source.split_at(1);
 
-        self.column += 1;
+        self.pos.take_char(slice.chars().next().unwrap());
         self.source = source;
 
-        Token::new(kind, slice, line, column)
+        Token::new(kind, slice, pos)
     }
 
     fn consume_numeric(&mut self) -> Token<'a> {
-        let line = self.line;
-        let column = self.column;
+        let pos = self.pos;
         let slice = self.until(|i| !i.is_ascii_digit());
 
-        Token::new(TokenKind::Numeric, slice, line, column)
+        Token::new(TokenKind::Numeric, slice, pos)
     }
 
     fn consume_identifier(&mut self) -> Token<'a> {
-        let line = self.line;
-        let column = self.column;
+        let pos = self.pos;
         let identifier = self.until(|i| !is_valid_in_identifier(i));
 
-        Token::new(match_kind(identifier), identifier, line, column)
+        Token::new(match_kind(identifier), identifier, pos)
     }
 
     fn consume_eq(&mut self, not_eq: TokenKind, eq: TokenKind) -> Token<'a> {
-        let line = self.line;
-        let column = self.column;
+        let pos = self.pos;
         let (idx, kind) = match self.source.chars().nth(1) {
             Some('=') => (2, eq),
             _ => (1, not_eq),
         };
 
         let (slice, source) = self.source.split_at(idx);
-        self.column += idx;
+
+        self.pos.column += idx;
         self.source = source;
 
-        Token::new(kind, slice, line, column)
+        Token::new(kind, slice, pos)
     }
 }
 
@@ -156,14 +141,7 @@ impl<'a> Iterator for Lexer<'a> {
             c if c.is_ascii_digit() => self.consume_numeric(),
             c if is_valid_in_identifier(c) => self.consume_identifier(),
 
-            c => {
-                if c == '\n' {
-                    self.line += 1;
-                    self.column = 1;
-                }
-
-                self.consume_char(TokenKind::Invalid)
-            }
+            _ => self.consume_char(TokenKind::Invalid),
         })
     }
 }

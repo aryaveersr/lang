@@ -1,3 +1,4 @@
+use crate::error::Position;
 use serde::Serialize;
 use std::fmt::{self, Debug, Formatter};
 
@@ -48,42 +49,21 @@ pub enum TokenKind {
     Invalid,
 }
 
-#[derive(PartialEq, Eq, Clone, Copy, Serialize)]
+#[derive(PartialEq, Eq, Clone, Copy, Serialize, Default)]
 pub struct Token<'a> {
     pub kind: TokenKind,
     pub slice: &'a str,
-    pub line: usize,
-    pub column: usize,
-}
-
-impl<'a> Default for Token<'a> {
-    fn default() -> Self {
-        Self {
-            kind: TokenKind::default(),
-            slice: "",
-            line: 1,
-            column: 1,
-        }
-    }
+    pub pos: Position,
 }
 
 impl<'a> Token<'a> {
-    pub fn new(kind: TokenKind, slice: &'a str, line: usize, column: usize) -> Self {
-        Self {
-            kind,
-            slice,
-            line,
-            column,
-        }
+    pub fn new(kind: TokenKind, slice: &'a str, pos: Position) -> Self {
+        Self { kind, slice, pos }
     }
 }
 
 impl Debug for Token<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "[{:?}: {} at {}:{}]",
-            self.kind, self.slice, self.line, self.column
-        )
+        write!(f, "[{:?}: {} at {}]", self.kind, self.slice, self.pos)
     }
 }
