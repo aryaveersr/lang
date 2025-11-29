@@ -2,10 +2,14 @@ use super::*;
 
 impl Parser<'_> {
     pub(super) fn parse_type(&mut self) -> Type {
-        let token = self.expect(To::Identifier, "Missing type expression.");
+        let token = self.expect(To::Identifier, "Expected type name.");
 
-        Type::Simple {
-            name: token.slice.to_owned(),
+        match token.slice {
+            "bool" => Type::Bool,
+            "num" => Type::Num,
+            "void" => Type::Void,
+
+            _ => panic!("Unknown type: {}", token.slice),
         }
     }
 }

@@ -9,14 +9,14 @@ impl<'a> Parser<'a> {
         self.lexer.next_if(|i| i.kind == kind)
     }
 
-    pub(super) fn expect(&mut self, kind: TokenKind, err: &str) -> Token<'a> {
-        self.eat(kind).expect(err)
-    }
-
-    pub(super) fn map<T>(&mut self, f: impl Fn(TokenKind) -> Option<T>) -> Option<T> {
+    pub(super) fn eat_map<T>(&mut self, f: impl Fn(TokenKind) -> Option<T>) -> Option<T> {
         self.lexer
             .next_if(|token| f(token.kind).is_some())
             .map(|t| t.kind)
             .and_then(f)
+    }
+
+    pub(super) fn expect(&mut self, kind: TokenKind, err: &str) -> Token<'a> {
+        self.eat(kind).expect(err)
     }
 }

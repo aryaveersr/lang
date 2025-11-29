@@ -1,3 +1,7 @@
+mod visitor;
+
+pub use visitor::*;
+
 use crate::ops::{BinOp, UnOp};
 use serde::Serialize;
 use std::collections::HashMap;
@@ -9,8 +13,8 @@ pub struct Module {
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct Fun {
-    pub ty: Type,
-    pub body: Block,
+    pub return_ty: Option<Type>,
+    pub body: Vec<Stmt>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
@@ -18,48 +22,36 @@ pub struct Fun {
 pub enum Stmt {
     Break,
 
-    Block(Block),
+    Block {
+        body: Vec<Stmt>,
+    },
 
     Return {
         expr: Option<Box<Expr>>,
     },
 
     Loop {
-        body: Block,
+        body: Vec<Stmt>,
     },
 
     If {
         cond: Box<Expr>,
-        body: Block,
+        body: Vec<Stmt>,
 
         #[serde(rename = "else")]
-        else_: Option<Block>,
+        else_: Option<Vec<Stmt>>,
     },
 
     Let {
         name: String,
-        ty: Type,
+        ty: Option<Type>,
         expr: Option<Box<Expr>>,
     },
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
-pub struct Block {
-    pub scope: HashMap<String, Type>,
-    pub stmts: Vec<Stmt>,
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize)]
-pub struct Expr {
-    pub ty: Type,
-
-    #[serde(flatten)]
-    pub kind: ExprKind,
-}
-
-#[derive(Debug, PartialEq, Eq, Serialize)]
 #[serde(tag = "kind")]
-pub enum ExprKind {
+pub enum Expr {
     Bool {
         value: bool,
     },

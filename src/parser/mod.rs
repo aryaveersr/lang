@@ -3,51 +3,55 @@ mod stmt;
 mod ty;
 mod utils;
 
-use crate::{ast::*, lexer::*, ops::*, token::*};
-use std::{iter::Peekable, panic};
+use crate::{hir::*, lexer::*, ops::*, token::*};
+use std::{collections::HashMap, iter::Peekable, panic};
 
 type To = TokenKind;
 
 pub struct Parser<'a> {
     lexer: Peekable<Lexer<'a>>,
+    in_loop: bool,
 }
 
 impl<'a> Parser<'a> {
     pub fn new(lexer: Lexer<'a>) -> Self {
         Self {
             lexer: lexer.peekable(),
+            in_loop: false,
         }
     }
 
-    fn parse_function(&mut self) -> Fun {
+    fn parse_function(&mut self) -> (String, Fun) {
         let name = self.expect(To::Identifier, "Missing function name.");
 
         self.expect(To::LeftParen, "Missing '('.");
         self.expect(To::RightParen, "Missing ')'.");
 
-        let ty = self.eat(To::Colon).map(|_| self.parse_type());
+        let return_ty = self.eat(To::Colon).map(|_| self.parse_type());
 
         self.expect(To::LeftBrace, "Missing function body.");
 
         let body = self.parse_body(true);
 
-        Fun {
-            name: name.slice.to_owned(),
-            ty,
-            body,
-        }
+        (name.slice.to_owned(), Fun { return_ty, body })
     }
 
-    pub fn parse(&mut self) -> Ast {
-        let mut funs = Vec::new();
+    pub fn parse(&mut self) -> Module {
+        let mut funs = HashMap::new();
 
         while let Some(token) = self.lexer.next() {
             match token.kind {
-                To::Fun => funs.push(self.parse_function()),
+                To::Fun => {
+                    let (name, fun) = self.parse_function();
+                    funs.insert(name, fun);
+                }
+
                 _ => panic!("Expected EOF or declaration."),
             }
         }
 
-        Ast { funs }
+        assert!(funs.contains_key("main"), "No `main()` function found.");
+
+        Module { funs }
     }
 }

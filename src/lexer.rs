@@ -37,8 +37,10 @@ impl<'a> Lexer<'a> {
 
     /// Consume whitespace and comments.
     fn consume_whitespace(&mut self) {
-        while let Some(c) = self.source.chars().next() {
-            if c.is_ascii_whitespace() {
+        loop {
+            while let Some(c) = self.source.chars().next()
+                && c.is_ascii_whitespace()
+            {
                 self.source = &self.source[1..];
                 if c == '\n' {
                     self.line += 1;
@@ -46,32 +48,18 @@ impl<'a> Lexer<'a> {
                 } else {
                     self.column += 1;
                 }
-            } else {
+            }
+
+            if !self.source.starts_with("//") {
                 break;
             }
-        }
 
-        while self.source.len() > 1 && &self.source[0..2] == "//" {
             self.until(|i| i == '\n');
 
-            if !self.source.is_empty() && self.source.chars().next() == Some('\n') {
+            if self.source.starts_with('\n') {
                 self.source = &self.source[1..];
                 self.line += 1;
                 self.column = 1;
-            }
-
-            while let Some(c) = self.source.chars().next() {
-                if c.is_ascii_whitespace() {
-                    self.source = &self.source[1..];
-                    if c == '\n' {
-                        self.line += 1;
-                        self.column = 1;
-                    } else {
-                        self.column += 1;
-                    }
-                } else {
-                    break;
-                }
             }
         }
     }

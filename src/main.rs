@@ -1,25 +1,24 @@
-use lang::{ast_to_hir::AstToHir, lexer::Lexer, parser::Parser};
+use lang::{hir_passes::TypeResolver, lexer::Lexer, parser::Parser};
 use std::{
     fs,
     io::{self, Write, stdin, stdout},
 };
 
 fn compile(source: &str) {
+    println!("== Tokens ==");
+
     for token in Lexer::new(source) {
         println!("{token:?}");
     }
 
-    let ast = Parser::new(Lexer::new(source)).parse();
+    let mut hir = Parser::new(Lexer::new(source)).parse();
 
-    println!("====");
-    println!("=> AST:");
-    println!("{}", serde_yaml::to_string(&ast).unwrap());
-
-    let hir = AstToHir::new().build_hir(ast);
-
-    println!("====");
-    println!("=> HIR:");
+    println!("\n== HIR ==");
     println!("{}", serde_yaml::to_string(&hir).unwrap());
+
+    let mut type_resolver = TypeResolver::new();
+
+    type_resolver.resolve(&mut hir);
 }
 
 fn repl() -> io::Result<()> {
