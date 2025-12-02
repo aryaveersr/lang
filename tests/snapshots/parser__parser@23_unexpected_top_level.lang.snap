@@ -4,5 +4,8 @@ expression: result
 input_file: tests/parser/23_unexpected_top_level.lang
 ---
 Err:
-  UnexpectedEOF:
-    expected: declaration
+  InvalidDecl:
+    found: Let
+    pos:
+      line: 1
+      column: 1

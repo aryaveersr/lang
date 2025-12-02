@@ -1,4 +1,5 @@
-use super::*;
+use super::{ParseError, Parser, Result};
+use crate::{hir::Type, token::TokenKind};
 
 impl Parser<'_> {
     pub(super) fn parse_type(&mut self) -> Result<Type> {

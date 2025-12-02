@@ -1,4 +1,9 @@
-use super::*;
+use super::{ParseError, Parser, Result};
+use crate::{
+    hir::Expr,
+    ops::{BinOp, UnOp},
+    token::TokenKind,
+};
 
 impl Parser<'_> {
     pub(super) fn parse_expr(&mut self) -> Result<Box<Expr>> {
@@ -111,14 +116,14 @@ impl Parser<'_> {
     }
 
     fn parse_expr_primary(&mut self) -> Result<Box<Expr>> {
-        let next = self.lexer.next().ok_or(ParseError::eof("expression"))?;
+        let next = self.next("expression")?;
 
         Ok(match next.kind {
             TokenKind::True => Box::new(Expr::Bool { value: true }),
             TokenKind::False => Box::new(Expr::Bool { value: false }),
 
             TokenKind::Identifier => {
-                let name = next.slice.to_string();
+                let name = next.slice.to_owned();
 
                 Box::new(Expr::Var { name })
             }
@@ -127,7 +132,7 @@ impl Parser<'_> {
                 let value = next
                     .slice
                     .parse()
-                    .map_err(|_| ParseError::NumberTooLarge { pos: next.pos })?;
+                    .map_err(|err| ParseError::CannotParseNum { pos: next.pos, err })?;
 
                 Box::new(Expr::Num { value })
             }

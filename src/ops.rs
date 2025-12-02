@@ -1,5 +1,6 @@
-use serde::Serialize;
 use std::fmt::{self, Display, Formatter};
+
+use serde::Serialize;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Clone, Copy)]
 pub enum UnOp {
@@ -28,8 +29,8 @@ pub enum BinOp {
 impl Display for UnOp {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            UnOp::Negate => write!(f, "-"),
-            UnOp::Not => write!(f, "!"),
+            Self::Negate => write!(f, "-"),
+            Self::Not => write!(f, "!"),
         }
     }
 }
@@ -37,18 +38,18 @@ impl Display for UnOp {
 impl Display for BinOp {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            BinOp::Add => write!(f, "+"),
-            BinOp::Sub => write!(f, "-"),
-            BinOp::Mul => write!(f, "*"),
-            BinOp::Div => write!(f, "/"),
-            BinOp::Eq => write!(f, "=="),
-            BinOp::NotEq => write!(f, "!="),
-            BinOp::Lesser => write!(f, "<"),
-            BinOp::LesserEq => write!(f, "<="),
-            BinOp::Greater => write!(f, ">"),
-            BinOp::GreaterEq => write!(f, ">="),
-            BinOp::And => write!(f, "&&"),
-            BinOp::Or => write!(f, "||"),
+            Self::Add => write!(f, "+"),
+            Self::Sub => write!(f, "-"),
+            Self::Mul => write!(f, "*"),
+            Self::Div => write!(f, "/"),
+            Self::Eq => write!(f, "=="),
+            Self::NotEq => write!(f, "!="),
+            Self::Lesser => write!(f, "<"),
+            Self::LesserEq => write!(f, "<="),
+            Self::Greater => write!(f, ">"),
+            Self::GreaterEq => write!(f, ">="),
+            Self::And => write!(f, "&&"),
+            Self::Or => write!(f, "||"),
         }
     }
 }

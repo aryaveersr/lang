@@ -1,9 +1,12 @@
-use crate::{hir::Type, ops::*};
-use serde::Serialize;
 use std::fmt::Display;
+
+use serde::Serialize;
 use thiserror::Error;
 
-pub type TypeResult<T> = std::result::Result<T, TypeError>;
+use crate::{
+    hir::Type,
+    ops::{BinOp, UnOp},
+};
 
 #[derive(Error, Debug, Clone, PartialEq, Eq, Serialize)]
 pub enum TypeError {
@@ -29,9 +32,9 @@ pub enum TypeError {
 impl Display for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Type::Void => write!(f, "void"),
-            Type::Bool => write!(f, "bool"),
-            Type::Num => write!(f, "num"),
+            Self::Void => write!(f, "void"),
+            Self::Bool => write!(f, "bool"),
+            Self::Num => write!(f, "num"),
         }
     }
 }

@@ -1,5 +1,6 @@
-use serde::Serialize;
 use std::fmt::{self, Display, Formatter};
+
+use serde::Serialize;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize)]
 pub struct Position {

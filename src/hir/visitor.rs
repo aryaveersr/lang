@@ -1,4 +1,4 @@
-use super::*;
+use super::{Expr, Fun, Module, Stmt};
 
 pub trait Walkable<E> {
     fn walk<V: HirVisitor<E> + ?Sized>(&mut self, visitor: &mut V) -> Result<(), E>;

@@ -1,15 +1,61 @@
-mod error;
+use self::error::TypeError;
+use crate::{
+    hir::{
+        Expr, Fun, Module, Stmt, Type,
+        visitor::{HirVisitor, Walkable as _},
+    },
+    ops::{BinOp, UnOp},
+    scope::Scope,
+};
 
-pub use error::*;
+pub mod error;
 
-use crate::{hir::*, ops::*, scope::Scope};
-
-type Result<T> = TypeResult<T>;
+type Result<T> = std::result::Result<T, TypeError>;
 
 #[derive(Default)]
 pub struct TypeResolver {
     scope: Scope<Type>,
     expected_return_type: Option<Type>,
+}
+
+impl HirVisitor<TypeError> for TypeResolver {
+    fn visit_fun(&mut self, _name: &str, fun: &mut Fun) -> Result<()> {
+        self.expected_return_type = Some(fun.return_ty.get_or_insert(Type::Void).clone());
+        self.visit_block(&mut fun.body)?;
+        self.expected_return_type = None;
+
+        Ok(())
+    }
+
+    fn visit_stmt(&mut self, stmt: &mut Stmt) -> Result<()> {
+        #[inline]
+        #[expect(clippy::ref_option)]
+        fn unbox<T>(x: &Option<Box<T>>) -> Option<&T> {
+            x.as_ref().map(|y| &**y)
+        }
+
+        match stmt {
+            Stmt::Break => Ok(()),
+            Stmt::Block { body } | Stmt::Loop { body } => self.visit_block(body),
+
+            Stmt::Return { expr } => self.resolve_stmt_return(unbox(expr)),
+            Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, unbox(expr)),
+            Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
+        }
+    }
+
+    fn visit_block(&mut self, block: &mut Vec<Stmt>) -> Result<()> {
+        self.scope.create();
+        block.walk(self)?;
+        self.scope.pop();
+
+        Ok(())
+    }
+
+    fn visit_expr(&mut self, expr: &mut Expr) -> Result<()> {
+        self.resolve_expr(expr)?;
+        Ok(())
+    }
 }
 
 impl TypeResolver {
@@ -28,12 +74,14 @@ impl TypeResolver {
             Expr::Unary { op, expr } => self.resolve_expr_unary(*op, expr),
             Expr::Binary { op, lhs, rhs } => self.resolve_expr_binary(*op, lhs, rhs),
 
-            Expr::Var { name } => match self.scope.get(name) {
-                Some(ty) => Ok(ty.to_owned()),
-                None => Err(TypeError::UndefinedVar {
-                    name: name.to_owned(),
-                }),
-            },
+            Expr::Var { name } => {
+                self.scope
+                    .get(name)
+                    .cloned()
+                    .ok_or_else(|| TypeError::UndefinedVar {
+                        name: name.to_owned(),
+                    })
+            }
         }
     }
 
@@ -57,11 +105,11 @@ impl TypeResolver {
         }
 
         match (op, &lhs) {
-            (BinOp::Eq | BinOp::NotEq, _) => Ok(Type::Bool),
-            (BinOp::And | BinOp::Or, Type::Bool) => Ok(Type::Bool),
             (BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div, Type::Num) => Ok(Type::Num),
 
-            (BinOp::Lesser | BinOp::LesserEq | BinOp::Greater | BinOp::GreaterEq, Type::Num) => {
+            (BinOp::Eq | BinOp::NotEq, _)
+            | (BinOp::And | BinOp::Or, Type::Bool)
+            | (BinOp::Lesser | BinOp::LesserEq | BinOp::Greater | BinOp::GreaterEq, Type::Num) => {
                 Ok(Type::Bool)
             }
 
@@ -73,7 +121,7 @@ impl TypeResolver {
         &mut self,
         name: &str,
         ty: &mut Option<Type>,
-        expr: &Option<Box<Expr>>,
+        expr: Option<&Expr>,
     ) -> Result<()> {
         let expr_ty = expr.as_ref().map(|e| self.resolve_expr(e)).transpose()?;
 
@@ -109,7 +157,7 @@ impl TypeResolver {
         Ok(())
     }
 
-    fn resolve_stmt_return(&self, expr: &Option<Box<Expr>>) -> Result<()> {
+    fn resolve_stmt_return(&self, expr: Option<&Expr>) -> Result<()> {
         let fun_ty = self.expected_return_type.as_ref().unwrap();
         let expr_ty = expr
             .as_ref()
@@ -144,40 +192,6 @@ impl TypeResolver {
             self.visit_block(block)?;
         }
 
-        Ok(())
-    }
-}
-
-impl HirVisitor<TypeError> for TypeResolver {
-    fn visit_fun(&mut self, _name: &str, fun: &mut Fun) -> Result<()> {
-        self.expected_return_type = Some(fun.return_ty.get_or_insert(Type::Void).clone());
-        self.visit_block(&mut fun.body)?;
-        self.expected_return_type = None;
-
-        Ok(())
-    }
-
-    fn visit_stmt(&mut self, stmt: &mut Stmt) -> Result<()> {
-        match stmt {
-            Stmt::Break => Ok(()),
-            Stmt::Block { body } | Stmt::Loop { body } => self.visit_block(body),
-
-            Stmt::Return { expr } => self.resolve_stmt_return(expr),
-            Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, expr),
-            Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
-        }
-    }
-
-    fn visit_block(&mut self, block: &mut Vec<Stmt>) -> Result<()> {
-        self.scope.create();
-        block.walk(self)?;
-        self.scope.pop();
-
-        Ok(())
-    }
-
-    fn visit_expr(&mut self, expr: &mut Expr) -> Result<()> {
-        self.resolve_expr(expr)?;
         Ok(())
     }
 }

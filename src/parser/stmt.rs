@@ -1,8 +1,13 @@
-use super::*;
+use super::{ParseError, Parser, Result};
+use crate::{
+    hir::{Expr, Stmt},
+    ops::UnOp,
+    token::{Token, TokenKind},
+};
 
 impl Parser<'_> {
     pub(super) fn parse_stmt(&mut self) -> Result<Stmt> {
-        let next = self.lexer.next().ok_or(ParseError::eof("statement"))?;
+        let next = self.next("statement")?;
 
         match next.kind {
             TokenKind::Return => self.parse_stmt_return(),

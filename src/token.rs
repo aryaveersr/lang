@@ -1,6 +1,8 @@
-use crate::position::Position;
-use serde::Serialize;
 use std::fmt::{self, Debug, Display, Formatter};
+
+use serde::Serialize;
+
+use crate::position::Position;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize)]
 pub enum TokenKind {
@@ -50,14 +52,14 @@ pub enum TokenKind {
 }
 
 #[derive(PartialEq, Eq, Clone, Copy, Serialize, Default)]
-pub struct Token<'a> {
+pub struct Token<'src> {
     pub kind: TokenKind,
-    pub slice: &'a str,
+    pub slice: &'src str,
     pub pos: Position,
 }
 
-impl<'a> Token<'a> {
-    pub fn new(kind: TokenKind, slice: &'a str, pos: Position) -> Self {
+impl<'src> Token<'src> {
+    pub fn new(kind: TokenKind, slice: &'src str, pos: Position) -> Self {
         Self { kind, slice, pos }
     }
 }
@@ -71,39 +73,39 @@ impl Debug for Token<'_> {
 impl Display for TokenKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            TokenKind::LeftParen => write!(f, "("),
-            TokenKind::RightParen => write!(f, ")"),
-            TokenKind::LeftBrace => write!(f, "{{"),
-            TokenKind::RightBrace => write!(f, "}}"),
-            TokenKind::Semicolon => write!(f, ";"),
-            TokenKind::Colon => write!(f, ":"),
-            TokenKind::Plus => write!(f, "+"),
-            TokenKind::Minus => write!(f, "-"),
-            TokenKind::Star => write!(f, "*"),
-            TokenKind::Slash => write!(f, "/"),
-            TokenKind::Equal => write!(f, "="),
-            TokenKind::EqualEqual => write!(f, "=="),
-            TokenKind::Lesser => write!(f, "<"),
-            TokenKind::LesserEqual => write!(f, "<="),
-            TokenKind::Greater => write!(f, ">"),
-            TokenKind::GreaterEqual => write!(f, ">="),
-            TokenKind::Not => write!(f, "!"),
-            TokenKind::NotEqual => write!(f, "!="),
-            TokenKind::Identifier => write!(f, "identifier"),
-            TokenKind::Numeric => write!(f, "numeric"),
-            TokenKind::True => write!(f, "true"),
-            TokenKind::False => write!(f, "false"),
-            TokenKind::And => write!(f, "and"),
-            TokenKind::Or => write!(f, "or"),
-            TokenKind::Fun => write!(f, "fun"),
-            TokenKind::Return => write!(f, "return"),
-            TokenKind::If => write!(f, "if"),
-            TokenKind::Else => write!(f, "else"),
-            TokenKind::Loop => write!(f, "loop"),
-            TokenKind::While => write!(f, "while"),
-            TokenKind::Break => write!(f, "break"),
-            TokenKind::Let => write!(f, "let"),
-            TokenKind::Unknown => write!(f, "unknown"),
+            Self::LeftParen => write!(f, "("),
+            Self::RightParen => write!(f, ")"),
+            Self::LeftBrace => write!(f, "{{"),
+            Self::RightBrace => write!(f, "}}"),
+            Self::Semicolon => write!(f, ";"),
+            Self::Colon => write!(f, ":"),
+            Self::Plus => write!(f, "+"),
+            Self::Minus => write!(f, "-"),
+            Self::Star => write!(f, "*"),
+            Self::Slash => write!(f, "/"),
+            Self::Equal => write!(f, "="),
+            Self::EqualEqual => write!(f, "=="),
+            Self::Lesser => write!(f, "<"),
+            Self::LesserEqual => write!(f, "<="),
+            Self::Greater => write!(f, ">"),
+            Self::GreaterEqual => write!(f, ">="),
+            Self::Not => write!(f, "!"),
+            Self::NotEqual => write!(f, "!="),
+            Self::Identifier => write!(f, "identifier"),
+            Self::Numeric => write!(f, "numeric"),
+            Self::True => write!(f, "true"),
+            Self::False => write!(f, "false"),
+            Self::And => write!(f, "and"),
+            Self::Or => write!(f, "or"),
+            Self::Fun => write!(f, "fun"),
+            Self::Return => write!(f, "return"),
+            Self::If => write!(f, "if"),
+            Self::Else => write!(f, "else"),
+            Self::Loop => write!(f, "loop"),
+            Self::While => write!(f, "while"),
+            Self::Break => write!(f, "break"),
+            Self::Let => write!(f, "let"),
+            Self::Unknown => write!(f, "unknown"),
         }
     }
 }

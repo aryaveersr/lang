@@ -1,23 +1,27 @@
-mod error;
+use std::{collections::HashMap, iter::Peekable};
+
+use self::error::ParseError;
+use crate::{
+    hir::{Fun, Module},
+    lexer::Lexer,
+    token::TokenKind,
+};
+
+pub mod error;
 mod expr;
 mod stmt;
 mod ty;
 mod utils;
 
-pub use error::*;
+type Result<T> = std::result::Result<T, ParseError>;
 
-use crate::{hir::*, lexer::*, ops::*, token::*};
-use std::{collections::HashMap, iter::Peekable};
-
-type Result<T> = ParseResult<T>;
-
-pub struct Parser<'a> {
-    lexer: Peekable<Lexer<'a>>,
+pub struct Parser<'src> {
+    lexer: Peekable<Lexer<'src>>,
     in_loop: bool,
 }
 
-impl<'a> Parser<'a> {
-    pub fn new(lexer: Lexer<'a>) -> Self {
+impl<'src> Parser<'src> {
+    pub fn new(lexer: Lexer<'src>) -> Self {
         Self {
             lexer: lexer.peekable(),
             in_loop: false,

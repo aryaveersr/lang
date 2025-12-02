@@ -1,8 +1,9 @@
-use lang::{lexer::Lexer, parser::Parser, type_resolver::TypeResolver};
 use std::{
     fs,
     io::{self, Write, stdin, stdout},
 };
+
+use lang::{lexer::Lexer, parser::Parser, type_resolver::TypeResolver};
 
 fn compile(source: &str) {
     println!("== Tokens ==");
@@ -20,7 +21,7 @@ fn compile(source: &str) {
     println!("{}", serde_yaml::to_string(&hir).unwrap());
 
     if let Err(err) = TypeResolver::new().resolve(&mut hir) {
-        return println!("Type Resolver Error:\n{err}");
+        println!("Type Resolver Error:\n{err}");
     }
 }
 

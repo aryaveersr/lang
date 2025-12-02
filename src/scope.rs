@@ -10,11 +10,11 @@ impl<T: Clone> Scope<T> {
     }
 
     pub fn pop(&mut self) -> HashMap<String, T> {
-        self.scopes.pop().unwrap()
+        self.scopes.pop().expect("scope stack underflow")
     }
 
     pub fn set(&mut self, name: &str, value: &T) {
-        let last = self.scopes.last_mut().unwrap();
+        let last = self.scopes.last_mut().expect("scope stack empty");
         last.insert(name.to_owned(), value.to_owned());
     }
 

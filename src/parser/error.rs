@@ -1,11 +1,12 @@
+use std::num::ParseIntError;
+
+use serde::{Serialize, Serializer};
+use thiserror::Error;
+
 use crate::{
     position::Position,
     token::{Token, TokenKind},
 };
-use serde::Serialize;
-use thiserror::Error;
-
-pub type ParseResult<T> = std::result::Result<T, ParseError>;
 
 #[derive(Error, Debug, Clone, PartialEq, Eq, Serialize)]
 pub enum ParseError {
@@ -17,9 +18,6 @@ pub enum ParseError {
 
     #[error("Unexpected end of file, expected {expected}.")]
     UnexpectedEOF { expected: String },
-
-    #[error("Number too large at {pos}.")]
-    NumberTooLarge { pos: Position },
 
     #[error("Invalid expression: {found} at {pos}.")]
     InvalidExpr { found: TokenKind, pos: Position },
@@ -42,10 +40,19 @@ pub enum ParseError {
         found: TokenKind,
         pos: Position,
     },
+
+    #[error("Cannot parse number at {pos}: {err}.")]
+    CannotParseNum {
+        pos: Position,
+
+        #[serde(serialize_with = "serialize_parse_int_err")]
+        #[source]
+        err: ParseIntError,
+    },
 }
 
 impl ParseError {
-    pub fn eof(expected: impl Into<String>) -> Self {
+    pub fn eof<T: Into<String>>(expected: T) -> Self {
         Self::UnexpectedEOF {
             expected: expected.into(),
         }
@@ -79,11 +86,15 @@ impl ParseError {
         }
     }
 
-    pub fn unexpected_token(expected: impl Into<String>, found: Token) -> Self {
+    pub fn unexpected_token<T: Into<String>>(expected: T, found: Token) -> Self {
         Self::UnexpectedToken {
             expected: expected.into(),
             found: found.kind,
             pos: found.pos,
         }
     }
+}
+
+fn serialize_parse_int_err<S: Serializer>(err: &ParseIntError, s: S) -> Result<S::Ok, S::Error> {
+    s.serialize_str(&err.to_string())
 }

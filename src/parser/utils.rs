@@ -1,7 +1,8 @@
-use super::*;
+use super::{ParseError, Parser, Result};
+use crate::token::{Token, TokenKind};
 
-impl<'a> Parser<'a> {
-    pub(super) fn eat(&mut self, kind: TokenKind) -> Option<Token<'a>> {
+impl<'src> Parser<'src> {
+    pub(super) fn eat(&mut self, kind: TokenKind) -> Option<Token<'src>> {
         self.lexer.next_if(|i| i.kind == kind)
     }
 
@@ -12,8 +13,12 @@ impl<'a> Parser<'a> {
             .and_then(f)
     }
 
-    pub(super) fn expect(&mut self, kind: TokenKind, expected: &str) -> Result<Token<'a>> {
-        let next = self.lexer.next().ok_or(ParseError::eof(expected))?;
+    pub(super) fn next(&mut self, expected: impl Into<String>) -> Result<Token<'src>> {
+        self.lexer.next().ok_or_else(|| ParseError::eof(expected))
+    }
+
+    pub(super) fn expect(&mut self, kind: TokenKind, expected: &str) -> Result<Token<'src>> {
+        let next = self.lexer.next().ok_or_else(|| ParseError::eof(expected))?;
 
         if next.kind == kind {
             Ok(next)

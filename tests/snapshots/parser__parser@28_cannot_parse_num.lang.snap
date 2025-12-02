@@ -1,0 +1,11 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/28_cannot_parse_num.lang
+---
+Err:
+  CannotParseNum:
+    pos:
+      line: 2
+      column: 10
+    err: number too large to fit in target type

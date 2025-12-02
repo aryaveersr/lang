@@ -1,10 +1,10 @@
-mod visitor;
+use std::collections::HashMap;
 
-pub use visitor::*;
+use serde::Serialize;
 
 use crate::ops::{BinOp, UnOp};
-use serde::Serialize;
-use std::collections::HashMap;
+
+pub mod visitor;
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct Module {
