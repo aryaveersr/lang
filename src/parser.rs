@@ -2,7 +2,7 @@ use std::{collections::HashMap, iter::Peekable};
 
 use self::error::ParseError;
 use crate::{
-    hir::{Fun, Module},
+    hir::{HirFun, HirModule},
     lexer::Lexer,
     token::TokenKind,
 };
@@ -28,7 +28,7 @@ impl<'src> Parser<'src> {
         }
     }
 
-    fn parse_function(&mut self) -> Result<(String, Fun)> {
+    fn parse_function(&mut self) -> Result<(String, HirFun)> {
         let name = self.expect(TokenKind::Identifier, "function name")?;
 
         self.expect(TokenKind::LeftParen, "(")?;
@@ -43,10 +43,10 @@ impl<'src> Parser<'src> {
 
         let body = self.parse_body(true)?;
 
-        Ok((name.slice.to_owned(), Fun { return_ty, body }))
+        Ok((name.slice.to_owned(), HirFun { return_ty, body }))
     }
 
-    pub fn parse(&mut self) -> Result<Module> {
+    pub fn parse(&mut self) -> Result<HirModule> {
         let mut funs = HashMap::new();
 
         while let Some(token) = self.lexer.next() {
@@ -69,7 +69,7 @@ impl<'src> Parser<'src> {
         }
 
         if funs.contains_key("main") {
-            Ok(Module { funs })
+            Ok(HirModule { funs })
         } else {
             Err(ParseError::MissingMainFunction)
         }

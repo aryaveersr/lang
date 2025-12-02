@@ -1,15 +1,15 @@
-use super::{Expr, Fun, Module, Stmt};
+use super::{Expr, HirFun, HirModule, Stmt};
 
 pub trait Walkable<E> {
     fn walk<V: HirVisitor<E> + ?Sized>(&mut self, visitor: &mut V) -> Result<(), E>;
 }
 
 pub trait HirVisitor<E> {
-    fn visit_module(&mut self, module: &mut Module) -> Result<(), E> {
+    fn visit_module(&mut self, module: &mut HirModule) -> Result<(), E> {
         module.walk(self)
     }
 
-    fn visit_fun(&mut self, _name: &str, fun: &mut Fun) -> Result<(), E> {
+    fn visit_fun(&mut self, _name: &str, fun: &mut HirFun) -> Result<(), E> {
         fun.walk(self)
     }
 
@@ -26,7 +26,7 @@ pub trait HirVisitor<E> {
     }
 }
 
-impl<E> Walkable<E> for Module {
+impl<E> Walkable<E> for HirModule {
     fn walk<V: HirVisitor<E> + ?Sized>(&mut self, visitor: &mut V) -> Result<(), E> {
         for (name, fun) in &mut self.funs {
             visitor.visit_fun(name, fun)?;
@@ -36,7 +36,7 @@ impl<E> Walkable<E> for Module {
     }
 }
 
-impl<E> Walkable<E> for Fun {
+impl<E> Walkable<E> for HirFun {
     fn walk<V: HirVisitor<E> + ?Sized>(&mut self, visitor: &mut V) -> Result<(), E> {
         visitor.visit_block(&mut self.body)
     }

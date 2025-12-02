@@ -1,14 +1,14 @@
 use super::{ParseError, Parser, Result};
-use crate::{hir::Type, token::TokenKind};
+use crate::{hir::HirType, token::TokenKind};
 
 impl Parser<'_> {
-    pub(super) fn parse_type(&mut self) -> Result<Type> {
+    pub(super) fn parse_type(&mut self) -> Result<HirType> {
         let token = self.expect(TokenKind::Identifier, "type name")?;
 
         Ok(match token.slice {
-            "bool" => Type::Bool,
-            "num" => Type::Num,
-            "void" => Type::Void,
+            "bool" => HirType::Bool,
+            "num" => HirType::Num,
+            "void" => HirType::Void,
 
             _ => return Err(ParseError::invalid_type(token)),
         })

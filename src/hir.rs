@@ -7,13 +7,13 @@ use crate::ops::{BinOp, UnOp};
 pub mod visitor;
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
-pub struct Module {
-    pub funs: HashMap<String, Fun>,
+pub struct HirModule {
+    pub funs: HashMap<String, HirFun>,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
-pub struct Fun {
-    pub return_ty: Option<Type>,
+pub struct HirFun {
+    pub return_ty: Option<HirType>,
     pub body: Vec<Stmt>,
 }
 
@@ -44,7 +44,7 @@ pub enum Stmt {
 
     Let {
         name: String,
-        ty: Option<Type>,
+        ty: Option<HirType>,
         expr: Option<Box<Expr>>,
     },
 }
@@ -78,7 +78,7 @@ pub enum Expr {
 
 #[derive(Debug, PartialEq, Eq, Serialize, Clone)]
 #[serde(tag = "kind")]
-pub enum Type {
+pub enum HirType {
     Void,
     Bool,
     Num,

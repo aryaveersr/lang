@@ -1,7 +1,7 @@
 use self::error::TypeError;
 use crate::{
     hir::{
-        Expr, Fun, Module, Stmt, Type,
+        Expr, HirFun, HirModule, HirType, Stmt,
         visitor::{HirVisitor, Walkable as _},
     },
     ops::{BinOp, UnOp},
@@ -14,13 +14,13 @@ type Result<T> = std::result::Result<T, TypeError>;
 
 #[derive(Default)]
 pub struct TypeResolver {
-    scope: Scope<Type>,
-    expected_return_type: Option<Type>,
+    scope: Scope<HirType>,
+    expected_return_type: Option<HirType>,
 }
 
 impl HirVisitor<TypeError> for TypeResolver {
-    fn visit_fun(&mut self, _name: &str, fun: &mut Fun) -> Result<()> {
-        self.expected_return_type = Some(fun.return_ty.get_or_insert(Type::Void).clone());
+    fn visit_fun(&mut self, _name: &str, fun: &mut HirFun) -> Result<()> {
+        self.expected_return_type = Some(fun.return_ty.get_or_insert(HirType::Void).clone());
         self.visit_block(&mut fun.body)?;
         self.expected_return_type = None;
 
@@ -63,14 +63,14 @@ impl TypeResolver {
         Self::default()
     }
 
-    pub fn resolve(&mut self, module: &mut Module) -> Result<()> {
+    pub fn resolve(&mut self, module: &mut HirModule) -> Result<()> {
         self.visit_module(module)
     }
 
-    fn resolve_expr(&self, expr: &Expr) -> Result<Type> {
+    fn resolve_expr(&self, expr: &Expr) -> Result<HirType> {
         match expr {
-            Expr::Bool { .. } => Ok(Type::Bool),
-            Expr::Num { .. } => Ok(Type::Num),
+            Expr::Bool { .. } => Ok(HirType::Bool),
+            Expr::Num { .. } => Ok(HirType::Num),
             Expr::Unary { op, expr } => self.resolve_expr_unary(*op, expr),
             Expr::Binary { op, lhs, rhs } => self.resolve_expr_binary(*op, lhs, rhs),
 
@@ -85,18 +85,18 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_expr_unary(&self, op: UnOp, expr: &Expr) -> Result<Type> {
+    fn resolve_expr_unary(&self, op: UnOp, expr: &Expr) -> Result<HirType> {
         let ty = self.resolve_expr(expr)?;
 
         match (op, &ty) {
-            (UnOp::Negate, Type::Num) => Ok(Type::Num),
-            (UnOp::Not, Type::Bool) => Ok(Type::Bool),
+            (UnOp::Negate, HirType::Num) => Ok(HirType::Num),
+            (UnOp::Not, HirType::Bool) => Ok(HirType::Bool),
 
             _ => Err(TypeError::InvalidUnaryOp { op, ty }),
         }
     }
 
-    fn resolve_expr_binary(&self, op: BinOp, lhs: &Expr, rhs: &Expr) -> Result<Type> {
+    fn resolve_expr_binary(&self, op: BinOp, lhs: &Expr, rhs: &Expr) -> Result<HirType> {
         let lhs = self.resolve_expr(lhs)?;
         let rhs = self.resolve_expr(rhs)?;
 
@@ -105,12 +105,12 @@ impl TypeResolver {
         }
 
         match (op, &lhs) {
-            (BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div, Type::Num) => Ok(Type::Num),
+            (BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div, HirType::Num) => Ok(HirType::Num),
 
             (BinOp::Eq | BinOp::NotEq, _)
-            | (BinOp::And | BinOp::Or, Type::Bool)
-            | (BinOp::Lesser | BinOp::LesserEq | BinOp::Greater | BinOp::GreaterEq, Type::Num) => {
-                Ok(Type::Bool)
+            | (BinOp::And | BinOp::Or, HirType::Bool)
+            | (BinOp::Lesser | BinOp::LesserEq | BinOp::Greater | BinOp::GreaterEq, HirType::Num) => {
+                Ok(HirType::Bool)
             }
 
             _ => Err(TypeError::InvalidBinaryOp { op, lhs, rhs }),
@@ -120,7 +120,7 @@ impl TypeResolver {
     fn resolve_stmt_let(
         &mut self,
         name: &str,
-        ty: &mut Option<Type>,
+        ty: &mut Option<HirType>,
         expr: Option<&Expr>,
     ) -> Result<()> {
         let expr_ty = expr.as_ref().map(|e| self.resolve_expr(e)).transpose()?;
@@ -163,7 +163,7 @@ impl TypeResolver {
             .as_ref()
             .map(|e| self.resolve_expr(e))
             .transpose()?
-            .unwrap_or(Type::Void);
+            .unwrap_or(HirType::Void);
 
         if expr_ty == *fun_ty {
             Ok(())
@@ -183,7 +183,7 @@ impl TypeResolver {
     ) -> Result<()> {
         let cond_ty = self.resolve_expr(cond)?;
 
-        if cond_ty != Type::Bool {
+        if cond_ty != HirType::Bool {
             return Err(TypeError::NonBooleanCondition { found: cond_ty });
         }
 
