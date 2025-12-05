@@ -1,5 +1,5 @@
 use serde::Serialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 use crate::ops::{BinOp, UnOp};
 
@@ -79,4 +79,14 @@ pub enum HirType {
     Void,
     Bool,
     Num,
+}
+
+impl Display for HirType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Void => write!(f, "void"),
+            Self::Bool => write!(f, "bool"),
+            Self::Num => write!(f, "num"),
+        }
+    }
 }

@@ -1,5 +1,4 @@
 use serde::Serialize;
-use std::fmt::Display;
 use thiserror::Error;
 
 use crate::{
@@ -30,14 +29,4 @@ pub enum TypeError {
         lhs: HirType,
         rhs: HirType,
     },
-}
-
-impl Display for HirType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Void => write!(f, "void"),
-            Self::Bool => write!(f, "bool"),
-            Self::Num => write!(f, "num"),
-        }
-    }
 }
