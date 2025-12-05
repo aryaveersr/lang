@@ -28,7 +28,7 @@ impl HirToMir {
 
     fn lower_fun(&mut self, name: String, fun: HirFun) -> MirFun {
         self.builder = Builder::new(name);
-        self.builder.fun.return_ty = self.lower_type(fun.return_ty.unwrap());
+        self.builder.fun.return_ty = self.lower_type(&fun.return_ty.unwrap());
 
         self.loop_stack = Vec::new();
         self.scope = Scope::default();
@@ -44,7 +44,8 @@ impl HirToMir {
         std::mem::take(&mut self.builder).finish()
     }
 
-    fn lower_type(&mut self, ty: HirType) -> Option<MirType> {
+    #[expect(clippy::unused_self)]
+    fn lower_type(&self, ty: &HirType) -> Option<MirType> {
         match ty {
             HirType::Void => None,
             HirType::Bool => Some(MirType::Bool),
@@ -124,6 +125,8 @@ impl HirToMir {
                     match ty.unwrap() {
                         HirType::Bool => self.builder.add_const_bool(false),
                         HirType::Num => self.builder.add_const_num(0),
+
+                        #[expect(clippy::panic)]
                         HirType::Void => panic!("Value cannot be of type void."),
                     }
                 };
