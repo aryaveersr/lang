@@ -1,5 +1,5 @@
 use crate::{
-    mir::{BasicBlock, BlockID, Instr, MirFun, Phi, Term, ValueID},
+    mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, Phi, Term, ValueID},
     ops::{BinOp, UnOp},
 };
 
@@ -56,31 +56,51 @@ impl Builder {
 
     pub fn add_const_bool(&mut self, value: bool) -> ValueID {
         let dest = self.fresh_value();
-        self.add_instr(Instr::ConstBool { dest, value });
+        self.add_instr(Instr {
+            dest,
+            kind: InstrKind::ConstBool { value },
+        });
+
         dest
     }
 
     pub fn add_const_num(&mut self, value: i32) -> ValueID {
         let dest = self.fresh_value();
-        self.add_instr(Instr::ConstNum { dest, value });
+        self.add_instr(Instr {
+            dest,
+            kind: InstrKind::ConstNum { value },
+        });
+
         dest
     }
 
     pub fn add_copy(&mut self, src: ValueID) -> ValueID {
         let dest = self.fresh_value();
-        self.add_instr(Instr::Copy { dest, src });
+        self.add_instr(Instr {
+            dest,
+            kind: InstrKind::Copy { src },
+        });
+
         dest
     }
 
     pub fn add_unary(&mut self, op: UnOp, arg: ValueID) -> ValueID {
         let dest = self.fresh_value();
-        self.add_instr(Instr::Unary { dest, op, arg });
+        self.add_instr(Instr {
+            dest,
+            kind: InstrKind::Unary { op, arg },
+        });
+
         dest
     }
 
     pub fn add_binary(&mut self, op: BinOp, lhs: ValueID, rhs: ValueID) -> ValueID {
         let dest = self.fresh_value();
-        self.add_instr(Instr::Binary { dest, op, lhs, rhs });
+        self.add_instr(Instr {
+            dest,
+            kind: InstrKind::Binary { op, lhs, rhs },
+        });
+
         dest
     }
 

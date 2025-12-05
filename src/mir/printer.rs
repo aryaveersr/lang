@@ -1,6 +1,6 @@
 use std::fmt::{self, Display, Formatter};
 
-use crate::mir::{BasicBlock, BlockID, Instr, MirFun, MirModule, Phi, Term, ValueID};
+use crate::mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirModule, Phi, Term, ValueID};
 
 impl Display for MirModule {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -62,12 +62,16 @@ impl Display for Phi {
 
 impl Display for Instr {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            Instr::ConstBool { dest, value } => write!(f, "{} = const {}", dest, value),
-            Instr::ConstNum { dest, value } => write!(f, "{} = const {}", dest, value),
-            Instr::Copy { dest, src } => write!(f, "{} = copy {}", dest, src),
-            Instr::Unary { dest, op, arg } => write!(f, "{} = {}{}", dest, op, arg),
-            Instr::Binary { dest, op, lhs, rhs } => write!(f, "{} = {} {} {}", dest, lhs, op, rhs),
+        write!(f, "{} = ", self.dest)?;
+
+        match self.kind {
+            InstrKind::ConstBool { value } => write!(f, "const {}", value),
+            InstrKind::ConstNum { value } => write!(f, "const {}", value),
+            InstrKind::Copy { src } => write!(f, "copy {}", src),
+            InstrKind::Unary { op, arg } => write!(f, "{} {}", op, arg),
+            InstrKind::Binary { op, lhs, rhs } => {
+                write!(f, "{} {}, {}", lhs, op, rhs)
+            }
         }
     }
 }

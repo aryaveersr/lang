@@ -39,30 +39,31 @@ pub struct Phi {
 }
 
 #[derive(Debug, Clone)]
-pub enum Instr {
+pub struct Instr {
+    pub dest: ValueID,
+    pub kind: InstrKind,
+}
+
+#[derive(Debug, Clone)]
+pub enum InstrKind {
     ConstBool {
-        dest: ValueID,
         value: bool,
     },
 
     ConstNum {
-        dest: ValueID,
         value: i32,
     },
 
     Copy {
-        dest: ValueID,
         src: ValueID,
     },
 
     Unary {
-        dest: ValueID,
         op: UnOp,
         arg: ValueID,
     },
 
     Binary {
-        dest: ValueID,
         op: BinOp,
         lhs: ValueID,
         rhs: ValueID,
