@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub struct Builder {
-    fun: MirFun,
+    pub fun: MirFun,
     block: Option<BlockID>,
 }
 
@@ -50,7 +50,7 @@ impl Builder {
         self.active_block().instrs.push(instr);
     }
 
-    pub fn set_term(&mut self, term: Term) {
+    pub fn add_term(&mut self, term: Term) {
         self.active_block().term = Some(term);
     }
 
@@ -104,20 +104,20 @@ impl Builder {
         dest
     }
 
-    pub fn set_jump(&mut self, block: BlockID) {
-        self.set_term(Term::Jump { block });
+    pub fn add_jump(&mut self, block: BlockID) {
+        self.add_term(Term::Jump { block });
     }
 
-    pub fn set_branch(&mut self, cond: ValueID, then_block: BlockID, else_block: BlockID) {
-        self.set_term(Term::Branch {
+    pub fn add_branch(&mut self, cond: ValueID, then_block: BlockID, else_block: BlockID) {
+        self.add_term(Term::Branch {
             cond,
             then_block,
             else_block,
         });
     }
 
-    pub fn set_return(&mut self, value: Option<ValueID>) {
-        self.set_term(Term::Return { value });
+    pub fn add_return(&mut self, value: Option<ValueID>) {
+        self.add_term(Term::Return { value });
     }
 
     pub fn add_phi(&mut self) -> ValueID {
@@ -135,5 +135,11 @@ impl Builder {
             .expect("Invalid phi node.");
 
         phi.srcs.push((block, value));
+    }
+}
+
+impl Default for Builder {
+    fn default() -> Self {
+        Self::new(String::new())
     }
 }

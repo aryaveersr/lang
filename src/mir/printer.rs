@@ -14,13 +14,13 @@ impl Display for MirModule {
 
 impl Display for MirFun {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "fun {}() {{", self.name)?;
+        writeln!(f, "fun {}() {{", self.name)?;
 
         for block in &self.blocks {
             write!(f, "{block}")?;
         }
 
-        write!(f, "}}")
+        writeln!(f, "}}")
     }
 }
 

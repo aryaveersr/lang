@@ -3,7 +3,7 @@ use std::{
     io::{self, Write, stdin, stdout},
 };
 
-use lang::{lexer::Lexer, parser::Parser, type_resolver::TypeResolver};
+use lang::{hir_to_mir::HirToMir, lexer::Lexer, parser::Parser, type_resolver::TypeResolver};
 
 fn compile(source: &str) {
     println!("== Tokens ==");
@@ -23,6 +23,11 @@ fn compile(source: &str) {
     if let Err(err) = TypeResolver::new().resolve(&mut hir) {
         println!("Type Resolver Error:\n{err}");
     }
+
+    let mir = HirToMir::new().lower_module(hir);
+
+    println!("\n== MIR ==");
+    println!("{mir}");
 }
 
 fn repl() -> io::Result<()> {

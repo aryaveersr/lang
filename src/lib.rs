@@ -29,6 +29,7 @@
 #![allow(clippy::missing_panics_doc)]
 
 pub mod hir;
+pub mod hir_to_mir;
 pub mod lexer;
 pub mod mir;
 pub mod ops;
