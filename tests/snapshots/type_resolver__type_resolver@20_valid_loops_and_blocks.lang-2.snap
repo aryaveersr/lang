@@ -1,0 +1,97 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/20_valid_loops_and_blocks.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: counter
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 0
+      - kind: Loop
+        body:
+          - kind: Let
+            name: x
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 10
+          - kind: If
+            cond:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Var
+                name: x
+              rhs:
+                kind: Num
+                value: 5
+            body:
+              - kind: Break
+            else: ~
+      - kind: Block
+        body:
+          - kind: Let
+            name: scoped
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 42
+          - kind: Let
+            name: y
+            ty:
+              kind: Bool
+            expr:
+              kind: Bool
+              value: true
+      - kind: Loop
+        body:
+          - kind: Let
+            name: a
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 1
+          - kind: Let
+            name: b
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 2
+          - kind: If
+            cond:
+              kind: Binary
+              op: Lesser
+              lhs:
+                kind: Var
+                name: a
+              rhs:
+                kind: Var
+                name: b
+            body:
+              - kind: Let
+                name: sum
+                ty:
+                  kind: Num
+                expr:
+                  kind: Binary
+                  op: Add
+                  lhs:
+                    kind: Var
+                    name: a
+                  rhs:
+                    kind: Var
+                    name: b
+              - kind: Break
+            else: ~

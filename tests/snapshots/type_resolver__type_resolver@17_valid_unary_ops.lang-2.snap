@@ -1,0 +1,70 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/17_valid_unary_ops.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Let
+        name: neg_x
+        ty:
+          kind: Num
+        expr:
+          kind: Unary
+          op: Negate
+          expr:
+            kind: Var
+            name: x
+      - kind: Let
+        name: double_neg
+        ty:
+          kind: Num
+        expr:
+          kind: Unary
+          op: Negate
+          expr:
+            kind: Unary
+            op: Negate
+            expr:
+              kind: Var
+              name: x
+      - kind: Let
+        name: a
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: not_a
+        ty:
+          kind: Bool
+        expr:
+          kind: Unary
+          op: Not
+          expr:
+            kind: Var
+            name: a
+      - kind: Let
+        name: double_not
+        ty:
+          kind: Bool
+        expr:
+          kind: Unary
+          op: Not
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Var
+              name: a

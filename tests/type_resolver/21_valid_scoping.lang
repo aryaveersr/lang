@@ -1,0 +1,23 @@
+fun main() {
+    let x: num = 10;
+
+    {
+        let x: num = 20;
+        let y: num = x;
+    }
+
+    let z: num = x;
+
+    if (true) {
+        let x: bool = false;
+        let a: bool = x;
+    }
+
+    loop {
+        let x: num = 30;
+        let b: num = x + 5;
+        break;
+    }
+
+    let final: num = x;
+}

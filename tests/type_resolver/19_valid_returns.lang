@@ -1,0 +1,30 @@
+fun returns_num(): num {
+    return 42;
+}
+
+fun returns_bool(): bool {
+    return true;
+}
+
+fun returns_void(): void {
+    return;
+}
+
+fun implicit_void() {
+    let x: num = 10;
+}
+
+fun returns_expression(): num {
+    let x: num = 5;
+    let y: num = 10;
+    return x + y * 2;
+}
+
+fun returns_comparison(): bool {
+    let a: num = 10;
+    let b: num = 20;
+    return a < b;
+}
+
+fun main() {
+}

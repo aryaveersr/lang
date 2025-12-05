@@ -1,0 +1,80 @@
+fun helper(): num {
+    let x: num = 10;
+    let y: num = 20;
+    return x + y;
+}
+
+fun compute(): bool {
+    let a: num = 10;
+    let b: num = 5;
+    let sum: num = a + b;
+    let diff: num = a - b;
+    let result: bool = sum > diff;
+    return result;
+}
+
+fun conditional_logic(): num {
+    let x: num = 5;
+    let y: num = 10;
+
+    if (x < y) {
+        let temp: num = x * 2;
+        return temp;
+    } else {
+        return y;
+    }
+}
+
+fun loop_example(): void {
+    let counter: num = 0;
+
+    loop {
+        let x: num = counter + 1;
+
+        if (x > 100) {
+            break;
+        }
+
+        {
+            let nested: bool = x > 50;
+            if (nested) {
+                let inner: num = x * 2;
+            }
+        }
+    }
+
+    return;
+}
+
+fun boolean_logic(): bool {
+    let a: bool = true;
+    let b: bool = false;
+    let c: bool = true;
+
+    let result: bool = (a and b) or (c and !b);
+    let comparison: bool = 10 < 20;
+    let equality: bool = 5 == 5;
+
+    return result and comparison and equality;
+}
+
+fun main() {
+    let x: num = 30;
+    let y: bool = true;
+    let z: num = 15;
+
+    loop {
+        let counter: num = 0;
+        if (counter > 100) {
+            break;
+        }
+    }
+
+    let final: bool = false;
+
+    if (final) {
+        let success: num = 1;
+    } else {
+        let failure: num = 0;
+    }
+}

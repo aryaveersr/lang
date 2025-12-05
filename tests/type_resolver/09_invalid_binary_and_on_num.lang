@@ -1,0 +1,5 @@
+fun main() {
+    let x: num = 5;
+    let y: num = 10;
+    let z: bool = x and y;
+}

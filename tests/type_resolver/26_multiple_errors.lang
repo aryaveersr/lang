@@ -1,0 +1,5 @@
+fun main() {
+    let x: num = true;
+    let y: bool = undefined_var;
+    let z: num = x + y;
+}

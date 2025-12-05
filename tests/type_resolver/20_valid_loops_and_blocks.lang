@@ -1,0 +1,24 @@
+fun main() {
+    let counter: num = 0;
+
+    loop {
+        let x: num = 10;
+        if (x > 5) {
+            break;
+        }
+    }
+
+    {
+        let scoped: num = 42;
+        let y: bool = true;
+    }
+
+    loop {
+        let a: num = 1;
+        let b: num = 2;
+        if (a < b) {
+            let sum: num = a + b;
+            break;
+        }
+    }
+}

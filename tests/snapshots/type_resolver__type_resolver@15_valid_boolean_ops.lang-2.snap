@@ -1,0 +1,91 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/15_valid_boolean_ops.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: a
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: b
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: false
+      - kind: Let
+        name: and_op
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: And
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: or_op
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Or
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: not_op
+        ty:
+          kind: Bool
+        expr:
+          kind: Unary
+          op: Not
+          expr:
+            kind: Var
+            name: a
+      - kind: Let
+        name: complex
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Or
+          lhs:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b
+          rhs:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Var
+                name: a
+            rhs:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Var
+                name: b

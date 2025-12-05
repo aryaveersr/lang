@@ -1,0 +1,5 @@
+fun main() {
+    if (undefined_var) {
+        let x: num = 10;
+    }
+}

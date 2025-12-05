@@ -1,0 +1,11 @@
+fun main() {
+    let x = 42;
+    let y = true;
+    let z = x + 10;
+    let a = y and false;
+    let b = x < 100;
+    let c = !y;
+    let d = -x;
+    let e = x * 2 + 5;
+    let f = (x > 0) and y;
+}

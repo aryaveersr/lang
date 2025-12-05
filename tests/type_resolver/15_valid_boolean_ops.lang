@@ -1,0 +1,8 @@
+fun main() {
+    let a: bool = true;
+    let b: bool = false;
+    let and_op: bool = a and b;
+    let or_op: bool = a or b;
+    let not_op: bool = !a;
+    let complex: bool = (a and b) or (!a and !b);
+}

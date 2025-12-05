@@ -1,0 +1,114 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/18_valid_if_statements.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Let
+        name: y
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 20
+      - kind: If
+        cond:
+          kind: Binary
+          op: Lesser
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Var
+            name: y
+        body:
+          - kind: Let
+            name: z
+            ty:
+              kind: Num
+            expr:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Var
+                name: x
+              rhs:
+                kind: Var
+                name: y
+        else: ~
+      - kind: If
+        cond:
+          kind: Bool
+          value: true
+        body:
+          - kind: Let
+            name: a
+            ty:
+              kind: Bool
+            expr:
+              kind: Bool
+              value: false
+        else:
+          - kind: Let
+            name: b
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 100
+      - kind: If
+        cond:
+          kind: Binary
+          op: Eq
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Var
+            name: y
+        body:
+          - kind: Let
+            name: result
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 1
+        else:
+          - kind: If
+            cond:
+              kind: Binary
+              op: Lesser
+              lhs:
+                kind: Var
+                name: x
+              rhs:
+                kind: Var
+                name: y
+            body:
+              - kind: Let
+                name: result
+                ty:
+                  kind: Num
+                expr:
+                  kind: Num
+                  value: 2
+            else:
+              - kind: Let
+                name: result
+                ty:
+                  kind: Num
+                expr:
+                  kind: Num
+                  value: 3

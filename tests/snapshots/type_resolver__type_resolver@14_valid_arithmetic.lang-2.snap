@@ -1,0 +1,101 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/14_valid_arithmetic.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: a
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Let
+        name: b
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 20
+      - kind: Let
+        name: sum
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Add
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: diff
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Sub
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: prod
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Mul
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: quot
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Div
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: nested
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Mul
+          lhs:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b
+          rhs:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b

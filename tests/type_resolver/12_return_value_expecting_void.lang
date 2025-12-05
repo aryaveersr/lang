@@ -1,0 +1,6 @@
+fun test(): void {
+    return 42;
+}
+
+fun main() {
+}

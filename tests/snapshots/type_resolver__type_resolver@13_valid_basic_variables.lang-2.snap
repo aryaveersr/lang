@@ -1,0 +1,38 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/13_valid_basic_variables.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 42
+      - kind: Let
+        name: y
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: z
+        ty:
+          kind: Num
+        expr:
+          kind: Var
+          name: x
+      - kind: Let
+        name: inferred
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 100

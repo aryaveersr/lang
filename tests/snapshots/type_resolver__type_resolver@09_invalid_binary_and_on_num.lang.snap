@@ -1,0 +1,12 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/09_invalid_binary_and_on_num.lang
+---
+Err:
+  InvalidBinaryOp:
+    op: And
+    lhs:
+      kind: Num
+    rhs:
+      kind: Num

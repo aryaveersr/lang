@@ -1,0 +1,9 @@
+fun main() {
+    let a: num = 10;
+    let b: num = 20;
+    let sum: num = a + b;
+    let diff: num = a - b;
+    let prod: num = a * b;
+    let quot: num = a / b;
+    let nested: num = (a + b) * (a - b);
+}

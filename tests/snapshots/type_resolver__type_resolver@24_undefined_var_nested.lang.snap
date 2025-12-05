@@ -1,0 +1,8 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/24_undefined_var_nested.lang
+---
+Err:
+  UndefinedVar:
+    name: z

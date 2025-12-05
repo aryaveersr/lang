@@ -1,0 +1,6 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/16_valid_comparisons.lang
+---
+Ok: ~

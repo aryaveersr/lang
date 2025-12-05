@@ -1,0 +1,105 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/19_valid_returns.lang
+---
+funs:
+  implicit_void:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+  main:
+    return_ty:
+      kind: Void
+    body: []
+  returns_bool:
+    return_ty:
+      kind: Bool
+    body:
+      - kind: Return
+        expr:
+          kind: Bool
+          value: true
+  returns_comparison:
+    return_ty:
+      kind: Bool
+    body:
+      - kind: Let
+        name: a
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Let
+        name: b
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 20
+      - kind: Return
+        expr:
+          kind: Binary
+          op: Lesser
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+  returns_expression:
+    return_ty:
+      kind: Num
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 5
+      - kind: Let
+        name: y
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Return
+        expr:
+          kind: Binary
+          op: Add
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Var
+              name: y
+            rhs:
+              kind: Num
+              value: 2
+  returns_num:
+    return_ty:
+      kind: Num
+    body:
+      - kind: Return
+        expr:
+          kind: Num
+          value: 42
+  returns_void:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Return
+        expr: ~

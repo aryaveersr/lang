@@ -1,0 +1,9 @@
+fun main() {
+    let x: num = 10;
+    let neg_x: num = -x;
+    let double_neg: num = --x;
+
+    let a: bool = true;
+    let not_a: bool = !a;
+    let double_not: bool = !!a;
+}

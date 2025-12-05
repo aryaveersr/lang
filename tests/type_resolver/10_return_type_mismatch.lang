@@ -1,0 +1,6 @@
+fun test(): num {
+    return true;
+}
+
+fun main() {
+}

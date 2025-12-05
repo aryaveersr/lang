@@ -1,0 +1,6 @@
+fun main() {
+    let x: num = 42;
+    let y: bool = true;
+    let z: num = x;
+    let inferred = 100;
+}

@@ -1,0 +1,390 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/22_valid_complex.lang
+---
+funs:
+  boolean_logic:
+    return_ty:
+      kind: Bool
+    body:
+      - kind: Let
+        name: a
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: b
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: false
+      - kind: Let
+        name: c
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: result
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Or
+          lhs:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b
+          rhs:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Var
+              name: c
+            rhs:
+              kind: Unary
+              op: Not
+              expr:
+                kind: Var
+                name: b
+      - kind: Let
+        name: comparison
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Lesser
+          lhs:
+            kind: Num
+            value: 10
+          rhs:
+            kind: Num
+            value: 20
+      - kind: Let
+        name: equality
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Eq
+          lhs:
+            kind: Num
+            value: 5
+          rhs:
+            kind: Num
+            value: 5
+      - kind: Return
+        expr:
+          kind: Binary
+          op: And
+          lhs:
+            kind: Binary
+            op: And
+            lhs:
+              kind: Var
+              name: result
+            rhs:
+              kind: Var
+              name: comparison
+          rhs:
+            kind: Var
+            name: equality
+  compute:
+    return_ty:
+      kind: Bool
+    body:
+      - kind: Let
+        name: a
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Let
+        name: b
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 5
+      - kind: Let
+        name: sum
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Add
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: diff
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Sub
+          lhs:
+            kind: Var
+            name: a
+          rhs:
+            kind: Var
+            name: b
+      - kind: Let
+        name: result
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Greater
+          lhs:
+            kind: Var
+            name: sum
+          rhs:
+            kind: Var
+            name: diff
+      - kind: Return
+        expr:
+          kind: Var
+          name: result
+  conditional_logic:
+    return_ty:
+      kind: Num
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 5
+      - kind: Let
+        name: y
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: If
+        cond:
+          kind: Binary
+          op: Lesser
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Var
+            name: y
+        body:
+          - kind: Let
+            name: temp
+            ty:
+              kind: Num
+            expr:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Var
+                name: x
+              rhs:
+                kind: Num
+                value: 2
+          - kind: Return
+            expr:
+              kind: Var
+              name: temp
+        else:
+          - kind: Return
+            expr:
+              kind: Var
+              name: y
+  helper:
+    return_ty:
+      kind: Num
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 10
+      - kind: Let
+        name: y
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 20
+      - kind: Return
+        expr:
+          kind: Binary
+          op: Add
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Var
+            name: y
+  loop_example:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: counter
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 0
+      - kind: Loop
+        body:
+          - kind: Let
+            name: x
+            ty:
+              kind: Num
+            expr:
+              kind: Binary
+              op: Add
+              lhs:
+                kind: Var
+                name: counter
+              rhs:
+                kind: Num
+                value: 1
+          - kind: If
+            cond:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Var
+                name: x
+              rhs:
+                kind: Num
+                value: 100
+            body:
+              - kind: Break
+            else: ~
+          - kind: Block
+            body:
+              - kind: Let
+                name: nested
+                ty:
+                  kind: Bool
+                expr:
+                  kind: Binary
+                  op: Greater
+                  lhs:
+                    kind: Var
+                    name: x
+                  rhs:
+                    kind: Num
+                    value: 50
+              - kind: If
+                cond:
+                  kind: Var
+                  name: nested
+                body:
+                  - kind: Let
+                    name: inner
+                    ty:
+                      kind: Num
+                    expr:
+                      kind: Binary
+                      op: Mul
+                      lhs:
+                        kind: Var
+                        name: x
+                      rhs:
+                        kind: Num
+                        value: 2
+                else: ~
+      - kind: Return
+        expr: ~
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 30
+      - kind: Let
+        name: y
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: z
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 15
+      - kind: Loop
+        body:
+          - kind: Let
+            name: counter
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 0
+          - kind: If
+            cond:
+              kind: Binary
+              op: Greater
+              lhs:
+                kind: Var
+                name: counter
+              rhs:
+                kind: Num
+                value: 100
+            body:
+              - kind: Break
+            else: ~
+      - kind: Let
+        name: final
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: false
+      - kind: If
+        cond:
+          kind: Var
+          name: final
+        body:
+          - kind: Let
+            name: success
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 1
+        else:
+          - kind: Let
+            name: failure
+            ty:
+              kind: Num
+            expr:
+              kind: Num
+              value: 0

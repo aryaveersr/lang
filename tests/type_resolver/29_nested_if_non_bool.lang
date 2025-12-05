@@ -1,0 +1,10 @@
+fun main() {
+    let x: num = 10;
+
+    if (x > 5) {
+        let y: num = 20;
+        if (y) {
+            let z: num = 30;
+        }
+    }
+}

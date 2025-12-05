@@ -1,0 +1,6 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/19_valid_returns.lang
+---
+Ok: ~

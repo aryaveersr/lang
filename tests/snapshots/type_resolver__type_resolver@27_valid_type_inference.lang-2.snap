@@ -1,0 +1,121 @@
+---
+source: tests/type_resolver.rs
+expression: hir
+input_file: tests/type_resolver/27_valid_type_inference.lang
+---
+funs:
+  main:
+    return_ty:
+      kind: Void
+    body:
+      - kind: Let
+        name: x
+        ty:
+          kind: Num
+        expr:
+          kind: Num
+          value: 42
+      - kind: Let
+        name: y
+        ty:
+          kind: Bool
+        expr:
+          kind: Bool
+          value: true
+      - kind: Let
+        name: z
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Add
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Num
+            value: 10
+      - kind: Let
+        name: a
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: And
+          lhs:
+            kind: Var
+            name: y
+          rhs:
+            kind: Bool
+            value: false
+      - kind: Let
+        name: b
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: Lesser
+          lhs:
+            kind: Var
+            name: x
+          rhs:
+            kind: Num
+            value: 100
+      - kind: Let
+        name: c
+        ty:
+          kind: Bool
+        expr:
+          kind: Unary
+          op: Not
+          expr:
+            kind: Var
+            name: y
+      - kind: Let
+        name: d
+        ty:
+          kind: Num
+        expr:
+          kind: Unary
+          op: Negate
+          expr:
+            kind: Var
+            name: x
+      - kind: Let
+        name: e
+        ty:
+          kind: Num
+        expr:
+          kind: Binary
+          op: Add
+          lhs:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Num
+              value: 2
+          rhs:
+            kind: Num
+            value: 5
+      - kind: Let
+        name: f
+        ty:
+          kind: Bool
+        expr:
+          kind: Binary
+          op: And
+          lhs:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Num
+              value: 0
+          rhs:
+            kind: Var
+            name: y

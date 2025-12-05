@@ -1,0 +1,4 @@
+fun main() {
+    let x: num = 5;
+    let y: num = !x;
+}

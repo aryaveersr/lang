@@ -1,0 +1,10 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/06_invalid_unary_negate_on_bool.lang
+---
+Err:
+  InvalidUnaryOp:
+    op: Negate
+    ty:
+      kind: Bool
