@@ -1,4 +1,4 @@
-use super::{Expr, HirFun, HirModule, Stmt};
+use crate::hir::{Expr, HirFun, HirModule, Stmt};
 
 pub trait Walkable<E> {
     fn walk<V: HirVisitor<E> + ?Sized>(&mut self, visitor: &mut V) -> Result<(), E>;

@@ -1,7 +1,7 @@
-use super::{ParseError, Parser, Result};
 use crate::{
     hir::{Expr, Stmt},
     ops::UnOp,
+    parser::{ParseError, Parser, Result},
     token::{Token, TokenKind},
 };
 

@@ -1,6 +1,5 @@
-use std::fmt::{self, Debug, Display, Formatter};
-
 use serde::Serialize;
+use std::fmt::{self, Debug, Display, Formatter};
 
 use crate::position::Position;
 

@@ -1,0 +1,119 @@
+use crate::{
+    mir::{BasicBlock, BlockID, Instr, MirFun, Phi, Term, ValueID},
+    ops::{BinOp, UnOp},
+};
+
+pub struct Builder {
+    fun: MirFun,
+    block: Option<BlockID>,
+}
+
+impl Builder {
+    pub fn new(name: String) -> Self {
+        Self {
+            fun: MirFun::new(name),
+            block: None,
+        }
+    }
+
+    pub fn create_block(&mut self) -> BlockID {
+        let id = BlockID(self.fun.next_block);
+        self.fun.next_block += 1;
+        self.fun.blocks.push(BasicBlock::new(id));
+        id
+    }
+
+    pub fn set_active_block(&mut self, block: BlockID) {
+        self.block = Some(block);
+    }
+
+    pub fn active_block(&mut self) -> &mut BasicBlock {
+        let id = self.block.expect("No active block set.");
+        self.fun
+            .blocks
+            .iter_mut()
+            .find(|b| b.id == id)
+            .expect("Invalid block id.")
+    }
+
+    pub fn fresh_value(&mut self) -> ValueID {
+        let id = ValueID(self.fun.next_value);
+        self.fun.next_value += 1;
+        id
+    }
+
+    pub fn finish(self) -> MirFun {
+        self.fun
+    }
+
+    pub fn add_instr(&mut self, instr: Instr) {
+        self.active_block().instrs.push(instr);
+    }
+
+    pub fn set_term(&mut self, term: Term) {
+        self.active_block().term = Some(term);
+    }
+
+    pub fn add_const_bool(&mut self, value: bool) -> ValueID {
+        let dest = self.fresh_value();
+        self.add_instr(Instr::ConstBool { dest, value });
+        dest
+    }
+
+    pub fn add_const_num(&mut self, value: i32) -> ValueID {
+        let dest = self.fresh_value();
+        self.add_instr(Instr::ConstNum { dest, value });
+        dest
+    }
+
+    pub fn add_copy(&mut self, src: ValueID) -> ValueID {
+        let dest = self.fresh_value();
+        self.add_instr(Instr::Copy { dest, src });
+        dest
+    }
+
+    pub fn add_unary(&mut self, op: UnOp, arg: ValueID) -> ValueID {
+        let dest = self.fresh_value();
+        self.add_instr(Instr::Unary { dest, op, arg });
+        dest
+    }
+
+    pub fn add_binary(&mut self, op: BinOp, lhs: ValueID, rhs: ValueID) -> ValueID {
+        let dest = self.fresh_value();
+        self.add_instr(Instr::Binary { dest, op, lhs, rhs });
+        dest
+    }
+
+    pub fn set_jump(&mut self, block: BlockID) {
+        self.set_term(Term::Jump { block });
+    }
+
+    pub fn set_branch(&mut self, cond: ValueID, then_block: BlockID, else_block: BlockID) {
+        self.set_term(Term::Branch {
+            cond,
+            then_block,
+            else_block,
+        });
+    }
+
+    pub fn set_return(&mut self, value: Option<ValueID>) {
+        self.set_term(Term::Return { value });
+    }
+
+    pub fn add_phi(&mut self) -> ValueID {
+        let dest = self.fresh_value();
+        self.active_block().phis.push(Phi::new(dest));
+        dest
+    }
+
+    pub fn add_phi_src(&mut self, phi: ValueID, value: ValueID, block: BlockID) {
+        let phi = self
+            .active_block()
+            .phis
+            .iter_mut()
+            .find(|p| p.dest == phi)
+            .expect("Invalid phi node.");
+
+        phi.srcs.push((block, value));
+    }
+}

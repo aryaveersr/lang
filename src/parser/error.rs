@@ -1,6 +1,5 @@
-use std::num::ParseIntError;
-
 use serde::{Serialize, Serializer};
+use std::num::ParseIntError;
 use thiserror::Error;
 
 use crate::{

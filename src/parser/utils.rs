@@ -1,5 +1,7 @@
-use super::{ParseError, Parser, Result};
-use crate::token::{Token, TokenKind};
+use crate::{
+    parser::{ParseError, Parser, Result},
+    token::{Token, TokenKind},
+};
 
 impl<'src> Parser<'src> {
     pub(super) fn eat(&mut self, kind: TokenKind) -> Option<Token<'src>> {

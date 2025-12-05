@@ -25,12 +25,11 @@ pub enum BinOp {
     And,
     Or,
 }
-
 impl Display for UnOp {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Negate => write!(f, "-"),
-            Self::Not => write!(f, "!"),
+            Self::Negate => write!(f, "neg"),
+            Self::Not => write!(f, "not"),
         }
     }
 }
@@ -38,18 +37,18 @@ impl Display for UnOp {
 impl Display for BinOp {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Add => write!(f, "+"),
-            Self::Sub => write!(f, "-"),
-            Self::Mul => write!(f, "*"),
-            Self::Div => write!(f, "/"),
-            Self::Eq => write!(f, "=="),
-            Self::NotEq => write!(f, "!="),
-            Self::Lesser => write!(f, "<"),
-            Self::LesserEq => write!(f, "<="),
-            Self::Greater => write!(f, ">"),
-            Self::GreaterEq => write!(f, ">="),
-            Self::And => write!(f, "&&"),
-            Self::Or => write!(f, "||"),
+            Self::Add => write!(f, "add"),
+            Self::Sub => write!(f, "sub"),
+            Self::Mul => write!(f, "mul"),
+            Self::Div => write!(f, "div"),
+            Self::Eq => write!(f, "eq"),
+            Self::NotEq => write!(f, "neq"),
+            Self::Lesser => write!(f, "lt"),
+            Self::LesserEq => write!(f, "lte"),
+            Self::Greater => write!(f, "gt"),
+            Self::GreaterEq => write!(f, "gte"),
+            Self::And => write!(f, "and"),
+            Self::Or => write!(f, "or"),
         }
     }
 }
