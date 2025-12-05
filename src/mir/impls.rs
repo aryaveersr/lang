@@ -2,7 +2,7 @@ use crate::mir::{BasicBlock, BlockID, MirFun, Phi, ValueID};
 
 impl MirFun {
     pub fn new(name: String) -> Self {
-        MirFun {
+        Self {
             name,
             blocks: Vec::new(),
             return_ty: None,
@@ -14,7 +14,7 @@ impl MirFun {
 
 impl BasicBlock {
     pub fn new(id: BlockID) -> Self {
-        BasicBlock {
+        Self {
             id,
             phis: Vec::new(),
             instrs: Vec::new(),
@@ -25,7 +25,7 @@ impl BasicBlock {
 
 impl Phi {
     pub fn new(dest: ValueID) -> Self {
-        Phi {
+        Self {
             dest,
             srcs: Vec::new(),
         }
