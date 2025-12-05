@@ -1,9 +1,6 @@
 use self::error::TypeError;
 use crate::{
-    hir::{
-        Expr, HirFun, HirModule, HirType, Stmt,
-        visitor::{HirVisitor, Walkable as _},
-    },
+    hir::{Expr, HirFun, HirModule, HirType, Stmt},
     ops::{BinOp, UnOp},
     scope::Scope,
 };
@@ -18,16 +15,28 @@ pub struct TypeResolver {
     expected_return_type: Option<HirType>,
 }
 
-impl HirVisitor<TypeError> for TypeResolver {
-    fn visit_fun(&mut self, _name: &str, fun: &mut HirFun) -> Result<()> {
+impl TypeResolver {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn resolve(&mut self, module: &mut HirModule) -> Result<()> {
+        for fun in module.funs.values_mut() {
+            self.resolve_fun(fun)?;
+        }
+
+        Ok(())
+    }
+
+    fn resolve_fun(&mut self, fun: &mut HirFun) -> Result<()> {
         self.expected_return_type = Some(fun.return_ty.get_or_insert(HirType::Void).clone());
-        self.visit_block(&mut fun.body)?;
+        self.resolve_block(&mut fun.body)?;
         self.expected_return_type = None;
 
         Ok(())
     }
 
-    fn visit_stmt(&mut self, stmt: &mut Stmt) -> Result<()> {
+    fn resolve_stmt(&mut self, stmt: &mut Stmt) -> Result<()> {
         #[inline]
         #[expect(clippy::ref_option)]
         fn unbox<T>(x: &Option<Box<T>>) -> Option<&T> {
@@ -36,35 +45,23 @@ impl HirVisitor<TypeError> for TypeResolver {
 
         match stmt {
             Stmt::Break => Ok(()),
-            Stmt::Block { body } | Stmt::Loop { body } => self.visit_block(body),
-
+            Stmt::Block { body } | Stmt::Loop { body } => self.resolve_block(body),
             Stmt::Return { expr } => self.resolve_stmt_return(unbox(expr)),
             Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, unbox(expr)),
             Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
         }
     }
 
-    fn visit_block(&mut self, block: &mut Vec<Stmt>) -> Result<()> {
+    fn resolve_block(&mut self, block: &mut Vec<Stmt>) -> Result<()> {
         self.scope.create();
-        block.walk(self)?;
+
+        for stmt in block {
+            self.resolve_stmt(stmt)?;
+        }
+
         self.scope.pop();
 
         Ok(())
-    }
-
-    fn visit_expr(&mut self, expr: &mut Expr) -> Result<()> {
-        self.resolve_expr(expr)?;
-        Ok(())
-    }
-}
-
-impl TypeResolver {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn resolve(&mut self, module: &mut HirModule) -> Result<()> {
-        self.visit_module(module)
     }
 
     fn resolve_expr(&self, expr: &Expr) -> Result<HirType> {
@@ -187,9 +184,9 @@ impl TypeResolver {
             return Err(TypeError::NonBooleanCondition { found: cond_ty });
         }
 
-        self.visit_block(body)?;
+        self.resolve_block(body)?;
         if let Some(block) = else_.as_mut() {
-            self.visit_block(block)?;
+            self.resolve_block(block)?;
         }
 
         Ok(())
