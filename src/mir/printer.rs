@@ -1,4 +1,4 @@
-use itertools::Itertools;
+use itertools::Itertools as _;
 use std::fmt::{self, Display, Formatter};
 
 use crate::mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirModule, Phi, Term, ValueID};
