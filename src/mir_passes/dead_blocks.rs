@@ -30,6 +30,10 @@ impl DeadBlocks {
     }
 
     fn mark_block(&mut self, fun: &mut MirFun, id: BlockID) {
+        if self.marked_blocks.contains(&id) {
+            return;
+        }
+
         let block = fun.get_block_mut(id);
         self.marked_blocks.push(id);
 
