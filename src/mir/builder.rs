@@ -104,11 +104,11 @@ impl Builder {
         dest
     }
 
-    pub fn add_call(&mut self, name: String) -> ValueID {
+    pub fn add_call(&mut self, name: String, args: Vec<ValueID>) -> ValueID {
         let dest = self.fresh_value();
         self.add_instr(Instr {
             dest,
-            kind: InstrKind::Call { name },
+            kind: InstrKind::Call { name, args },
         });
 
         dest

@@ -28,7 +28,7 @@ impl HirToMir {
 
     fn lower_fun(&mut self, name: String, fun: HirFun) -> MirFun {
         self.builder = Builder::new(name);
-        self.builder.fun.return_ty = self.lower_type(&fun.return_ty.unwrap());
+        self.builder.fun.return_ty = self.lower_type(&fun.ty.returns);
 
         self.loop_stack = Vec::new();
         self.scope = Scope::default();
@@ -138,8 +138,8 @@ impl HirToMir {
                 self.scope.set(&name, &value);
             }
 
-            Stmt::Call { name } => {
-                self.builder.add_call(name);
+            Stmt::Call { name, args } => {
+                self.lower_expr_call(name, args);
             }
         }
     }
@@ -159,7 +159,7 @@ impl HirToMir {
             Expr::Bool { value } => self.builder.add_const_bool(value),
             Expr::Num { value } => self.builder.add_const_num(value),
             Expr::Var { name } => self.scope.get(&name).unwrap().to_owned(),
-            Expr::Call { name } => self.builder.add_call(name),
+            Expr::Call { name, args } => self.lower_expr_call(name, args),
 
             Expr::Unary { op, expr } => {
                 let arg = self.lower_expr(*expr);
@@ -172,5 +172,10 @@ impl HirToMir {
                 self.builder.add_binary(op, lhs, rhs)
             }
         }
+    }
+
+    fn lower_expr_call(&mut self, name: String, args: Vec<Box<Expr>>) -> ValueID {
+        let args = args.into_iter().map(|a| self.lower_expr(*a)).collect();
+        self.builder.add_call(name, args)
     }
 }
