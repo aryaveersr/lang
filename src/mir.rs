@@ -12,6 +12,7 @@ pub struct MirModule {
 #[derive(Debug, Clone)]
 pub struct MirFun {
     pub name: String,
+    pub params: Vec<(ValueID, MirType)>,
     pub blocks: Vec<BasicBlock>,
     pub return_ty: Option<MirType>,
     next_block: usize,
@@ -71,6 +72,7 @@ pub enum InstrKind {
 
     Call {
         name: String,
+        args: Vec<ValueID>,
     },
 }
 

@@ -70,7 +70,17 @@ impl Display for Instr {
             InstrKind::Copy { src } => write!(f, "copy {src}"),
             InstrKind::Unary { op, arg } => write!(f, "{op} {arg}"),
             InstrKind::Binary { op, lhs, rhs } => write!(f, "{op} {lhs} {rhs}"),
-            InstrKind::Call { name } => write!(f, "call {name}"),
+
+            InstrKind::Call { name, args } => {
+                write!(
+                    f,
+                    "call {name}({})",
+                    args.iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )
+            }
         }
     }
 }
