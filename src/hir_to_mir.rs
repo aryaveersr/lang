@@ -133,6 +133,9 @@ impl HirToMir {
 
                 self.scope.set(&name, &value);
             }
+
+            Stmt::Assign { name, expr } => todo!(),
+            Stmt::Call { name } => todo!(),
         }
     }
 
@@ -162,6 +165,8 @@ impl HirToMir {
                 let rhs = self.lower_expr(*rhs);
                 self.builder.add_binary(op, lhs, rhs)
             }
+
+            Expr::Call { name } => todo!(),
         }
     }
 }

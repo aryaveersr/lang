@@ -17,6 +17,7 @@ impl Parser<'_> {
             TokenKind::While => self.parse_stmt_while(),
             TokenKind::Break => self.parse_stmt_break(next),
             TokenKind::Let => self.parse_stmt_let(),
+            TokenKind::Identifier => self.parse_stmt_identifier(next),
 
             _ => Err(ParseError::invalid_stmt(next)),
         }
@@ -117,6 +118,10 @@ impl Parser<'_> {
         self.expect(TokenKind::Semicolon, ";")?;
 
         Ok(Stmt::Let { name, ty, expr })
+    }
+
+    fn parse_stmt_identifier(&mut self, token: Token) -> Result<Stmt> {
+        todo!()
     }
 
     fn parse_condition(&mut self) -> Result<Box<Expr>> {

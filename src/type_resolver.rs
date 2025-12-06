@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use self::error::TypeError;
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
@@ -12,6 +14,7 @@ type Result<T> = std::result::Result<T, TypeError>;
 #[derive(Default)]
 pub struct TypeResolver {
     scope: Scope<HirType>,
+    functions: HashMap<String, HirType>,
     expected_return_type: Option<HirType>,
 }
 
@@ -21,6 +24,11 @@ impl TypeResolver {
     }
 
     pub fn resolve(&mut self, module: &mut HirModule) -> Result<()> {
+        for (name, fun) in &mut module.funs {
+            let ty = fun.return_ty.get_or_insert(HirType::Void);
+            self.functions.insert(name.to_owned(), ty.to_owned());
+        }
+
         for fun in module.funs.values_mut() {
             self.resolve_fun(fun)?;
         }
@@ -29,7 +37,7 @@ impl TypeResolver {
     }
 
     fn resolve_fun(&mut self, fun: &mut HirFun) -> Result<()> {
-        self.expected_return_type = Some(fun.return_ty.get_or_insert(HirType::Void).clone());
+        self.expected_return_type = Some(fun.return_ty.clone().unwrap());
         self.resolve_block(&mut fun.body)?;
         self.expected_return_type = None;
 
@@ -49,6 +57,8 @@ impl TypeResolver {
             Stmt::Return { expr } => self.resolve_stmt_return(unbox(expr)),
             Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, unbox(expr)),
             Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
+            Stmt::Assign { name, expr } => self.resolve_stmt_assign(name, expr),
+            Stmt::Call { name } => self.resolve_expr_call(name).map(|_| ()),
         }
     }
 
@@ -70,6 +80,7 @@ impl TypeResolver {
             Expr::Num { .. } => Ok(HirType::Num),
             Expr::Unary { op, expr } => self.resolve_expr_unary(*op, expr),
             Expr::Binary { op, lhs, rhs } => self.resolve_expr_binary(*op, lhs, rhs),
+            Expr::Call { name } => self.resolve_expr_call(name),
 
             Expr::Var { name } => {
                 self.scope
@@ -112,6 +123,15 @@ impl TypeResolver {
 
             _ => Err(TypeError::InvalidBinaryOp { op, lhs, rhs }),
         }
+    }
+
+    fn resolve_expr_call(&self, name: &str) -> Result<HirType> {
+        self.functions
+            .get(name)
+            .cloned()
+            .ok_or_else(|| TypeError::UndefinedFun {
+                name: name.to_owned(),
+            })
     }
 
     fn resolve_stmt_let(
@@ -190,5 +210,24 @@ impl TypeResolver {
         }
 
         Ok(())
+    }
+
+    fn resolve_stmt_assign(&mut self, name: &str, expr: &Expr) -> Result<()> {
+        let expr_ty = self.resolve_expr(expr)?;
+        let var_ty = self
+            .scope
+            .get(name)
+            .ok_or_else(|| TypeError::UndefinedVar {
+                name: name.to_owned(),
+            })?;
+
+        if expr_ty == *var_ty {
+            Ok(())
+        } else {
+            Err(TypeError::TypeMismatch {
+                expected: var_ty.clone(),
+                found: expr_ty,
+            })
+        }
     }
 }

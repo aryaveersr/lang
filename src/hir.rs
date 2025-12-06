@@ -44,6 +44,15 @@ pub enum Stmt {
         ty: Option<HirType>,
         expr: Option<Box<Expr>>,
     },
+
+    Assign {
+        name: String,
+        expr: Box<Expr>,
+    },
+
+    Call {
+        name: String,
+    },
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
@@ -58,6 +67,10 @@ pub enum Expr {
     },
 
     Var {
+        name: String,
+    },
+
+    Call {
         name: String,
     },
 

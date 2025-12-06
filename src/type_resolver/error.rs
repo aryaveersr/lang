@@ -14,6 +14,9 @@ pub enum TypeError {
     #[error("Undefined variable: {name}.")]
     UndefinedVar { name: String },
 
+    #[error("Undefined function: {name}.")]
+    UndefinedFun { name: String },
+
     #[error("Cannot infer type for variable: {name}.")]
     CannotInferType { name: String },
 
