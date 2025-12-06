@@ -52,17 +52,11 @@ impl TypeResolver {
     }
 
     fn resolve_stmt(&mut self, stmt: &mut Stmt) -> Result<()> {
-        #[inline]
-        #[expect(clippy::ref_option)]
-        fn unbox<T>(x: &Option<Box<T>>) -> Option<&T> {
-            x.as_ref().map(|y| &**y)
-        }
-
         match stmt {
             Stmt::Break => Ok(()),
             Stmt::Block { body } | Stmt::Loop { body } => self.resolve_block(body),
-            Stmt::Return { expr } => self.resolve_stmt_return(unbox(expr)),
-            Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, unbox(expr)),
+            Stmt::Return { expr } => self.resolve_stmt_return(expr.as_ref()),
+            Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, expr.as_ref()),
             Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
             Stmt::Assign { name, expr } => self.resolve_stmt_assign(name, expr),
             Stmt::Call { name, args } => self.resolve_expr_call(name, args).map(|_| ()),
@@ -132,7 +126,7 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_expr_call(&self, name: &str, args: &[Box<Expr>]) -> Result<HirType> {
+    fn resolve_expr_call(&self, name: &str, args: &[Expr]) -> Result<HirType> {
         let ty = self
             .functions
             .get(name)

@@ -30,7 +30,7 @@ pub enum Stmt {
     },
 
     Return {
-        expr: Option<Box<Expr>>,
+        expr: Option<Expr>,
     },
 
     Loop {
@@ -38,7 +38,7 @@ pub enum Stmt {
     },
 
     If {
-        cond: Box<Expr>,
+        cond: Expr,
         body: Vec<Stmt>,
 
         #[serde(rename = "else")]
@@ -48,17 +48,17 @@ pub enum Stmt {
     Let {
         name: String,
         ty: Option<HirType>,
-        expr: Option<Box<Expr>>,
+        expr: Option<Expr>,
     },
 
     Assign {
         name: String,
-        expr: Box<Expr>,
+        expr: Expr,
     },
 
     Call {
         name: String,
-        args: Vec<Box<Expr>>,
+        args: Vec<Expr>,
     },
 }
 
@@ -79,7 +79,7 @@ pub enum Expr {
 
     Call {
         name: String,
-        args: Vec<Box<Expr>>,
+        args: Vec<Expr>,
     },
 
     Unary {

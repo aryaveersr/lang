@@ -67,10 +67,10 @@ impl Parser<'_> {
             Stmt::If {
                 body: vec![Stmt::Break],
                 else_: None,
-                cond: Box::new(Expr::Unary {
+                cond: Expr::Unary {
                     op: UnOp::Not,
-                    expr,
-                }),
+                    expr: Box::new(expr),
+                },
             },
         );
 
@@ -134,7 +134,7 @@ impl Parser<'_> {
         }
     }
 
-    fn parse_condition(&mut self) -> Result<Box<Expr>> {
+    fn parse_condition(&mut self) -> Result<Expr> {
         self.expect(TokenKind::LeftParen, "(")?;
         let cond = self.parse_expr()?;
         self.expect(TokenKind::RightParen, ")")?;
@@ -166,8 +166,7 @@ impl Parser<'_> {
         Ok(body)
     }
 
-    #[expect(clippy::vec_box)]
-    pub(super) fn parse_args(&mut self) -> Result<Vec<Box<Expr>>> {
+    pub(super) fn parse_args(&mut self) -> Result<Vec<Expr>> {
         let mut args = Vec::new();
 
         if self.eat(TokenKind::RightParen).is_some() {

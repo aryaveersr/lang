@@ -65,7 +65,7 @@ impl HirToMir {
             }
 
             Stmt::Return { expr } => {
-                let value = expr.map(|e| self.lower_expr(*e));
+                let value = expr.map(|e| self.lower_expr(e));
                 self.builder.add_return(value);
 
                 let unreachable = self.builder.create_block();
@@ -94,7 +94,7 @@ impl HirToMir {
                 let else_block = self.builder.create_block();
                 let exit_block = self.builder.create_block();
 
-                let cond = self.lower_expr(*cond);
+                let cond = self.lower_expr(cond);
 
                 self.builder.add_branch(cond, then_block, else_block);
                 self.builder.set_active_block(then_block);
@@ -119,7 +119,7 @@ impl HirToMir {
 
             Stmt::Let { name, ty, expr } => {
                 let value = if let Some(expr) = expr {
-                    self.lower_expr(*expr)
+                    self.lower_expr(expr)
                 } else {
                     match ty.unwrap() {
                         HirType::Bool => self.builder.add_const_bool(false),
@@ -134,7 +134,7 @@ impl HirToMir {
             }
 
             Stmt::Assign { name, expr } => {
-                let value = self.lower_expr(*expr);
+                let value = self.lower_expr(expr);
                 self.scope.set(&name, &value);
             }
 
@@ -174,9 +174,8 @@ impl HirToMir {
         }
     }
 
-    #[expect(clippy::vec_box)]
-    fn lower_expr_call(&mut self, name: String, args: Vec<Box<Expr>>) -> ValueID {
-        let args = args.into_iter().map(|a| self.lower_expr(*a)).collect();
+    fn lower_expr_call(&mut self, name: String, args: Vec<Expr>) -> ValueID {
+        let args = args.into_iter().map(|e| self.lower_expr(e)).collect();
         self.builder.add_call(name, args)
     }
 }
