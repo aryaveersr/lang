@@ -33,6 +33,7 @@ pub mod hir;
 pub mod hir_to_mir;
 pub mod lexer;
 pub mod mir;
+pub mod mir_passes;
 pub mod ops;
 pub mod parser;
 pub mod position;
