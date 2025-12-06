@@ -1,0 +1,247 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/29_function_calls.lang
+---
+Ok:
+  funs:
+    add:
+      ty:
+        params:
+          - - a
+            - kind: Num
+          - - b
+            - kind: Num
+        returns:
+          kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b
+    check:
+      ty:
+        params:
+          - - x
+            - kind: Num
+        returns:
+          kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Num
+              value: 0
+    do_something:
+      ty:
+        params: []
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    get_number:
+      ty:
+        params: []
+        returns:
+          kind: Num
+      body:
+        - kind: Return
+          expr:
+            kind: Num
+            value: 42
+    is_valid:
+      ty:
+        params:
+          - - x
+            - kind: Num
+        returns:
+          kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Bool
+            value: true
+    main:
+      ty:
+        params: []
+        returns:
+          kind: Void
+      body:
+        - kind: Call
+          name: simple
+          args: []
+        - kind: Call
+          name: with_one_arg
+          args:
+            - kind: Num
+              value: 42
+        - kind: Call
+          name: with_multiple_args
+          args:
+            - kind: Num
+              value: 1
+            - kind: Num
+              value: 2
+            - kind: Num
+              value: 3
+        - kind: Call
+          name: with_bool_args
+          args:
+            - kind: Bool
+              value: true
+            - kind: Bool
+              value: false
+        - kind: Call
+          name: nested_call
+          args:
+            - kind: Call
+              name: add
+              args:
+                - kind: Num
+                  value: 5
+                - kind: Num
+                  value: 10
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Call
+            name: get_number
+            args: []
+        - kind: Let
+          name: y
+          ty:
+            kind: Num
+          expr:
+            kind: Call
+            name: add
+            args:
+              - kind: Num
+                value: 10
+              - kind: Num
+                value: 20
+        - kind: Let
+          name: z
+          ty:
+            kind: Bool
+          expr:
+            kind: Call
+            name: check
+            args:
+              - kind: Var
+                name: x
+        - kind: If
+          cond:
+            kind: Call
+            name: is_valid
+            args:
+              - kind: Var
+                name: x
+          body:
+            - kind: Call
+              name: do_something
+              args: []
+          else: ~
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Call
+                  name: should_continue
+                  args: []
+              body:
+                - kind: Break
+              else: ~
+            - kind: Call
+              name: process
+              args: []
+        - kind: Return
+          expr: ~
+    nested_call:
+      ty:
+        params:
+          - - x
+            - kind: Num
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    process:
+      ty:
+        params: []
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    should_continue:
+      ty:
+        params: []
+        returns:
+          kind: Bool
+      body:
+        - kind: Return
+          expr:
+            kind: Bool
+            value: false
+    simple:
+      ty:
+        params: []
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    with_bool_args:
+      ty:
+        params:
+          - - a
+            - kind: Bool
+          - - b
+            - kind: Bool
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    with_multiple_args:
+      ty:
+        params:
+          - - a
+            - kind: Num
+          - - b
+            - kind: Num
+          - - c
+            - kind: Num
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~
+    with_one_arg:
+      ty:
+        params:
+          - - a
+            - kind: Num
+        returns:
+          kind: Void
+      body:
+        - kind: Return
+          expr: ~

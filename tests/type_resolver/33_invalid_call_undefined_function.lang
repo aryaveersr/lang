@@ -1,0 +1,4 @@
+fun main() {
+    undefined_function();
+    return;
+}

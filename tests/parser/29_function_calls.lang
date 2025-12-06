@@ -1,0 +1,69 @@
+fun main() {
+    simple();
+    with_one_arg(42);
+    with_multiple_args(1, 2, 3);
+    with_bool_args(true, false);
+    nested_call(add(5, 10));
+
+    let x: num = get_number();
+    let y: num = add(10, 20);
+    let z: bool = check(x);
+
+    if (is_valid(x)) {
+        do_something();
+    }
+
+    while (should_continue()) {
+        process();
+    }
+
+    return;
+}
+
+fun simple() {
+    return;
+}
+
+fun with_one_arg(a: num) {
+    return;
+}
+
+fun with_multiple_args(a: num, b: num, c: num) {
+    return;
+}
+
+fun with_bool_args(a: bool, b: bool) {
+    return;
+}
+
+fun add(a: num, b: num): num {
+    return a + b;
+}
+
+fun get_number(): num {
+    return 42;
+}
+
+fun check(x: num): bool {
+    return x > 0;
+}
+
+fun is_valid(x: num): bool {
+    return true;
+}
+
+fun do_something() {
+    return;
+}
+
+fun should_continue(): bool {
+    return false;
+}
+
+fun process() {
+    return;
+}
+
+fun nested_call(x: num) {
+    return;
+}

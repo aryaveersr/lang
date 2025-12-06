@@ -1,0 +1,247 @@
+---
+source: tests/parser.rs
+expression: result
+input_file: tests/parser/30_assignments.lang
+---
+Ok:
+  funs:
+    add:
+      ty:
+        params:
+          - - a
+            - kind: Num
+          - - b
+            - kind: Num
+        returns:
+          kind: Num
+      body:
+        - kind: Let
+          name: result
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 0
+        - kind: Assign
+          name: result
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: a
+            rhs:
+              kind: Var
+              name: b
+        - kind: Return
+          expr:
+            kind: Var
+            name: result
+    get_value:
+      ty:
+        params: []
+        returns:
+          kind: Num
+      body:
+        - kind: Let
+          name: val
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 42
+        - kind: Assign
+          name: val
+          expr:
+            kind: Binary
+            op: Mul
+            lhs:
+              kind: Var
+              name: val
+            rhs:
+              kind: Num
+              value: 2
+        - kind: Return
+          expr:
+            kind: Var
+            name: val
+    main:
+      ty:
+        params: []
+        returns:
+          kind: Void
+      body:
+        - kind: Let
+          name: x
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 10
+        - kind: Assign
+          name: x
+          expr:
+            kind: Num
+            value: 20
+        - kind: Assign
+          name: x
+          expr:
+            kind: Binary
+            op: Add
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Num
+              value: 5
+        - kind: Assign
+          name: x
+          expr:
+            kind: Binary
+            op: Sub
+            lhs:
+              kind: Binary
+              op: Mul
+              lhs:
+                kind: Var
+                name: x
+              rhs:
+                kind: Num
+                value: 2
+            rhs:
+              kind: Num
+              value: 10
+        - kind: Let
+          name: y
+          ty:
+            kind: Bool
+          expr:
+            kind: Bool
+            value: true
+        - kind: Assign
+          name: y
+          expr:
+            kind: Bool
+            value: false
+        - kind: Assign
+          name: y
+          expr:
+            kind: Unary
+            op: Not
+            expr:
+              kind: Var
+              name: y
+        - kind: Assign
+          name: y
+          expr:
+            kind: Binary
+            op: Greater
+            lhs:
+              kind: Var
+              name: x
+            rhs:
+              kind: Num
+              value: 10
+        - kind: Let
+          name: a
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 0
+        - kind: Let
+          name: b
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 0
+        - kind: Assign
+          name: a
+          expr:
+            kind: Var
+            name: b
+        - kind: Assign
+          name: b
+          expr:
+            kind: Var
+            name: a
+        - kind: Let
+          name: result
+          ty:
+            kind: Num
+          expr:
+            kind: Num
+            value: 0
+        - kind: Assign
+          name: result
+          expr:
+            kind: Call
+            name: add
+            args:
+              - kind: Num
+                value: 5
+              - kind: Num
+                value: 10
+        - kind: Assign
+          name: result
+          expr:
+            kind: Call
+            name: get_value
+            args: []
+        - kind: If
+          cond:
+            kind: Bool
+            value: true
+          body:
+            - kind: Assign
+              name: x
+              expr:
+                kind: Num
+                value: 100
+          else: ~
+        - kind: Loop
+          body:
+            - kind: If
+              cond:
+                kind: Unary
+                op: Not
+                expr:
+                  kind: Binary
+                  op: Greater
+                  lhs:
+                    kind: Var
+                    name: x
+                  rhs:
+                    kind: Num
+                    value: 0
+              body:
+                - kind: Break
+              else: ~
+            - kind: Assign
+              name: x
+              expr:
+                kind: Binary
+                op: Sub
+                lhs:
+                  kind: Var
+                  name: x
+                rhs:
+                  kind: Num
+                  value: 1
+        - kind: Block
+          body:
+            - kind: Let
+              name: scoped
+              ty:
+                kind: Num
+              expr:
+                kind: Num
+                value: 5
+            - kind: Assign
+              name: scoped
+              expr:
+                kind: Num
+                value: 10
+        - kind: Return
+          expr: ~

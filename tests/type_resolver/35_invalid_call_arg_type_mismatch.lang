@@ -1,0 +1,18 @@
+fun main() {
+    add(5, true);
+    check(false);
+    process(10, 20);
+    return;
+}
+
+fun add(a: num, b: num): num {
+    return a + b;
+}
+
+fun check(flag: bool): bool {
+    return flag;
+}
+
+fun process(a: bool, b: bool) {
+    return;
+}

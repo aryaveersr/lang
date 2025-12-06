@@ -1,0 +1,66 @@
+fun main() {
+    let x: num = 10;
+    x = 20;
+    x = x + 5;
+    x = x * 2 - 10;
+
+    let y: bool = true;
+    y = false;
+    y = !y;
+    y = x > 10;
+
+    let a: num = 0;
+    let b: num = 0;
+    a = b;
+    b = a;
+
+    let result: num = 0;
+    result = add(5, 10);
+    result = get_value();
+
+    if (true) {
+        x = 100;
+    }
+
+    if (x > 50) {
+        x = 0;
+    } else {
+        x = 50;
+    }
+
+    while (x < 100) {
+        x = x + 1;
+    }
+
+    {
+        let scoped: num = 5;
+        scoped = 10;
+        scoped = scoped + 1;
+    }
+
+    let flag: bool = true;
+    flag = x > 0 and x < 100;
+    flag = is_valid(x);
+
+    return;
+}
+
+fun add(a: num, b: num): num {
+    let result: num = 0;
+    result = a + b;
+    return result;
+}
+
+fun get_value(): num {
+    let val: num = 42;
+    val = val * 2;
+    val = val - 10;
+    return val;
+}
+
+fun is_valid(x: num): bool {
+    let valid: bool = false;
+    valid = x >= 0;
+    valid = valid and x <= 100;
+    return valid;
+}

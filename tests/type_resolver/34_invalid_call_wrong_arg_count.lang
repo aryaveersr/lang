@@ -1,0 +1,14 @@
+fun main() {
+    add(5);
+    add(1, 2, 3);
+    no_args(42);
+    return;
+}
+
+fun add(a: num, b: num): num {
+    return a + b;
+}
+
+fun no_args(): num {
+    return 0;
+}

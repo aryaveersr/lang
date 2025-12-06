@@ -1,0 +1,30 @@
+fun main() {
+    let x: num = 10;
+    x = get_bool();
+    x = returns_void();
+
+    let y: bool = true;
+    y = get_number();
+
+    let z: num = 0;
+    z = no_return();
+
+    return;
+}
+
+fun get_bool(): bool {
+    return true;
+}
+
+fun get_number(): num {
+    return 42;
+}
+
+fun returns_void() {
+    return;
+}
+
+fun no_return() {
+    let temp: num = 5;
+    return;
+}

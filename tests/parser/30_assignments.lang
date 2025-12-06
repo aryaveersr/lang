@@ -1,0 +1,47 @@
+fun main() {
+    let x: num = 10;
+    x = 20;
+    x = x + 5;
+    x = x * 2 - 10;
+
+    let y: bool = true;
+    y = false;
+    y = !y;
+    y = x > 10;
+
+    let a: num = 0;
+    let b: num = 0;
+    a = b;
+    b = a;
+
+    let result: num = 0;
+    result = add(5, 10);
+    result = get_value();
+
+    if (true) {
+        x = 100;
+    }
+
+    while (x > 0) {
+        x = x - 1;
+    }
+
+    {
+        let scoped: num = 5;
+        scoped = 10;
+    }
+
+    return;
+}
+
+fun add(a: num, b: num): num {
+    let result: num = 0;
+    result = a + b;
+    return result;
+}
+
+fun get_value(): num {
+    let val: num = 42;
+    val = val * 2;
+    return val;
+}

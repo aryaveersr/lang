@@ -1,0 +1,11 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/38_invalid_assign_wrong_return_type.lang
+---
+Err:
+  TypeMismatch:
+    expected:
+      kind: Num
+    found:
+      kind: Bool

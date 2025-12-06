@@ -1,0 +1,10 @@
+---
+source: tests/type_resolver.rs
+expression: result
+input_file: tests/type_resolver/34_invalid_call_wrong_arg_count.lang
+---
+Err:
+  InvalidCallArgs:
+    name: add
+    expected: 2
+    found: 1

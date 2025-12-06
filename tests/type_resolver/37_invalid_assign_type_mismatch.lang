@@ -1,0 +1,16 @@
+fun main() {
+    let x: num = 10;
+    x = true;
+    x = false;
+
+    let y: bool = false;
+    y = 42;
+    y = x;
+
+    let a: num = 5;
+    let b: bool = true;
+    a = b;
+    b = a;
+
+    return;
+}

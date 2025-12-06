@@ -1,0 +1,78 @@
+fun main() {
+    simple();
+    with_args(42, true);
+
+    let x: num = get_number();
+    let y: bool = check(10);
+    let z: num = add(5, 3);
+
+    process(x);
+
+    if (is_valid(x)) {
+        do_something();
+    }
+
+    while (should_continue(y)) {
+        update(x);
+        x = increment(x);
+    }
+
+    let result: num = compute(add(1, 2), multiply(3, 4));
+
+    return;
+}
+
+fun simple() {
+    return;
+}
+
+fun with_args(a: num, b: bool) {
+    return;
+}
+
+fun get_number(): num {
+    return 42;
+}
+
+fun check(x: num): bool {
+    return x > 0;
+}
+
+fun add(a: num, b: num): num {
+    return a + b;
+}
+
+fun multiply(a: num, b: num): num {
+    return a * b;
+}
+
+fun process(x: num) {
+    let temp: num = x;
+    return;
+}
+
+fun is_valid(x: num): bool {
+    return x >= 0 and x <= 100;
+}
+
+fun do_something() {
+    let x: num = 1;
+    return;
+}
+
+fun should_continue(flag: bool): bool {
+    return flag or false;
+}
+
+fun update(x: num) {
+    let y: num = x + 1;
+    return;
+}
+
+fun increment(x: num): num {
+    return x + 1;
+}
+
+fun compute(a: num, b: num): num {
+    return a + b;
+}
