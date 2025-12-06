@@ -6,7 +6,10 @@ input_file: tests/parser/05_loops.lang
 Ok:
   funs:
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Loop
           body:

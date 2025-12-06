@@ -5,8 +5,10 @@ input_file: tests/type_resolver/18_valid_if_statements.lang
 ---
 funs:
   main:
-    return_ty:
-      kind: Void
+    ty:
+      params: []
+      returns:
+        kind: Void
     body:
       - kind: Let
         name: x

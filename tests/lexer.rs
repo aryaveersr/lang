@@ -1,4 +1,5 @@
 use insta::{assert_yaml_snapshot, glob};
+use itertools::Itertools;
 use lang::lexer::Lexer;
 use std::fs;
 
@@ -8,6 +9,6 @@ fn test_lexer() {
         let source = fs::read_to_string(path).unwrap();
         let lexer = Lexer::new(&source);
 
-        assert_yaml_snapshot!(lexer.collect::<Vec<_>>());
+        assert_yaml_snapshot!(lexer.collect_vec());
     });
 }

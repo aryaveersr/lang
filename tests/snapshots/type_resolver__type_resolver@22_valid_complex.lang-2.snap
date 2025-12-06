@@ -5,8 +5,10 @@ input_file: tests/type_resolver/22_valid_complex.lang
 ---
 funs:
   boolean_logic:
-    return_ty:
-      kind: Bool
+    ty:
+      params: []
+      returns:
+        kind: Bool
     body:
       - kind: Let
         name: a
@@ -100,8 +102,10 @@ funs:
             kind: Var
             name: equality
   compute:
-    return_ty:
-      kind: Bool
+    ty:
+      params: []
+      returns:
+        kind: Bool
     body:
       - kind: Let
         name: a
@@ -161,8 +165,10 @@ funs:
           kind: Var
           name: result
   conditional_logic:
-    return_ty:
-      kind: Num
+    ty:
+      params: []
+      returns:
+        kind: Num
     body:
       - kind: Let
         name: x
@@ -212,8 +218,10 @@ funs:
               kind: Var
               name: y
   helper:
-    return_ty:
-      kind: Num
+    ty:
+      params: []
+      returns:
+        kind: Num
     body:
       - kind: Let
         name: x
@@ -240,8 +248,10 @@ funs:
             kind: Var
             name: y
   loop_example:
-    return_ty:
-      kind: Void
+    ty:
+      params: []
+      returns:
+        kind: Void
     body:
       - kind: Let
         name: counter
@@ -315,8 +325,10 @@ funs:
       - kind: Return
         expr: ~
   main:
-    return_ty:
-      kind: Void
+    ty:
+      params: []
+      returns:
+        kind: Void
     body:
       - kind: Let
         name: x

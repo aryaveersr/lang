@@ -1,6 +1,6 @@
 ---
 source: tests/lexer.rs
-expression: "lexer.collect::<Vec<_>>()"
+expression: lexer.collect_vec()
 input_file: tests/lexer/single_chars.lang
 ---
 - kind: LeftBrace

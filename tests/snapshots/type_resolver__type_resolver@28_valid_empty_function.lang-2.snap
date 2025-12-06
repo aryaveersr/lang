@@ -5,10 +5,14 @@ input_file: tests/type_resolver/28_valid_empty_function.lang
 ---
 funs:
   empty_function:
-    return_ty:
-      kind: Void
+    ty:
+      params: []
+      returns:
+        kind: Void
     body: []
   main:
-    return_ty:
-      kind: Void
+    ty:
+      params: []
+      returns:
+        kind: Void
     body: []

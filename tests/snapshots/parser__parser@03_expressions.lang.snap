@@ -6,7 +6,10 @@ input_file: tests/parser/03_expressions.lang
 Ok:
   funs:
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: a

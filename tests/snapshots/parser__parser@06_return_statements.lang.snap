@@ -6,8 +6,10 @@ input_file: tests/parser/06_return_statements.lang
 Ok:
   funs:
     conditional_return:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Let
           name: x
@@ -37,8 +39,10 @@ Ok:
                 kind: Num
                 value: 200
     early_return:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: If
           cond:
@@ -55,13 +59,18 @@ Ok:
             kind: Num
             value: 2
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Return
           expr: ~
     multiple_early_returns:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: If
           cond:
@@ -88,7 +97,10 @@ Ok:
             kind: Num
             value: 3
     no_return:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: x
@@ -98,16 +110,20 @@ Ok:
             kind: Num
             value: 42
     return_bool:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Return
           expr:
             kind: Bool
             value: true
     return_comparison:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Return
           expr:
@@ -120,8 +136,10 @@ Ok:
               kind: Num
               value: 10
     return_complex:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Return
           expr:
@@ -146,8 +164,10 @@ Ok:
               kind: Num
               value: 2
     return_expression:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Return
           expr:
@@ -160,8 +180,10 @@ Ok:
               kind: Num
               value: 10
     return_logical:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Return
           expr:
@@ -174,8 +196,10 @@ Ok:
               kind: Bool
               value: false
     return_not:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Return
           expr:
@@ -185,8 +209,10 @@ Ok:
               kind: Bool
               value: false
     return_unary:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Return
           expr:
@@ -196,16 +222,20 @@ Ok:
               kind: Num
               value: 5
     return_value:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Return
           expr:
             kind: Num
             value: 42
     return_variable:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Let
           name: result
@@ -219,8 +249,10 @@ Ok:
             kind: Var
             name: result
     return_void:
-      return_ty:
-        kind: Void
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Return
           expr: ~

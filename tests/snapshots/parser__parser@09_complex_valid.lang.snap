@@ -6,8 +6,10 @@ input_file: tests/parser/09_complex_valid.lang
 Ok:
   funs:
     all_arithmetic_operators:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Let
           name: a
@@ -84,8 +86,10 @@ Ok:
               kind: Var
               name: d
     all_comparison_operators:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Let
           name: lt
@@ -200,8 +204,10 @@ Ok:
               kind: Var
               name: neq
     all_logical_combinations:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Let
           name: a
@@ -354,8 +360,10 @@ Ok:
               kind: Var
               name: h
     all_unary_positions:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Let
           name: a
@@ -448,8 +456,10 @@ Ok:
               kind: Var
               name: e
     boolean_edge_cases:
-      return_ty:
-        kind: Bool
+      ty:
+        params: []
+        returns:
+          kind: Bool
       body:
         - kind: Let
           name: t
@@ -554,8 +564,10 @@ Ok:
                 kind: Var
                 name: f
     complex_expressions:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Let
           name: x
@@ -680,8 +692,10 @@ Ok:
               kind: Var
               name: y
     deeply_nested:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: If
           cond:
@@ -722,7 +736,10 @@ Ok:
             kind: Num
             value: 0
     empty_blocks:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Block
           body: []
@@ -746,11 +763,16 @@ Ok:
           body:
             - kind: Break
     empty_function:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body: []
     expression_as_statement_context:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: Let
           name: a
@@ -785,7 +807,10 @@ Ok:
             kind: Var
             name: d
     if_without_braces_body:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: If
           cond:
@@ -796,7 +821,10 @@ Ok:
               expr: ~
           else: ~
     keywords_as_identifiers_prefix:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: returns
@@ -834,18 +862,27 @@ Ok:
             kind: Bool
             value: false
     loop_without_braces_body:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Loop
           body:
             - kind: Break
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Return
           expr: ~
     many_variables:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: a
@@ -918,7 +955,10 @@ Ok:
             kind: Num
             value: 10
     minimal_while:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Loop
           body:
@@ -933,7 +973,10 @@ Ok:
                 - kind: Break
               else: ~
     mixed_annotations:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: a
@@ -974,7 +1017,10 @@ Ok:
               kind: Var
               name: b
     mixed_statement_types:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: x
@@ -1018,7 +1064,10 @@ Ok:
         - kind: Return
           expr: ~
     nested_loops_and_conditionals:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Loop
           body:
@@ -1046,7 +1095,10 @@ Ok:
                 - kind: Break
               else: ~
     no_type_annotations:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: a
@@ -1085,8 +1137,10 @@ Ok:
               kind: Bool
               value: true
     sequential_returns:
-      return_ty:
-        kind: Num
+      ty:
+        params: []
+        returns:
+          kind: Num
       body:
         - kind: If
           cond:
@@ -1113,7 +1167,10 @@ Ok:
             kind: Num
             value: 3
     shadow_like_names:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: x
@@ -1148,12 +1205,18 @@ Ok:
             kind: Num
             value: 4
     single_statement:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Return
           expr: ~
     type_annotations_everywhere:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: a
@@ -1210,7 +1273,10 @@ Ok:
               kind: Var
               name: d
     unicode_identifiers:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: hello
@@ -1262,7 +1328,10 @@ Ok:
             kind: Num
             value: 5
     while_with_break:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Loop
           body:
@@ -1278,7 +1347,10 @@ Ok:
               else: ~
             - kind: Break
     while_without_braces_body:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Loop
           body:
@@ -1295,7 +1367,10 @@ Ok:
             - kind: Return
               expr: ~
     zero_and_large_numbers:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: zero

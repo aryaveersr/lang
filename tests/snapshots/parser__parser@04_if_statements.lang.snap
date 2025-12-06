@@ -6,7 +6,10 @@ input_file: tests/parser/04_if_statements.lang
 Ok:
   funs:
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: If
           cond:

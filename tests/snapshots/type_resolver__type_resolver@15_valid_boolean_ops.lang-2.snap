@@ -5,8 +5,10 @@ input_file: tests/type_resolver/15_valid_boolean_ops.lang
 ---
 funs:
   main:
-    return_ty:
-      kind: Void
+    ty:
+      params: []
+      returns:
+        kind: Void
     body:
       - kind: Let
         name: a

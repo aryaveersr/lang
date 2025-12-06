@@ -6,7 +6,10 @@ input_file: tests/parser/07_blocks.lang
 Ok:
   funs:
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Block
           body:

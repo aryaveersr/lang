@@ -6,7 +6,10 @@ input_file: tests/parser/08_operator_precedence.lang
 Ok:
   funs:
     main:
-      return_ty: ~
+      ty:
+        params: []
+        returns:
+          kind: Void
       body:
         - kind: Let
           name: expr1
