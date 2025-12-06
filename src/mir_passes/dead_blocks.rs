@@ -49,7 +49,7 @@ impl DeadBlocks {
 
             Some(Term::Jump { block }) => self.mark_block(fun, block),
 
-            _ => {}
+            Some(Term::Return { .. }) | None => {}
         }
     }
 }
