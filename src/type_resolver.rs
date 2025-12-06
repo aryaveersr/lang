@@ -212,7 +212,7 @@ impl TypeResolver {
         Ok(())
     }
 
-    fn resolve_stmt_assign(&mut self, name: &str, expr: &Expr) -> Result<()> {
+    fn resolve_stmt_assign(&self, name: &str, expr: &Expr) -> Result<()> {
         let expr_ty = self.resolve_expr(expr)?;
         let var_ty = self
             .scope

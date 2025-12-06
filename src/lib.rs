@@ -27,6 +27,7 @@
 #![allow(clippy::missing_const_for_fn)]
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::missing_panics_doc)]
+#![allow(clippy::unused_self)]
 
 pub mod hir;
 pub mod hir_to_mir;

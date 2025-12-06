@@ -44,7 +44,6 @@ impl HirToMir {
         std::mem::take(&mut self.builder).finish()
     }
 
-    #[expect(clippy::unused_self)]
     fn lower_type(&self, ty: &HirType) -> Option<MirType> {
         match ty {
             HirType::Void => None,

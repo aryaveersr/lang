@@ -129,7 +129,7 @@ impl Parser<'_> {
         })
     }
 
-    fn parse_expr_numeric(&mut self, token: Token) -> Result<Box<Expr>> {
+    fn parse_expr_numeric(&self, token: Token) -> Result<Box<Expr>> {
         let value = token
             .slice
             .parse()
