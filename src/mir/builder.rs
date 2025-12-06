@@ -74,14 +74,11 @@ impl Builder {
         dest
     }
 
-    pub fn add_copy(&mut self, src: ValueID) -> ValueID {
-        let dest = self.fresh_value();
+    pub fn add_copy(&mut self, dest: ValueID, src: ValueID) {
         self.add_instr(Instr {
             dest,
             kind: InstrKind::Copy { src },
         });
-
-        dest
     }
 
     pub fn add_unary(&mut self, op: UnOp, arg: ValueID) -> ValueID {

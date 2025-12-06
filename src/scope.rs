@@ -21,6 +21,10 @@ impl<T: Clone> Scope<T> {
     pub fn get(&self, name: &str) -> Option<&T> {
         self.scopes.iter().rev().find_map(|s| s.get(name))
     }
+
+    pub fn get_mut(&mut self, name: &str) -> Option<&mut T> {
+        self.scopes.iter_mut().rev().find_map(|s| s.get_mut(name))
+    }
 }
 
 impl<T> Default for Scope<T> {

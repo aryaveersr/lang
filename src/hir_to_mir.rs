@@ -135,7 +135,8 @@ impl HirToMir {
 
             Stmt::Assign { name, expr } => {
                 let value = self.lower_expr(expr);
-                self.scope.set(&name, &value);
+                self.builder
+                    .add_copy(*self.scope.get(&name).unwrap(), value);
             }
 
             Stmt::Call { name, args } => {
