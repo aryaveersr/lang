@@ -19,12 +19,12 @@ impl MirPass for DeadCode {
 }
 
 impl DeadCode {
-    fn sweep_fun(&mut self, fun: &mut MirFun) {
+    fn sweep_fun(&self, fun: &mut MirFun) {
         fun.blocks.retain(|b| self.marked_blocks.contains(&b.id));
     }
 
     fn mark_fun(&mut self, fun: &mut MirFun) {
-        if let Some(next) = fun.blocks.iter().next() {
+        if let Some(next) = fun.blocks.first() {
             self.mark_block(fun, next.id);
         }
     }
