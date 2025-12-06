@@ -4,11 +4,11 @@ use crate::{
 };
 
 #[derive(Default)]
-pub struct DeadCode {
+pub struct DeadBlocks {
     marked_blocks: Vec<BlockID>,
 }
 
-impl MirPass for DeadCode {
+impl MirPass for DeadBlocks {
     fn run(&mut self, module: &mut MirModule) {
         for fun in &mut module.funs {
             self.marked_blocks.clear();
@@ -18,7 +18,7 @@ impl MirPass for DeadCode {
     }
 }
 
-impl DeadCode {
+impl DeadBlocks {
     fn sweep_fun(&self, fun: &mut MirFun) {
         fun.blocks.retain(|b| self.marked_blocks.contains(&b.id));
     }
