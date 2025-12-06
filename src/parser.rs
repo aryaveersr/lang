@@ -2,7 +2,7 @@ use std::{collections::HashMap, iter::Peekable};
 
 use self::error::ParseError;
 use crate::{
-    hir::{HirFun, HirModule},
+    hir::{HirFun, HirFunType, HirModule, HirType},
     lexer::Lexer,
     token::TokenKind,
 };
@@ -28,22 +28,52 @@ impl<'src> Parser<'src> {
         }
     }
 
-    fn parse_function(&mut self) -> Result<(String, HirFun)> {
-        let name = self.expect(TokenKind::Identifier, "function name")?;
+    fn parse_params(&mut self) -> Result<Vec<(String, HirType)>> {
+        let mut params = Vec::new();
 
         self.expect(TokenKind::LeftParen, "(")?;
+
+        if self.eat(TokenKind::RightParen).is_some() {
+            return Ok(params);
+        }
+
+        loop {
+            let name = self.expect(TokenKind::Identifier, "parameter name")?.slice;
+            self.expect(TokenKind::Colon, "parameter type")?;
+            let ty = self.parse_type()?;
+
+            params.push((name.to_owned(), ty));
+
+            if self.eat(TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+
         self.expect(TokenKind::RightParen, ")")?;
 
-        let return_ty = self
+        Ok(params)
+    }
+
+    fn parse_function(&mut self) -> Result<(String, HirFun)> {
+        let name = self.expect(TokenKind::Identifier, "function name")?;
+        let params = self.parse_params()?;
+
+        let returns = self
             .eat(TokenKind::Colon)
             .map(|_| self.parse_type())
-            .transpose()?;
+            .unwrap_or(Ok(HirType::Void))?;
 
         self.expect(TokenKind::LeftBrace, "function body")?;
 
         let body = self.parse_body(true)?;
 
-        Ok((name.slice.to_owned(), HirFun { return_ty, body }))
+        Ok((
+            name.slice.to_owned(),
+            HirFun {
+                body,
+                ty: HirFunType { params, returns },
+            },
+        ))
     }
 
     pub fn parse(&mut self) -> Result<HirModule> {

@@ -21,6 +21,7 @@ impl<'src> Iterator for Lexer<'src> {
             ')' => self.consume_char(TokenKind::RightParen),
             ';' => self.consume_char(TokenKind::Semicolon),
             ':' => self.consume_char(TokenKind::Colon),
+            ',' => self.consume_char(TokenKind::Comma),
             '+' => self.consume_char(TokenKind::Plus),
             '-' => self.consume_char(TokenKind::Minus),
             '*' => self.consume_char(TokenKind::Star),

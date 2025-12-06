@@ -23,20 +23,6 @@ impl Parser<'_> {
         }
     }
 
-    pub(super) fn parse_body(&mut self, until_brace: bool) -> Result<Vec<Stmt>> {
-        let mut body = Vec::new();
-
-        if until_brace || self.eat(TokenKind::LeftBrace).is_some() {
-            while self.eat(TokenKind::RightBrace).is_none() {
-                body.push(self.parse_stmt()?);
-            }
-        } else {
-            body.push(self.parse_stmt()?);
-        }
-
-        Ok(body)
-    }
-
     fn parse_stmt_return(&mut self) -> Result<Stmt> {
         let mut expr = None;
 
@@ -135,11 +121,12 @@ impl Parser<'_> {
             }
 
             TokenKind::LeftParen => {
-                self.expect(TokenKind::RightParen, ")")?;
+                let args = self.parse_args()?;
                 self.expect(TokenKind::Semicolon, ";")?;
 
                 Ok(Stmt::Call {
                     name: token.slice.to_owned(),
+                    args,
                 })
             }
 
@@ -163,5 +150,39 @@ impl Parser<'_> {
 
         self.in_loop = old_in_loop;
         Ok(body)
+    }
+
+    pub(super) fn parse_body(&mut self, until_brace: bool) -> Result<Vec<Stmt>> {
+        let mut body = Vec::new();
+
+        if until_brace || self.eat(TokenKind::LeftBrace).is_some() {
+            while self.eat(TokenKind::RightBrace).is_none() {
+                body.push(self.parse_stmt()?);
+            }
+        } else {
+            body.push(self.parse_stmt()?);
+        }
+
+        Ok(body)
+    }
+
+    pub(super) fn parse_args(&mut self) -> Result<Vec<Box<Expr>>> {
+        let mut args = Vec::new();
+
+        if self.eat(TokenKind::RightParen).is_some() {
+            return Ok(args);
+        }
+
+        loop {
+            args.push(self.parse_expr()?);
+
+            if self.eat(TokenKind::Comma).is_none() {
+                break;
+            }
+        }
+
+        self.expect(TokenKind::RightParen, ")")?;
+
+        Ok(args)
     }
 }

@@ -152,9 +152,9 @@ impl Parser<'_> {
         let name = token.slice.to_owned();
 
         let expr = if self.eat(TokenKind::LeftParen).is_some() {
-            self.expect(TokenKind::RightParen, ")")?;
+            let args = self.parse_args()?;
 
-            Expr::Call { name }
+            Expr::Call { name, args }
         } else {
             Expr::Var { name }
         };
