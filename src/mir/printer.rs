@@ -64,14 +64,13 @@ impl Display for Instr {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{} = ", self.dest)?;
 
-        match self.kind {
+        match &self.kind {
             InstrKind::ConstBool { value } => write!(f, "const {value}"),
             InstrKind::ConstNum { value } => write!(f, "const {value}"),
             InstrKind::Copy { src } => write!(f, "copy {src}"),
             InstrKind::Unary { op, arg } => write!(f, "{op} {arg}"),
-            InstrKind::Binary { op, lhs, rhs } => {
-                write!(f, "{op} {lhs} {rhs}")
-            }
+            InstrKind::Binary { op, lhs, rhs } => write!(f, "{op} {lhs} {rhs}"),
+            InstrKind::Call { name } => write!(f, "call {name}"),
         }
     }
 }

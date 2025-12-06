@@ -121,7 +121,30 @@ impl Parser<'_> {
     }
 
     fn parse_stmt_identifier(&mut self, token: Token) -> Result<Stmt> {
-        todo!()
+        let next = self.next("assignment or call")?;
+
+        match next.kind {
+            TokenKind::Equal => {
+                let expr = self.parse_expr()?;
+                self.expect(TokenKind::Semicolon, ";")?;
+
+                Ok(Stmt::Assign {
+                    name: token.slice.to_owned(),
+                    expr,
+                })
+            }
+
+            TokenKind::LeftParen => {
+                self.expect(TokenKind::RightParen, ")")?;
+                self.expect(TokenKind::Semicolon, ";")?;
+
+                Ok(Stmt::Call {
+                    name: token.slice.to_owned(),
+                })
+            }
+
+            _ => Err(ParseError::unexpected_token("assignment or call", next)),
+        }
     }
 
     fn parse_condition(&mut self) -> Result<Box<Expr>> {

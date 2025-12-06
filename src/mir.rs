@@ -68,6 +68,10 @@ pub enum InstrKind {
         lhs: ValueID,
         rhs: ValueID,
     },
+
+    Call {
+        name: String,
+    },
 }
 
 #[derive(Debug, Clone)]

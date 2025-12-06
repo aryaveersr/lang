@@ -2,7 +2,7 @@ use crate::{
     hir::Expr,
     ops::{BinOp, UnOp},
     parser::{ParseError, Parser, Result},
-    token::TokenKind,
+    token::{Token, TokenKind},
 };
 
 impl Parser<'_> {
@@ -119,32 +119,46 @@ impl Parser<'_> {
         let next = self.next("expression")?;
 
         Ok(match next.kind {
+            TokenKind::Numeric => self.parse_expr_numeric(next)?,
+            TokenKind::Identifier => self.parse_expr_identifier(next)?,
+            TokenKind::LeftParen => self.parse_expr_group()?,
             TokenKind::True => Box::new(Expr::Bool { value: true }),
             TokenKind::False => Box::new(Expr::Bool { value: false }),
 
-            TokenKind::Identifier => {
-                let name = next.slice.to_owned();
-
-                Box::new(Expr::Var { name })
-            }
-
-            TokenKind::Numeric => {
-                let value = next
-                    .slice
-                    .parse()
-                    .map_err(|err| ParseError::CannotParseNum { pos: next.pos, err })?;
-
-                Box::new(Expr::Num { value })
-            }
-
-            TokenKind::LeftParen => {
-                let expr = self.parse_expr()?;
-                self.expect(TokenKind::RightParen, ")")?;
-
-                expr
-            }
-
             _ => return Err(ParseError::invalid_expr(next)),
         })
+    }
+
+    fn parse_expr_numeric(&mut self, token: Token) -> Result<Box<Expr>> {
+        let value = token
+            .slice
+            .parse()
+            .map_err(|err| ParseError::CannotParseNum {
+                pos: token.pos,
+                err,
+            })?;
+
+        Ok(Box::new(Expr::Num { value }))
+    }
+
+    fn parse_expr_group(&mut self) -> Result<Box<Expr>> {
+        let expr = self.parse_expr()?;
+        self.expect(TokenKind::RightParen, ")")?;
+
+        Ok(expr)
+    }
+
+    fn parse_expr_identifier(&mut self, token: Token) -> Result<Box<Expr>> {
+        let name = token.slice.to_owned();
+
+        let expr = if self.eat(TokenKind::LeftParen).is_some() {
+            self.expect(TokenKind::RightParen, ")")?;
+
+            Expr::Call { name }
+        } else {
+            Expr::Var { name }
+        };
+
+        Ok(Box::new(expr))
     }
 }

@@ -134,8 +134,14 @@ impl HirToMir {
                 self.scope.set(&name, &value);
             }
 
-            Stmt::Assign { name, expr } => todo!(),
-            Stmt::Call { name } => todo!(),
+            Stmt::Assign { name, expr } => {
+                let value = self.lower_expr(*expr);
+                self.scope.set(&name, &value);
+            }
+
+            Stmt::Call { name } => {
+                self.builder.add_call(name);
+            }
         }
     }
 
@@ -154,6 +160,7 @@ impl HirToMir {
             Expr::Bool { value } => self.builder.add_const_bool(value),
             Expr::Num { value } => self.builder.add_const_num(value),
             Expr::Var { name } => self.scope.get(&name).unwrap().to_owned(),
+            Expr::Call { name } => self.builder.add_call(name),
 
             Expr::Unary { op, expr } => {
                 let arg = self.lower_expr(*expr);
@@ -165,8 +172,6 @@ impl HirToMir {
                 let rhs = self.lower_expr(*rhs);
                 self.builder.add_binary(op, lhs, rhs)
             }
-
-            Expr::Call { name } => todo!(),
         }
     }
 }

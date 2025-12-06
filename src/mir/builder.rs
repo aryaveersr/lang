@@ -104,6 +104,16 @@ impl Builder {
         dest
     }
 
+    pub fn add_call(&mut self, name: String) -> ValueID {
+        let dest = self.fresh_value();
+        self.add_instr(Instr {
+            dest,
+            kind: InstrKind::Call { name },
+        });
+
+        dest
+    }
+
     pub fn add_jump(&mut self, block: BlockID) {
         self.add_term(Term::Jump { block });
     }
