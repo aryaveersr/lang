@@ -174,6 +174,7 @@ impl HirToMir {
         }
     }
 
+    #[expect(clippy::vec_box)]
     fn lower_expr_call(&mut self, name: String, args: Vec<Box<Expr>>) -> ValueID {
         let args = args.into_iter().map(|a| self.lower_expr(*a)).collect();
         self.builder.add_call(name, args)

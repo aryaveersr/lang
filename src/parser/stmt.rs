@@ -166,6 +166,7 @@ impl Parser<'_> {
         Ok(body)
     }
 
+    #[expect(clippy::vec_box)]
     pub(super) fn parse_args(&mut self) -> Result<Vec<Box<Expr>>> {
         let mut args = Vec::new();
 

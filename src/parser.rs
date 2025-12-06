@@ -60,8 +60,7 @@ impl<'src> Parser<'src> {
 
         let returns = self
             .eat(TokenKind::Colon)
-            .map(|_| self.parse_type())
-            .unwrap_or(Ok(HirType::Void))?;
+            .map_or(Ok(HirType::Void), |_| self.parse_type())?;
 
         self.expect(TokenKind::LeftBrace, "function body")?;
 
