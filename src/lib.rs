@@ -29,6 +29,7 @@
 #![allow(clippy::missing_panics_doc)]
 #![allow(clippy::unused_self)]
 
+pub mod graph;
 pub mod hir;
 pub mod hir_to_mir;
 pub mod lexer;
