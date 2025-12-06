@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use self::error::TypeError;
 use crate::{
-    hir::{Expr, HirFun, HirModule, HirType, Stmt},
+    hir::{Expr, HirFun, HirFunType, HirModule, HirType, Stmt},
     ops::{BinOp, UnOp},
     scope::Scope,
 };
@@ -14,7 +14,7 @@ type Result<T> = std::result::Result<T, TypeError>;
 #[derive(Default)]
 pub struct TypeResolver {
     scope: Scope<HirType>,
-    functions: HashMap<String, HirType>,
+    functions: HashMap<String, HirFunType>,
     expected_return_type: Option<HirType>,
 }
 
@@ -25,8 +25,7 @@ impl TypeResolver {
 
     pub fn resolve(&mut self, module: &mut HirModule) -> Result<()> {
         for (name, fun) in &mut module.funs {
-            let ty = fun.return_ty.get_or_insert(HirType::Void);
-            self.functions.insert(name.to_owned(), ty.to_owned());
+            self.functions.insert(name.to_owned(), fun.ty.clone());
         }
 
         for fun in module.funs.values_mut() {
@@ -37,8 +36,16 @@ impl TypeResolver {
     }
 
     fn resolve_fun(&mut self, fun: &mut HirFun) -> Result<()> {
-        self.expected_return_type = Some(fun.return_ty.clone().unwrap());
+        self.expected_return_type = Some(fun.ty.returns.clone());
+        self.scope.create();
+
+        for (name, ty) in &fun.ty.params {
+            self.scope.set(name, ty);
+        }
+
         self.resolve_block(&mut fun.body)?;
+
+        self.scope.pop();
         self.expected_return_type = None;
 
         Ok(())
@@ -58,7 +65,7 @@ impl TypeResolver {
             Stmt::Let { name, ty, expr } => self.resolve_stmt_let(name, ty, unbox(expr)),
             Stmt::If { cond, body, else_ } => self.resolve_stmt_if(cond, body, else_),
             Stmt::Assign { name, expr } => self.resolve_stmt_assign(name, expr),
-            Stmt::Call { name } => self.resolve_expr_call(name).map(|_| ()),
+            Stmt::Call { name, args } => self.resolve_expr_call(name, args).map(|_| ()),
         }
     }
 
@@ -80,7 +87,7 @@ impl TypeResolver {
             Expr::Num { .. } => Ok(HirType::Num),
             Expr::Unary { op, expr } => self.resolve_expr_unary(*op, expr),
             Expr::Binary { op, lhs, rhs } => self.resolve_expr_binary(*op, lhs, rhs),
-            Expr::Call { name } => self.resolve_expr_call(name),
+            Expr::Call { name, args } => self.resolve_expr_call(name, args),
 
             Expr::Var { name } => {
                 self.scope
@@ -125,13 +132,35 @@ impl TypeResolver {
         }
     }
 
-    fn resolve_expr_call(&self, name: &str) -> Result<HirType> {
-        self.functions
+    fn resolve_expr_call(&self, name: &str, args: &[Box<Expr>]) -> Result<HirType> {
+        let ty = self
+            .functions
             .get(name)
             .cloned()
             .ok_or_else(|| TypeError::UndefinedFun {
                 name: name.to_owned(),
-            })
+            })?;
+
+        if args.len() != ty.params.len() {
+            return Err(TypeError::InvalidCallArgs {
+                name: name.to_owned(),
+                expected: ty.params.len(),
+                found: args.len(),
+            });
+        }
+
+        for (arg, param) in args.iter().zip(ty.params.iter()) {
+            let arg_ty = self.resolve_expr(arg)?;
+
+            if arg_ty != param.1 {
+                return Err(TypeError::TypeMismatch {
+                    expected: param.1.clone(),
+                    found: arg_ty,
+                });
+            }
+        }
+
+        Ok(ty.returns)
     }
 
     fn resolve_stmt_let(

@@ -10,8 +10,14 @@ pub struct HirModule {
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct HirFun {
-    pub return_ty: Option<HirType>,
+    pub ty: HirFunType,
     pub body: Vec<Stmt>,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize, Clone)]
+pub struct HirFunType {
+    pub params: Vec<(String, HirType)>,
+    pub returns: HirType,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
@@ -52,6 +58,7 @@ pub enum Stmt {
 
     Call {
         name: String,
+        args: Vec<Box<Expr>>,
     },
 }
 
@@ -72,6 +79,7 @@ pub enum Expr {
 
     Call {
         name: String,
+        args: Vec<Box<Expr>>,
     },
 
     Unary {

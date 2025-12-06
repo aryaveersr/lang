@@ -32,4 +32,11 @@ pub enum TypeError {
         lhs: HirType,
         rhs: HirType,
     },
+
+    #[error("Invalid number of args for function {name}: expected {expected}, found {found}.")]
+    InvalidCallArgs {
+        name: String,
+        expected: usize,
+        found: usize,
+    },
 }
