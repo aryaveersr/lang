@@ -3,14 +3,16 @@ pub struct Graph<T> {
     edges: Vec<(T, T)>,
 }
 
-impl<T> Graph<T> {
-    pub fn new() -> Self {
+impl<T> Default for Graph<T> {
+    fn default() -> Self {
         Self {
             nodes: Vec::new(),
             edges: Vec::new(),
         }
     }
+}
 
+impl<T> Graph<T> {
     pub fn add_node(&mut self, node: T) {
         self.nodes.push(node);
     }
