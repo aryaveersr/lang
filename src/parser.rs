@@ -1,9 +1,9 @@
 use std::{collections::HashMap, iter::Peekable};
 
-use self::error::ParseError;
 use crate::{
     hir::{HirFun, HirFunType, HirModule, HirType},
     lexer::Lexer,
+    parser::error::ParseError,
     token::TokenKind,
 };
 

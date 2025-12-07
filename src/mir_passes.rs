@@ -1,11 +1,18 @@
-use crate::mir::MirModule;
+use crate::{
+    mir::{MirFun, MirModule},
+    mir_passes::{rename_blocks::RenameBlocks, unreachable_blocks::UnreachableBlocks},
+};
 
-mod dead_blocks;
+mod rename_blocks;
+mod unreachable_blocks;
 
-trait MirPass: Default {
-    fn run(&mut self, module: &mut MirModule);
+trait MirPass<'a> {
+    fn run(fun: &'a mut MirFun);
 }
 
 pub fn run_passes(module: &mut MirModule) {
-    dead_blocks::DeadBlocks::default().run(module);
+    for fun in &mut module.funs {
+        UnreachableBlocks::run(fun);
+        RenameBlocks::run(fun);
+    }
 }

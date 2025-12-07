@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use self::error::TypeError;
 use crate::{
     hir::{Expr, HirFun, HirFunType, HirModule, HirType, Stmt},
     ops::{BinOp, UnOp},
     scope::Scope,
+    type_resolver::error::TypeError,
 };
 
 pub mod error;

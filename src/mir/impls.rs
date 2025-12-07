@@ -12,6 +12,10 @@ impl MirFun {
         }
     }
 
+    pub fn get_block(&self, id: BlockID) -> &BasicBlock {
+        self.blocks.iter().find(|block| block.id == id).unwrap()
+    }
+
     pub fn get_block_mut(&mut self, id: BlockID) -> &mut BasicBlock {
         self.blocks.iter_mut().find(|block| block.id == id).unwrap()
     }
