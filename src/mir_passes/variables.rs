@@ -19,8 +19,8 @@ impl VarUseInfo {
     }
 }
 
-pub struct VarUseAnalyzer<'a> {
-    fun: &'a MirFun,
+pub struct VarUseAnalyzer<'fun> {
+    fun: &'fun MirFun,
     info: VarUseInfo,
 }
 
@@ -30,8 +30,8 @@ impl<'fun> MirPass<'fun, VarUseInfo> for VarUseAnalyzer<'fun> {
     }
 }
 
-impl<'a> VarUseAnalyzer<'a> {
-    fn new(fun: &'a MirFun) -> Self {
+impl<'fun> VarUseAnalyzer<'fun> {
+    fn new(fun: &'fun MirFun) -> Self {
         Self {
             info: VarUseInfo::empty(fun.blocks.len()),
             fun,
