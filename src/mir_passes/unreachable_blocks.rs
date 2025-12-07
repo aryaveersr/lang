@@ -3,19 +3,19 @@ use crate::{
     mir_passes::MirPass,
 };
 
-pub struct UnreachableBlocks<'a> {
-    fun: &'a mut MirFun,
+pub struct UnreachableBlocks<'fun> {
+    fun: &'fun mut MirFun,
     marked_blocks: Vec<BlockID>,
 }
 
-impl<'a> MirPass<'a> for UnreachableBlocks<'a> {
-    fn run(fun: &'a mut MirFun) {
+impl<'fun> MirPass<'fun> for UnreachableBlocks<'fun> {
+    fn run(fun: &'fun mut MirFun) {
         Self::new(fun).remove_unreachable_blocks();
     }
 }
 
-impl<'a> UnreachableBlocks<'a> {
-    fn new(fun: &'a mut MirFun) -> Self {
+impl<'fun> UnreachableBlocks<'fun> {
+    fn new(fun: &'fun mut MirFun) -> Self {
         Self {
             fun,
             marked_blocks: Vec::new(),

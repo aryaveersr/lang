@@ -3,19 +3,19 @@ use crate::{
     mir_passes::MirPass,
 };
 
-pub struct RenameBlocks<'a> {
-    fun: &'a mut MirFun,
+pub struct RenameBlocks<'fun> {
+    fun: &'fun mut MirFun,
     ids: Vec<BlockID>,
 }
 
-impl<'a> MirPass<'a> for RenameBlocks<'a> {
-    fn run(fun: &'a mut MirFun) {
+impl<'fun> MirPass<'fun> for RenameBlocks<'fun> {
+    fn run(fun: &'fun mut MirFun) {
         Self::new(fun).rename_blocks();
     }
 }
 
-impl<'a> RenameBlocks<'a> {
-    fn new(fun: &'a mut MirFun) -> Self {
+impl<'fun> RenameBlocks<'fun> {
+    fn new(fun: &'fun mut MirFun) -> Self {
         Self {
             fun,
             ids: Vec::new(),
@@ -34,9 +34,7 @@ impl<'a> RenameBlocks<'a> {
     }
 
     fn update_terminators(&mut self) {
-        let new_id = |id: &BlockID| {
-            return BlockID(self.ids.iter().position(|x| x == id).unwrap());
-        };
+        let new_id = |id: &BlockID| BlockID(self.ids.iter().position(|x| x == id).unwrap());
 
         for block in &mut self.fun.blocks {
             if let Some(term) = &mut block.term {

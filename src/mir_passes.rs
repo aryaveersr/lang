@@ -6,8 +6,8 @@ use crate::{
 mod rename_blocks;
 mod unreachable_blocks;
 
-trait MirPass<'a> {
-    fn run(fun: &'a mut MirFun);
+trait MirPass<'fun> {
+    fn run(fun: &'fun mut MirFun);
 }
 
 pub fn run_passes(module: &mut MirModule) {
