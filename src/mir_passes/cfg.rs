@@ -31,7 +31,7 @@ impl Cfg {
 
 impl From<&MirFun> for Cfg {
     fn from(value: &MirFun) -> Self {
-        let mut cfg = Cfg::default();
+        let mut cfg = Self::default();
 
         for block in &value.blocks {
             if let Some(term) = &block.term {
@@ -63,7 +63,7 @@ impl Display for Cfg {
         writeln!(f, "CFG:")?;
 
         for (from, to) in &self.edges {
-            writeln!(f, "{} -> {}", from, to)?;
+            writeln!(f, "{from} -> {to}")?;
         }
 
         Ok(())
