@@ -1,8 +1,9 @@
 use crate::{
     mir::{MirFun, MirModule},
-    mir_passes::{rename_blocks::RenameBlocks, unreachable_blocks::UnreachableBlocks},
+    mir_passes::{cfg::Cfg, rename_blocks::RenameBlocks, unreachable_blocks::UnreachableBlocks},
 };
 
+mod cfg;
 mod rename_blocks;
 mod unreachable_blocks;
 
@@ -14,5 +15,7 @@ pub fn run_passes(module: &mut MirModule) {
     for fun in &mut module.funs {
         UnreachableBlocks::run(fun);
         RenameBlocks::run(fun);
+
+        let cfg = Cfg::from(&*fun);
     }
 }
