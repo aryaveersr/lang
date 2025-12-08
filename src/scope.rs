@@ -9,8 +9,8 @@ impl<T: Clone> Scope<T> {
         self.scopes.push(HashMap::new());
     }
 
-    pub fn pop(&mut self) -> HashMap<String, T> {
-        self.scopes.pop().expect("scope stack underflow")
+    pub fn pop(&mut self) {
+        self.scopes.pop().expect("scope stack underflow");
     }
 
     pub fn set(&mut self, name: &str, value: &T) {
