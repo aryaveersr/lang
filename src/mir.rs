@@ -1,5 +1,10 @@
 use crate::ops::{BinOp, UnOp};
 
+mod basic_block;
+mod block_id;
+mod fun;
+mod value_id;
+
 #[derive(Debug, Clone)]
 pub struct MirModule {
     pub funs: Vec<MirFun>,
