@@ -2,6 +2,7 @@ use crate::ops::{BinOp, UnOp};
 
 mod basic_block;
 mod block_id;
+pub mod builder;
 mod cfg;
 mod fun;
 mod printer;
@@ -54,6 +55,10 @@ pub enum InstrKind {
 
     ConstNum {
         value: i32,
+    },
+
+    Copy {
+        src: ValueID,
     },
 
     Unary {

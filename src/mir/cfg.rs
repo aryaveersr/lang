@@ -17,12 +17,4 @@ impl Cfg {
             .map(|(from, _)| *from)
             .collect()
     }
-
-    pub fn successors(&self, id: BlockID) -> Vec<BlockID> {
-        self.edges
-            .iter()
-            .filter(|(from, _)| *from == id)
-            .map(|(_, to)| *to)
-            .collect()
-    }
 }

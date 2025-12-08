@@ -72,6 +72,7 @@ impl Display for InstrKind {
         match self {
             Self::ConstBool { value } => write!(f, "const {value}"),
             Self::ConstNum { value } => write!(f, "const {value}"),
+            Self::Copy { src } => write!(f, "copy {src}"),
             Self::Unary { op, arg } => write!(f, "{op} {arg}"),
             Self::Binary { op, lhs, rhs } => write!(f, "{op} {lhs} {rhs}"),
             Self::Call { name, args } => write!(f, "call {name}({})", args.iter().join(",")),
