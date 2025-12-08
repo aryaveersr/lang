@@ -3,17 +3,17 @@ use std::collections::HashMap;
 use crate::{
     hir::{Expr, HirFun, HirFunType, HirModule, HirType, Stmt},
     ops::{BinOp, UnOp},
-    scope::Scope,
-    type_resolver::error::TypeError,
+    type_resolver::{error::TypeError, scope::Scope},
 };
 
 pub mod error;
+mod scope;
 
 type Result<T> = std::result::Result<T, TypeError>;
 
 #[derive(Default)]
 pub struct TypeResolver {
-    scope: Scope<HirType>,
+    scope: Scope,
     functions: HashMap<String, HirFunType>,
     expected_return_type: Option<HirType>,
 }
