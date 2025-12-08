@@ -63,8 +63,8 @@ impl<'src> Lexer<'src> {
 
             self.until(|i| i == '\n');
 
-            if self.source.starts_with('\n') {
-                self.source = &self.source[1..];
+            if let Some(source) = self.source.strip_prefix('\n') {
+                self.source = source;
                 self.pos.newline();
             }
         }
