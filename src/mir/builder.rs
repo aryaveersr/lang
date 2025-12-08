@@ -82,19 +82,28 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_variable(&mut self, variable: Variable) -> ValueID {
+    pub fn declare_variable(&mut self, variable: Variable, mut value: ValueID) -> ValueID {
         debug_assert!(variable != 0);
+
+        self.uses_value(&mut value);
 
         self.variables.insert(variable, 1);
         let new_id = ValueID::variable(variable, 0);
 
         self.definitions[self.active_id].push(new_id);
 
+        self.push_instr(Instr {
+            dest: new_id,
+            kind: InstrKind::Copy { src: value },
+        });
+
         new_id
     }
 
-    pub fn assign_variable(&mut self, variable: Variable, value: ValueID) {
+    pub fn assign_variable(&mut self, variable: Variable, mut value: ValueID) {
         debug_assert!(variable != 0);
+
+        self.uses_value(&mut value);
 
         let new_id = self.fresh_variable(variable);
 

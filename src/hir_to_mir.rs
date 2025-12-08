@@ -139,9 +139,7 @@ impl HirToMir {
                 self.variable_counter += 1;
                 let variable = self.variable_counter;
 
-                let value_id = builder.declare_variable(variable);
-                builder.assign_variable(variable, value);
-
+                let value_id = builder.declare_variable(variable, value);
                 self.scope.set(&name, &value_id);
             }
 
