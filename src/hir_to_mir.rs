@@ -140,12 +140,12 @@ impl HirToMir {
                 let variable = self.variable_counter;
 
                 let value_id = builder.declare_variable(variable, value);
-                self.scope.set(&name, &value_id);
+                self.scope.set(name, &value_id);
             }
 
             Stmt::Assign { name, expr } => {
                 let value = self.lower_expr(builder, expr);
-                let value_id = self.scope.get(&name).unwrap();
+                let value_id = self.scope.get(name).unwrap();
 
                 builder.assign_variable(value_id.get_variable(), value);
             }
@@ -160,7 +160,7 @@ impl HirToMir {
         match expr {
             Expr::Bool { value } => builder.build_const_bool(value),
             Expr::Num { value } => builder.build_const_num(value),
-            Expr::Var { name } => self.scope.get(&name).unwrap().to_owned(),
+            Expr::Var { name } => self.scope.get(name).unwrap().to_owned(),
             Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
 
             Expr::Unary { op, expr } => {

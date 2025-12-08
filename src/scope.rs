@@ -13,13 +13,13 @@ impl<T: Clone> Scope<T> {
         self.scopes.pop().expect("scope stack underflow");
     }
 
-    pub fn set(&mut self, name: &str, value: &T) {
+    pub fn set<S: Into<String>>(&mut self, name: S, value: &T) {
         let last = self.scopes.last_mut().expect("scope stack empty");
-        last.insert(name.to_owned(), value.to_owned());
+        last.insert(name.into(), value.to_owned());
     }
 
-    pub fn get(&self, name: &str) -> Option<&T> {
-        self.scopes.iter().rev().find_map(|s| s.get(name))
+    pub fn get<S: AsRef<str>>(&self, name: S) -> Option<&T> {
+        self.scopes.iter().rev().find_map(|s| s.get(name.as_ref()))
     }
 }
 
