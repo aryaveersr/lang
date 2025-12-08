@@ -5,7 +5,9 @@ mod block_id;
 pub mod builder;
 mod cfg;
 mod fun;
+mod instr;
 mod printer;
+mod term;
 mod value_id;
 
 #[derive(Debug, Clone)]
