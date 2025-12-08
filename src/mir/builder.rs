@@ -15,7 +15,7 @@ pub struct Builder {
     sealed_blocks: Vec<BlockID>,
     definitions: Vec<Vec<ValueID>>,
     incomplete_phis: HashMap<BlockID, Vec<(Variable, ValueID)>>,
-    variables: HashMap<Variable, Generation>,
+    var_generations: HashMap<Variable, Generation>,
     cfg: Cfg,
     next_temporary: u32,
 }
@@ -33,7 +33,7 @@ impl Builder {
             sealed_blocks: vec![entry],
             definitions: vec![Vec::new()],
             incomplete_phis: HashMap::new(),
-            variables: HashMap::new(),
+            var_generations: HashMap::new(),
             cfg: Cfg::default(),
             next_temporary: 0,
         }
@@ -85,7 +85,7 @@ impl Builder {
     pub fn declare_variable(&mut self, variable: Variable, value: ValueID) -> ValueID {
         debug_assert!(variable != 0);
 
-        self.variables.insert(variable, 1);
+        self.var_generations.insert(variable, 1);
         let new_id = ValueID::variable(variable, 0);
 
         self.definitions[self.active_id].push(new_id);
@@ -112,8 +112,8 @@ impl Builder {
     }
 
     fn fresh_variable(&mut self, variable: Variable) -> ValueID {
-        let new_id = ValueID::variable(variable, self.variables[&variable]);
-        self.variables.entry(variable).and_modify(|g| *g += 1);
+        let new_id = ValueID::variable(variable, self.var_generations[&variable]);
+        self.var_generations.entry(variable).and_modify(|g| *g += 1);
 
         new_id
     }
