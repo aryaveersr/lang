@@ -3,6 +3,7 @@ use crate::ops::{BinOp, UnOp};
 mod basic_block;
 mod block_id;
 mod fun;
+mod printer;
 mod value_id;
 
 #[derive(Debug, Clone)]
