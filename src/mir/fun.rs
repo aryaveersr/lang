@@ -1,4 +1,4 @@
-use crate::mir::{BasicBlock, BlockID, MirFun};
+use crate::mir::{BasicBlock, BlockID, MirFun, MirType};
 
 impl MirFun {
     pub fn new(name: String) -> Self {
@@ -22,5 +22,10 @@ impl MirFun {
             .iter_mut()
             .find(|block| block.id == id)
             .expect("Invalid Block ID.")
+    }
+
+    pub fn with_return_type(mut self, ty: Option<MirType>) -> Self {
+        self.return_ty = ty;
+        self
     }
 }

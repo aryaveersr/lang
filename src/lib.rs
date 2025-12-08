@@ -30,10 +30,12 @@
 #![allow(clippy::unused_self)]
 
 pub mod hir;
+pub mod hir_to_mir;
 pub mod lexer;
 pub mod mir;
 pub mod ops;
 pub mod parser;
 pub mod position;
+pub mod scope;
 pub mod token;
 pub mod type_resolver;

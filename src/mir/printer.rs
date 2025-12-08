@@ -107,7 +107,7 @@ impl Display for ValueID {
         write!(f, "%")?;
 
         if self.0 != 0 {
-            write!(f, "{},", self.0)?;
+            write!(f, "{}:", self.0)?;
         }
 
         write!(f, "{}", self.1)

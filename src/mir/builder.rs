@@ -86,13 +86,19 @@ impl Builder {
         debug_assert!(variable != 0);
 
         self.variables.insert(variable, 1);
-        ValueID::variable(variable, 0)
+        let new_id = ValueID::variable(variable, 0);
+
+        self.definitions[self.active_id].push(new_id);
+
+        new_id
     }
 
     pub fn assign_variable(&mut self, variable: Variable, value: ValueID) {
         debug_assert!(variable != 0);
 
         let new_id = self.fresh_variable(variable);
+
+        self.definitions[self.active_id].push(new_id);
 
         self.push_instr(Instr {
             dest: new_id,
@@ -182,6 +188,10 @@ impl Builder {
 
     fn push_term(&mut self, term: Term) {
         self.active_block().term = Some(term);
+    }
+
+    pub fn is_terminated(&self) -> bool {
+        self.fun.get_block(self.active_id).term.is_some()
     }
 
     pub fn build_const_bool(&mut self, value: bool) -> ValueID {
