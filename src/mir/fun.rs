@@ -24,6 +24,7 @@ impl MirFun {
             .expect("Invalid Block ID.")
     }
 
+    #[must_use]
     pub fn with_return_type(mut self, ty: Option<MirType>) -> Self {
         self.return_ty = ty;
         self
