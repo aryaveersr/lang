@@ -190,7 +190,7 @@ impl Builder {
     }
 
     fn push_term(&mut self, mut term: Term) {
-        if let Some(value) = term.operands()
+        if let Some(value) = term.operand()
             && value.is_variable()
         {
             *value = self.read_variable(value.get_variable(), self.active_id).1;
