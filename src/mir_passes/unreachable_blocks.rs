@@ -23,6 +23,7 @@ impl<'fun> UnreachableBlocks<'fun> {
         }
 
         self.sweep();
+        self.remove_phi_sources();
     }
 
     fn mark_block(&mut self, id: BlockID) {
@@ -52,5 +53,14 @@ impl<'fun> UnreachableBlocks<'fun> {
         self.fun
             .blocks
             .retain(|b| self.marked_blocks.contains(&b.id));
+    }
+
+    fn remove_phi_sources(&mut self) {
+        for block in &mut self.fun.blocks {
+            for phi in &mut block.phis {
+                phi.srcs
+                    .retain(|(src, _)| self.marked_blocks.contains(&src));
+            }
+        }
     }
 }
