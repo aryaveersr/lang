@@ -123,7 +123,7 @@ impl Builder {
 
         for pred in preds {
             if let Some(src) = self.read_variable(variable, pred) {
-                self.fun.get_block_mut(id).get_phi_mut(dest).srcs.push(src)
+                self.fun.get_block_mut(id).get_phi_mut(dest).srcs.push(src);
             }
         }
     }
@@ -201,10 +201,9 @@ impl Builder {
     fn push_term(&mut self, mut term: Term) {
         if let Some(value) = term.operand()
             && value.is_variable()
+            && let Some(new_value) = self.read_variable(value.get_variable(), self.active_id)
         {
-            if let Some(new_value) = self.read_variable(value.get_variable(), self.active_id) {
-                *value = new_value.1;
-            }
+            *value = new_value.1;
         }
 
         self.active_block().term = Some(term);
