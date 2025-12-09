@@ -44,30 +44,11 @@ impl<'fun> CopyElimination<'fun> {
 
     fn rename_uses(&mut self) {
         for block in &mut self.fun.blocks {
-            let try_rename = |value: &mut ValueID| {
+            block.values_mut(|value| {
                 if let Some(new_value) = self.worklist.get(value) {
                     *value = *new_value;
                 }
-            };
-
-            for phi in &mut block.phis {
-                try_rename(&mut phi.dest);
-
-                for (_, src) in &mut phi.srcs {
-                    try_rename(src);
-                }
-            }
-
-            for instr in &mut block.instrs {
-                try_rename(&mut instr.dest);
-                instr.operands().for_each(try_rename);
-            }
-
-            if let Some(term) = &mut block.term
-                && let Some(operand) = term.operand()
-            {
-                try_rename(operand);
-            }
+            });
         }
     }
 }
