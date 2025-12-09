@@ -1,6 +1,6 @@
 use std::{
     fs,
-    io::{self, Write, stdin, stdout},
+    io::{self, Write as _, stdin, stdout},
 };
 
 use lang::{hir_to_mir::HirToMir, lexer::Lexer, parser::Parser, type_resolver::TypeResolver};
@@ -9,7 +9,7 @@ fn compile(source: &str) {
     println!("== Tokens ==");
 
     for token in Lexer::new(source) {
-        println!("{token:?}");
+        println!("{token}");
     }
 
     let mut hir = match Parser::new(Lexer::new(source)).parse() {

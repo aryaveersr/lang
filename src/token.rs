@@ -1,5 +1,5 @@
 use serde::Serialize;
-use std::fmt::{self, Debug, Display, Formatter};
+use std::fmt::{self, Display, Formatter};
 
 use crate::position::Position;
 
@@ -64,7 +64,7 @@ impl<'src> Token<'src> {
     }
 }
 
-impl Debug for Token<'_> {
+impl Display for Token<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "[{:?}: {} at {}]", self.kind, self.slice, self.pos)
     }
