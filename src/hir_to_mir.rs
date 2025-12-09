@@ -53,8 +53,8 @@ impl HirToMir {
             Stmt::Block { body } => self.lower_block(builder, body),
 
             Stmt::Break => {
-                let target = self.loop_stack.pop().unwrap();
-                builder.build_jump(target);
+                let target = self.loop_stack.last().unwrap();
+                builder.build_jump(*target);
 
                 let unreachable = builder.create_block();
                 builder.set_active(unreachable);
