@@ -12,6 +12,36 @@ thiserror = "2.0"
 [dev-dependencies]
 insta = { version = "1.43", features = ["glob", "yaml"] }
 
+[lints.clippy]
+allow_attributes = "warn"
+cognitive_complexity = "warn"
+dbg_macro = "warn"
+impl_trait_in_params = "warn"
+map_err_ignore = "warn"
+missing_const_for_fn = { level = "allow", priority = 2 }
+missing_errors_doc = { level = "allow", priority = 2 }
+missing_panics_doc = { level = "allow", priority = 2 }
+mod_module_files = "warn"
+must_use_candidate = { level = "allow", priority = 2 }
+nursery = "warn"
+panic = "warn"
+pedantic = "warn"
+redundant_type_annotations = "warn"
+renamed_function_params = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+same_name_method = "warn"
+semicolon_outside_block = "warn"
+single_char_lifetime_names = "warn"
+str_to_string = "warn"
+tests_outside_test_module = "warn"
+try_err = "warn"
+unnecessary_self_imports = "warn"
+unneeded_field_pattern = "warn"
+unused_self = { level = "allow", priority = 2 }
+unused_trait_names = "warn"
+use_debug = "warn"
+verbose_file_reads = "warn"
+
 [profile.dev.package]
 insta.opt-level = 3
 similar.opt-level = 3
