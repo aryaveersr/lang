@@ -83,7 +83,7 @@ pub enum InstrKind {
 #[derive(Debug, Clone)]
 pub enum Term {
     Jump {
-        block: BlockID,
+        target: BlockID,
     },
 
     Branch {

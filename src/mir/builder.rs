@@ -258,10 +258,10 @@ impl Builder {
         dest
     }
 
-    pub fn build_jump(&mut self, block: BlockID) {
-        self.add_flow(block);
+    pub fn build_jump(&mut self, target: BlockID) {
+        self.add_flow(target);
 
-        self.push_term(Term::Jump { block });
+        self.push_term(Term::Jump { target });
     }
 
     pub fn build_branch(&mut self, cond: ValueID, then_block: BlockID, else_block: BlockID) {

@@ -83,7 +83,7 @@ impl Display for InstrKind {
 impl Display for Term {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Jump { block } => write!(f, "jump {block}"),
+            Self::Jump { target } => write!(f, "jump {target}"),
 
             Self::Branch {
                 cond,
