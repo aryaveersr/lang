@@ -27,8 +27,8 @@ impl<'fun> UnreachableBlocks<'fun> {
         }
 
         self.sweep();
-        self.remove_phi_sources();
         self.rename_blocks();
+        self.remove_phi_sources();
     }
 
     fn mark_block(&mut self, id: BlockID) {
@@ -82,7 +82,7 @@ impl<'fun> UnreachableBlocks<'fun> {
     fn rename_blocks(&mut self) {
         for block in &mut self.fun.blocks {
             let try_rename = |id: &mut BlockID| {
-                if let Some(target) = self.renamed_blocks.get(id) {
+                while let Some(target) = self.renamed_blocks.get(id) {
                     *id = *target;
                 }
             };

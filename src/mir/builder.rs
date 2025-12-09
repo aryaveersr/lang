@@ -122,17 +122,18 @@ impl Builder {
         let preds = self.cfg.predecessors(id);
 
         for pred in preds {
-            let src = self.read_variable(variable, pred);
-            self.fun.get_block_mut(id).get_phi_mut(dest).srcs.push(src);
+            if let Some(src) = self.read_variable(variable, pred) {
+                self.fun.get_block_mut(id).get_phi_mut(dest).srcs.push(src)
+            }
         }
     }
 
-    fn read_variable(&mut self, variable: Variable, block: BlockID) -> (BlockID, ValueID) {
+    fn read_variable(&mut self, variable: Variable, block: BlockID) -> Option<(BlockID, ValueID)> {
         if let Some(value) = self.definitions[block]
             .iter()
             .find(|v| v.get_variable() == variable)
         {
-            return (block, *value);
+            return Some((block, *value));
         }
 
         if self.sealed_blocks.contains(&block) {
@@ -141,17 +142,23 @@ impl Builder {
             if preds.len() == 1 {
                 self.read_variable(variable, preds[0])
             } else {
-                let mut srcs = Vec::new();
-                let dest = self.fresh_variable(variable);
+                let srcs = preds
+                    .iter()
+                    .filter_map(|pred| self.read_variable(variable, *pred))
+                    .collect_vec();
 
-                self.definitions[block].push(dest);
+                if srcs.is_empty() {
+                    None
+                } else if srcs.len() == 1 {
+                    Some((block, srcs[0].1))
+                } else {
+                    let dest = self.fresh_variable(variable);
 
-                for pred in preds {
-                    srcs.push(self.read_variable(variable, pred));
+                    self.definitions[block].push(dest);
+                    self.fun.get_block_mut(block).phis.push(Phi { dest, srcs });
+
+                    Some((block, dest))
                 }
-
-                self.fun.get_block_mut(block).phis.push(Phi { dest, srcs });
-                (block, dest)
             }
         } else {
             let dest = self.fresh_variable(variable);
@@ -166,7 +173,7 @@ impl Builder {
                 .or_default()
                 .push((variable, dest));
 
-            (block, dest)
+            Some((block, dest))
         }
     }
 }
@@ -183,7 +190,9 @@ impl Builder {
 
     fn push_instr(&mut self, mut instr: Instr) {
         for value in instr.operands().filter(|v| v.is_variable()) {
-            *value = self.read_variable(value.get_variable(), self.active_id).1;
+            if let Some(new_value) = self.read_variable(value.get_variable(), self.active_id) {
+                *value = new_value.1;
+            }
         }
 
         self.active_block().instrs.push(instr);
@@ -193,7 +202,9 @@ impl Builder {
         if let Some(value) = term.operand()
             && value.is_variable()
         {
-            *value = self.read_variable(value.get_variable(), self.active_id).1;
+            if let Some(new_value) = self.read_variable(value.get_variable(), self.active_id) {
+                *value = new_value.1;
+            }
         }
 
         self.active_block().term = Some(term);
