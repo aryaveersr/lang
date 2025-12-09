@@ -58,8 +58,7 @@ impl<'fun> UnreachableBlocks<'fun> {
     fn remove_phi_sources(&mut self) {
         for block in &mut self.fun.blocks {
             for phi in &mut block.phis {
-                phi.srcs
-                    .retain(|(src, _)| self.marked_blocks.contains(&src));
+                phi.srcs.retain(|(src, _)| self.marked_blocks.contains(src));
             }
         }
     }
