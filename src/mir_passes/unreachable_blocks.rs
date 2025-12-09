@@ -38,8 +38,8 @@ impl<'fun> UnreachableBlocks<'fun> {
 
         let block = self.fun.get_block_mut(id);
 
-        if block.instrs.len() == 0
-            && block.phis.len() == 0
+        if block.instrs.is_empty()
+            && block.phis.is_empty()
             && let Some(Term::Jump { target }) = block.term
         {
             self.renamed_blocks.insert(id, target);
@@ -82,7 +82,7 @@ impl<'fun> UnreachableBlocks<'fun> {
     fn rename_blocks(&mut self) {
         for block in &mut self.fun.blocks {
             let try_rename = |id: &mut BlockID| {
-                if let Some(target) = self.renamed_blocks.get(&id) {
+                if let Some(target) = self.renamed_blocks.get(id) {
                     *id = *target;
                 }
             };
