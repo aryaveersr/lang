@@ -11,7 +11,7 @@ pub struct Builder {
     active_id: BlockID,
     sealed_blocks: Vec<BlockID>,
     definitions: Vec<Vec<Reg>>,
-    incomplete_phis: HashMap<BlockID, Vec<(VarID, Reg)>>,
+    incomplete_phis: HashMap<BlockID, Vec<Reg>>,
     var_gens: HashMap<VarID, Gen>,
     cfg: Cfg,
     next_temp: usize,
@@ -49,8 +49,8 @@ impl Builder {
 
     pub fn seal_block(&mut self, id: BlockID) {
         if let Some(phis) = self.incomplete_phis.remove(&id) {
-            for (var, dest) in phis {
-                self.add_phi_operands(id, var, dest);
+            for dest in phis {
+                self.add_phi_operands(id, dest);
             }
         }
 
@@ -69,8 +69,8 @@ impl Builder {
 
     pub fn finish(mut self) -> MirFun {
         for (id, phis) in self.incomplete_phis.drain().collect_vec() {
-            for (var, dest) in phis {
-                self.add_phi_operands(id, var, dest);
+            for dest in phis {
+                self.add_phi_operands(id, dest);
             }
         }
 
@@ -114,8 +114,9 @@ impl Builder {
         new_id
     }
 
-    fn add_phi_operands(&mut self, id: BlockID, var_id: VarID, dest: Reg) {
+    fn add_phi_operands(&mut self, id: BlockID, dest: Reg) {
         let preds = self.cfg.predecessors(id);
+        let var_id = dest.get_var_id().unwrap();
 
         for pred in preds {
             if let Some(src) = self.read_var(var_id, pred) {
@@ -158,16 +159,13 @@ impl Builder {
             }
         } else {
             let dest = self.fresh_var(var_id);
+
+            self.incomplete_phis.entry(block).or_default().push(dest);
             self.definitions[block].push(dest);
             self.fun
                 .get_block_mut(block)
                 .phis
                 .push(Phi { dest, srcs: vec![] });
-
-            self.incomplete_phis
-                .entry(block)
-                .or_default()
-                .push((var_id, dest));
 
             Some((block, dest))
         }
