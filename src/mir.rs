@@ -9,6 +9,7 @@ mod instr;
 mod printer;
 mod register;
 mod term;
+mod value;
 
 #[derive(Debug, Clone)]
 pub struct MirModule {
@@ -55,19 +56,21 @@ pub struct Instr {
     pub kind: InstrKind,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum Value {
+    Bool(bool),
+    Num(i32),
+    Reg(Reg),
+}
+
 #[derive(Debug, Clone)]
 pub enum InstrKind {
     ConstBool { value: bool },
-
     ConstNum { value: i32 },
-
-    Copy { src: Reg },
-
-    Unary { op: UnOp, arg: Reg },
-
-    Binary { op: BinOp, lhs: Reg, rhs: Reg },
-
-    Call { name: String, args: Vec<Reg> },
+    Copy { src: Value },
+    Unary { op: UnOp, arg: Value },
+    Binary { op: BinOp, lhs: Value, rhs: Value },
+    Call { name: String, args: Vec<Value> },
 }
 
 #[derive(Debug, Clone)]
@@ -77,13 +80,13 @@ pub enum Term {
     },
 
     Branch {
-        cond: Reg,
+        cond: Value,
         then_block: BlockID,
         else_block: BlockID,
     },
 
     Return {
-        value: Option<Reg>,
+        value: Option<Value>,
     },
 }
 
