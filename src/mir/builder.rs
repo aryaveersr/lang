@@ -2,9 +2,7 @@ use itertools::Itertools as _;
 use std::collections::HashMap;
 
 use crate::{
-    mir::{
-        BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, Phi, Register, Term, VarID, cfg::Cfg,
-    },
+    mir::{BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, Phi, Reg, Term, VarID, cfg::Cfg},
     ops::{BinOp, UnOp},
 };
 
@@ -12,8 +10,8 @@ pub struct Builder {
     fun: MirFun,
     active_id: BlockID,
     sealed_blocks: Vec<BlockID>,
-    definitions: Vec<Vec<Register>>,
-    incomplete_phis: HashMap<BlockID, Vec<(VarID, Register)>>,
+    definitions: Vec<Vec<Reg>>,
+    incomplete_phis: HashMap<BlockID, Vec<(VarID, Reg)>>,
     var_gens: HashMap<VarID, Gen>,
     cfg: Cfg,
     next_temp: usize,
@@ -61,8 +59,8 @@ impl Builder {
         self.active_id = id;
     }
 
-    pub fn fresh_temp(&mut self) -> Register {
-        let id = Register::Temp(self.next_temp);
+    pub fn fresh_temp(&mut self) -> Reg {
+        let id = Reg::Temp(self.next_temp);
         self.next_temp += 1;
         id
     }
@@ -81,9 +79,9 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_var(&mut self, var_id: VarID, value: Register) -> Register {
+    pub fn declare_var(&mut self, var_id: VarID, value: Reg) -> Reg {
         self.var_gens.insert(var_id, 1);
-        let new_id = Register::Var(var_id, 0);
+        let new_id = Reg::Var(var_id, 0);
 
         self.definitions[self.active_id].push(new_id);
 
@@ -95,7 +93,7 @@ impl Builder {
         new_id
     }
 
-    pub fn assign_var(&mut self, reg: Register, value: Register) {
+    pub fn assign_var(&mut self, reg: Reg, value: Reg) {
         let (var_id, _) = reg.as_var().unwrap();
         let new_id = self.fresh_var(var_id);
 
@@ -107,14 +105,14 @@ impl Builder {
         });
     }
 
-    fn fresh_var(&mut self, var_id: VarID) -> Register {
-        let new_id = Register::Var(var_id, self.var_gens[&var_id]);
+    fn fresh_var(&mut self, var_id: VarID) -> Reg {
+        let new_id = Reg::Var(var_id, self.var_gens[&var_id]);
         self.var_gens.entry(var_id).and_modify(|g| *g += 1);
 
         new_id
     }
 
-    fn add_phi_operands(&mut self, id: BlockID, var_id: VarID, dest: Register) {
+    fn add_phi_operands(&mut self, id: BlockID, var_id: VarID, dest: Reg) {
         let preds = self.cfg.predecessors(id);
 
         for pred in preds {
@@ -124,7 +122,7 @@ impl Builder {
         }
     }
 
-    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Register)> {
+    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Reg)> {
         if let Some(value) = self.definitions[block]
             .iter()
             .find(|v| v.get_var_id() == Some(var_id))
@@ -209,7 +207,7 @@ impl Builder {
         self.fun.get_block(self.active_id).term.is_some()
     }
 
-    pub fn build_const_bool(&mut self, value: bool) -> Register {
+    pub fn build_const_bool(&mut self, value: bool) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -220,7 +218,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_const_num(&mut self, value: i32) -> Register {
+    pub fn build_const_num(&mut self, value: i32) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -231,7 +229,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_unary(&mut self, op: UnOp, arg: Register) -> Register {
+    pub fn build_unary(&mut self, op: UnOp, arg: Reg) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -242,7 +240,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_binary(&mut self, op: BinOp, lhs: Register, rhs: Register) -> Register {
+    pub fn build_binary(&mut self, op: BinOp, lhs: Reg, rhs: Reg) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -253,7 +251,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_call(&mut self, name: String, args: Vec<Register>) -> Register {
+    pub fn build_call(&mut self, name: String, args: Vec<Reg>) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -270,7 +268,7 @@ impl Builder {
         self.push_term(Term::Jump { target });
     }
 
-    pub fn build_branch(&mut self, cond: Register, then_block: BlockID, else_block: BlockID) {
+    pub fn build_branch(&mut self, cond: Reg, then_block: BlockID, else_block: BlockID) {
         self.add_flow(then_block);
         self.add_flow(else_block);
 
@@ -281,7 +279,7 @@ impl Builder {
         });
     }
 
-    pub fn build_return(&mut self, value: Option<Register>) {
+    pub fn build_return(&mut self, value: Option<Reg>) {
         self.push_term(Term::Return { value });
     }
 }

@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use crate::mir::{InstrKind, MirFun, Register};
+use crate::mir::{InstrKind, MirFun, Reg};
 
 pub struct CopyElimination<'fun> {
     fun: &'fun mut MirFun,
-    worklist: HashMap<Register, Register>,
+    worklist: HashMap<Reg, Reg>,
 }
 
 impl<'fun> CopyElimination<'fun> {

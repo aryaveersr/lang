@@ -18,7 +18,7 @@ pub struct MirModule {
 #[derive(Debug, Clone)]
 pub struct MirFun {
     pub name: String,
-    pub params: Vec<(Register, MirType)>,
+    pub params: Vec<(Reg, MirType)>,
     pub blocks: Vec<BasicBlock>,
     pub return_ty: Option<MirType>,
 }
@@ -27,7 +27,7 @@ type VarID = usize;
 type Gen = usize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Register {
+pub enum Reg {
     Var(VarID, Gen),
     Temp(usize),
 }
@@ -45,45 +45,29 @@ pub struct BasicBlock {
 
 #[derive(Debug, Clone)]
 pub struct Phi {
-    pub dest: Register,
-    pub srcs: Vec<(BlockID, Register)>,
+    pub dest: Reg,
+    pub srcs: Vec<(BlockID, Reg)>,
 }
 
 #[derive(Debug, Clone)]
 pub struct Instr {
-    pub dest: Register,
+    pub dest: Reg,
     pub kind: InstrKind,
 }
 
 #[derive(Debug, Clone)]
 pub enum InstrKind {
-    ConstBool {
-        value: bool,
-    },
+    ConstBool { value: bool },
 
-    ConstNum {
-        value: i32,
-    },
+    ConstNum { value: i32 },
 
-    Copy {
-        src: Register,
-    },
+    Copy { src: Reg },
 
-    Unary {
-        op: UnOp,
-        arg: Register,
-    },
+    Unary { op: UnOp, arg: Reg },
 
-    Binary {
-        op: BinOp,
-        lhs: Register,
-        rhs: Register,
-    },
+    Binary { op: BinOp, lhs: Reg, rhs: Reg },
 
-    Call {
-        name: String,
-        args: Vec<Register>,
-    },
+    Call { name: String, args: Vec<Reg> },
 }
 
 #[derive(Debug, Clone)]
@@ -93,13 +77,13 @@ pub enum Term {
     },
 
     Branch {
-        cond: Register,
+        cond: Reg,
         then_block: BlockID,
         else_block: BlockID,
     },
 
     Return {
-        value: Option<Register>,
+        value: Option<Reg>,
     },
 }
 

@@ -1,6 +1,6 @@
-use crate::mir::{Gen, Register, VarID};
+use crate::mir::{Gen, Reg, VarID};
 
-impl Register {
+impl Reg {
     pub fn is_var(&self) -> bool {
         match self {
             Self::Var(..) => true,

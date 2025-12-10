@@ -1,13 +1,13 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Register, builder::Builder},
+    mir::{BlockID, MirFun, MirModule, MirType, Reg, builder::Builder},
     scope::Scope,
 };
 
 #[derive(Default)]
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
-    scope: Scope<Register>,
+    scope: Scope<Reg>,
     next_var_id: usize,
 }
 
@@ -154,7 +154,7 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr(&mut self, builder: &mut Builder, expr: Expr) -> Register {
+    fn lower_expr(&mut self, builder: &mut Builder, expr: Expr) -> Reg {
         match expr {
             Expr::Bool { value } => builder.build_const_bool(value),
             Expr::Num { value } => builder.build_const_num(value),
@@ -176,12 +176,7 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr_call(
-        &mut self,
-        builder: &mut Builder,
-        name: String,
-        args: Vec<Expr>,
-    ) -> Register {
+    fn lower_expr_call(&mut self, builder: &mut Builder, name: String, args: Vec<Expr>) -> Reg {
         let args = args
             .into_iter()
             .map(|e| self.lower_expr(builder, e))
