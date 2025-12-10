@@ -96,9 +96,8 @@ impl Builder {
         new_id
     }
 
-    pub fn assign_var(&mut self, reg: Reg, value: Reg) {
-        let (var_id, _) = reg.as_var().unwrap();
-        let new_id = self.fresh_var(var_id);
+    pub fn assign_var(&mut self, var: Reg, value: Reg) {
+        let new_id = self.fresh_var(var.get_var_id().unwrap());
 
         self.definitions[self.active_id].push(new_id);
 
@@ -186,8 +185,10 @@ impl Builder {
     }
 
     fn push_instr(&mut self, mut instr: Instr) {
-        for value in instr.operands().filter(|v| v.is_var()) {
-            if let Some(new_value) = self.read_var(value.get_var_id().unwrap(), self.active_id) {
+        for value in instr.operands() {
+            if let Some(var_id) = value.get_var_id()
+                && let Some(new_value) = self.read_var(var_id, self.active_id)
+            {
                 *value = new_value.1;
             }
         }
