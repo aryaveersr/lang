@@ -8,7 +8,7 @@ use crate::{
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
     scope: Scope<Register>,
-    next_variable: usize,
+    next_var_id: usize,
 }
 
 impl HirToMir {
@@ -136,18 +136,16 @@ impl HirToMir {
                     }
                 };
 
-                self.next_variable += 1;
-                let variable = self.next_variable;
-
-                let value_id = builder.declare_variable(variable, value);
+                let value_id = builder.declare_var(self.next_var_id, value);
                 self.scope.set(name, &value_id);
+                self.next_var_id += 1;
             }
 
             Stmt::Assign { name, expr } => {
                 let value = self.lower_expr(builder, expr);
-                let value_id = self.scope.get(name).unwrap();
+                let reg = self.scope.get(name).unwrap();
 
-                builder.assign_variable(value_id.get_variable(), value);
+                builder.assign_var(*reg, value);
             }
 
             Stmt::Call { name, args } => {
