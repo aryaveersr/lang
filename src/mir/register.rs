@@ -1,27 +1,27 @@
-use crate::mir::{Generation, Register, VariableID};
+use crate::mir::{Gen, Register, VarID};
 
 impl Register {
-    pub fn is_variable(&self) -> bool {
+    pub fn is_var(&self) -> bool {
         match self {
-            Register::Variable(_, _) => true,
+            Register::Var(_, _) => true,
             _ => false,
         }
     }
 
-    pub fn as_variable(&self) -> Option<(VariableID, Generation)> {
+    pub fn as_var(&self) -> Option<(VarID, Gen)> {
         match self {
-            Register::Variable(variable_id, generation) => Some((*variable_id, *generation)),
+            Register::Var(var_id, genn) => Some((*var_id, *genn)),
             _ => None,
         }
     }
 
-    pub fn get_variable_id(&self) -> Option<VariableID> {
-        self.as_variable().map(|(id, _)| id)
+    pub fn get_var_id(&self) -> Option<VarID> {
+        self.as_var().map(|(id, _)| id)
     }
 
-    pub fn as_temporary(&self) -> Option<usize> {
+    pub fn as_temp(&self) -> Option<usize> {
         match self {
-            Register::Temporary(id) => Some(*id),
+            Register::Temp(id) => Some(*id),
             _ => None,
         }
     }
