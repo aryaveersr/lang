@@ -8,7 +8,7 @@ use crate::{
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
     scope: Scope<ValueID>,
-    next_variable: u32,
+    next_variable: usize,
 }
 
 impl HirToMir {

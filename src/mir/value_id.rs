@@ -1,11 +1,11 @@
 use crate::mir::ValueID;
 
 impl ValueID {
-    pub fn temporary(id: u32) -> Self {
+    pub fn temporary(id: usize) -> Self {
         Self(0, id)
     }
 
-    pub fn variable(variable: u32, generation: u32) -> Self {
+    pub fn variable(variable: usize, generation: usize) -> Self {
         debug_assert!(variable != 0);
         Self(variable, generation)
     }
@@ -18,12 +18,12 @@ impl ValueID {
         self.0 != 0
     }
 
-    pub fn get_variable(&self) -> u32 {
+    pub fn get_variable(&self) -> usize {
         debug_assert!(self.0 != 0);
         self.0
     }
 
-    pub fn get_generation(&self) -> u32 {
+    pub fn get_generation(&self) -> usize {
         debug_assert!(self.0 != 0);
         self.1
     }

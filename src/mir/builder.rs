@@ -6,8 +6,8 @@ use crate::{
     ops::{BinOp, UnOp},
 };
 
-pub type Variable = u32;
-type Generation = u32;
+pub type Variable = usize;
+type Generation = usize;
 
 pub struct Builder {
     fun: MirFun,
@@ -17,7 +17,7 @@ pub struct Builder {
     incomplete_phis: HashMap<BlockID, Vec<(Variable, ValueID)>>,
     var_generations: HashMap<Variable, Generation>,
     cfg: Cfg,
-    next_temporary: u32,
+    next_temporary: usize,
 }
 
 impl Builder {

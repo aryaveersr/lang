@@ -27,7 +27,7 @@ pub struct MirFun {
 pub struct BlockID(pub usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct ValueID(u32, u32);
+pub struct ValueID(usize, usize);
 
 #[derive(Debug, Clone)]
 pub struct BasicBlock {
