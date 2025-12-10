@@ -1,6 +1,6 @@
-use crate::mir::ValueID;
+use crate::mir::Register;
 
-impl ValueID {
+impl Register {
     pub fn temporary(id: usize) -> Self {
         Self(0, id)
     }

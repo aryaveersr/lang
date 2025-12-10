@@ -1,4 +1,4 @@
-use crate::mir::{Instr, InstrKind, ValueID};
+use crate::mir::{Instr, InstrKind, Register};
 
 impl Instr {
     pub fn operands(&mut self) -> OperandIter<'_> {
@@ -26,11 +26,11 @@ impl Instr {
 }
 
 pub struct OperandIter<'instr> {
-    operands: Vec<&'instr mut ValueID>,
+    operands: Vec<&'instr mut Register>,
 }
 
 impl<'instr> Iterator for OperandIter<'instr> {
-    type Item = &'instr mut ValueID;
+    type Item = &'instr mut Register;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.operands.pop()

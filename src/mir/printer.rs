@@ -1,7 +1,7 @@
 use itertools::Itertools as _;
 use std::fmt::{self, Display, Formatter};
 
-use crate::mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirModule, Phi, Term, ValueID};
+use crate::mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirModule, Phi, Register, Term};
 
 impl Display for MirModule {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -102,7 +102,7 @@ impl Display for Term {
     }
 }
 
-impl Display for ValueID {
+impl Display for Register {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "%")?;
 
