@@ -9,6 +9,7 @@ mod instr;
 mod printer;
 mod register;
 mod term;
+mod r#type;
 mod value;
 
 #[derive(Debug, Clone)]
