@@ -48,7 +48,7 @@ pub struct BasicBlock {
 #[derive(Debug, Clone)]
 pub struct Phi {
     pub dest: Reg,
-    pub srcs: Vec<(BlockID, Reg)>,
+    pub srcs: Vec<(BlockID, Value)>,
 }
 
 #[derive(Debug, Clone)]

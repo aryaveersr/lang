@@ -141,12 +141,12 @@ impl Builder {
         }
     }
 
-    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Reg)> {
+    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Value)> {
         if let Some(value) = self.definitions[block]
             .iter()
             .find(|v| v.get_var_id() == Some(var_id))
         {
-            return Some((block, *value));
+            return Some((block, (*value).into()));
         }
 
         if self.sealed_blocks.contains(&block) {
@@ -170,7 +170,7 @@ impl Builder {
                     self.definitions[block].push(dest);
                     self.fun.get_block_mut(block).phis.push(Phi { dest, srcs });
 
-                    Some((block, dest))
+                    Some((block, dest.into()))
                 }
             }
         } else {
@@ -183,7 +183,7 @@ impl Builder {
                 .phis
                 .push(Phi { dest, srcs: vec![] });
 
-            Some((block, dest))
+            Some((block, dest.into()))
         }
     }
 }
@@ -203,7 +203,7 @@ impl Builder {
             if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
                 && let Some(new_value) = self.read_var(var_id, self.active_id)
             {
-                *value = Value::Reg(new_value.1);
+                *value = new_value.1;
             }
         });
 
@@ -215,7 +215,7 @@ impl Builder {
             if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
                 && let Some(new_value) = self.read_var(var_id, self.active_id)
             {
-                *value = Value::Reg(new_value.1);
+                *value = new_value.1;
             }
         });
 
