@@ -2,7 +2,9 @@ use itertools::Itertools as _;
 use std::collections::HashMap;
 
 use crate::{
-    mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, Phi, Register, Term, cfg::Cfg},
+    mir::{
+        BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, Phi, Register, Term, VarID, cfg::Cfg,
+    },
     ops::{BinOp, UnOp},
 };
 
@@ -11,10 +13,10 @@ pub struct Builder {
     active_id: BlockID,
     sealed_blocks: Vec<BlockID>,
     definitions: Vec<Vec<Register>>,
-    incomplete_phis: HashMap<BlockID, Vec<(Variable, Register)>>,
-    var_generations: HashMap<Variable, Generation>,
+    incomplete_phis: HashMap<BlockID, Vec<(VarID, Register)>>,
+    var_gens: HashMap<VarID, Gen>,
     cfg: Cfg,
-    next_temporary: usize,
+    next_temp: usize,
 }
 
 impl Builder {
@@ -30,9 +32,9 @@ impl Builder {
             sealed_blocks: vec![entry],
             definitions: vec![Vec::new()],
             incomplete_phis: HashMap::new(),
-            var_generations: HashMap::new(),
+            var_gens: HashMap::new(),
             cfg: Cfg::default(),
-            next_temporary: 0,
+            next_temp: 0,
         }
     }
 
@@ -60,8 +62,8 @@ impl Builder {
     }
 
     pub fn fresh_temp(&mut self) -> Register {
-        let id = Register::temporary(self.next_temporary);
-        self.next_temporary += 1;
+        let id = Register::Temp(self.next_temp);
+        self.next_temp += 1;
         id
     }
 
@@ -79,11 +81,9 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_variable(&mut self, variable: Variable, value: Register) -> Register {
-        debug_assert!(variable != 0);
-
-        self.var_generations.insert(variable, 1);
-        let new_id = Register::variable(variable, 0);
+    pub fn declare_var(&mut self, var_id: VarID, value: Register) -> Register {
+        self.var_gens.insert(var_id, 1);
+        let new_id = Register::Var(var_id, 0);
 
         self.definitions[self.active_id].push(new_id);
 
@@ -95,10 +95,9 @@ impl Builder {
         new_id
     }
 
-    pub fn assign_variable(&mut self, variable: Variable, value: Register) {
-        debug_assert!(variable != 0);
-
-        let new_id = self.fresh_variable(variable);
+    pub fn assign_var(&mut self, reg: Register, value: Register) {
+        let (var_id, _) = reg.as_var().unwrap();
+        let new_id = self.fresh_var(var_id);
 
         self.definitions[self.active_id].push(new_id);
 
@@ -108,27 +107,27 @@ impl Builder {
         });
     }
 
-    fn fresh_variable(&mut self, variable: Variable) -> Register {
-        let new_id = Register::variable(variable, self.var_generations[&variable]);
-        self.var_generations.entry(variable).and_modify(|g| *g += 1);
+    fn fresh_var(&mut self, var_id: VarID) -> Register {
+        let new_id = Register::Var(var_id, self.var_gens[&var_id]);
+        self.var_gens.entry(var_id).and_modify(|g| *g += 1);
 
         new_id
     }
 
-    fn add_phi_operands(&mut self, id: BlockID, variable: Variable, dest: Register) {
+    fn add_phi_operands(&mut self, id: BlockID, var_id: VarID, dest: Register) {
         let preds = self.cfg.predecessors(id);
 
         for pred in preds {
-            if let Some(src) = self.read_variable(variable, pred) {
+            if let Some(src) = self.read_var(var_id, pred) {
                 self.fun.get_block_mut(id).get_phi_mut(dest).srcs.push(src);
             }
         }
     }
 
-    fn read_variable(&mut self, variable: Variable, block: BlockID) -> Option<(BlockID, Register)> {
+    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Register)> {
         if let Some(value) = self.definitions[block]
             .iter()
-            .find(|v| v.get_variable() == variable)
+            .find(|v| v.get_var_id() == Some(var_id))
         {
             return Some((block, *value));
         }
@@ -137,11 +136,11 @@ impl Builder {
             let preds = self.cfg.predecessors(block);
 
             if preds.len() == 1 {
-                self.read_variable(variable, preds[0])
+                self.read_var(var_id, preds[0])
             } else {
                 let srcs = preds
                     .iter()
-                    .filter_map(|pred| self.read_variable(variable, *pred))
+                    .filter_map(|pred| self.read_var(var_id, *pred))
                     .collect_vec();
 
                 if srcs.is_empty() {
@@ -149,7 +148,7 @@ impl Builder {
                 } else if srcs.len() == 1 {
                     Some((block, srcs[0].1))
                 } else {
-                    let dest = self.fresh_variable(variable);
+                    let dest = self.fresh_var(var_id);
 
                     self.definitions[block].push(dest);
                     self.fun.get_block_mut(block).phis.push(Phi { dest, srcs });
@@ -158,7 +157,7 @@ impl Builder {
                 }
             }
         } else {
-            let dest = self.fresh_variable(variable);
+            let dest = self.fresh_var(var_id);
             self.definitions[block].push(dest);
             self.fun
                 .get_block_mut(block)
@@ -168,7 +167,7 @@ impl Builder {
             self.incomplete_phis
                 .entry(block)
                 .or_default()
-                .push((variable, dest));
+                .push((var_id, dest));
 
             Some((block, dest))
         }
@@ -186,8 +185,8 @@ impl Builder {
     }
 
     fn push_instr(&mut self, mut instr: Instr) {
-        for value in instr.operands().filter(|v| v.is_variable()) {
-            if let Some(new_value) = self.read_variable(value.get_variable(), self.active_id) {
+        for value in instr.operands().filter(|v| v.is_var()) {
+            if let Some(new_value) = self.read_var(value.get_var_id().unwrap(), self.active_id) {
                 *value = new_value.1;
             }
         }
@@ -197,8 +196,8 @@ impl Builder {
 
     fn push_term(&mut self, mut term: Term) {
         if let Some(value) = term.operand()
-            && value.is_variable()
-            && let Some(new_value) = self.read_variable(value.get_variable(), self.active_id)
+            && let Some(var_id) = value.get_var_id()
+            && let Some(new_value) = self.read_var(var_id, self.active_id)
         {
             *value = new_value.1;
         }
