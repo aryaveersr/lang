@@ -124,16 +124,15 @@ impl HirToMir {
             }
 
             Stmt::Let { name, ty, expr } => {
-                let value = if let Some(expr) = expr {
-                    self.lower_expr(builder, expr)
-                } else {
-                    match ty.unwrap() {
+                let value = expr.map_or_else(
+                    || match ty.unwrap() {
                         HirType::Bool => Value::Bool(false),
                         HirType::Num => Value::Num(0),
 
                         HirType::Void => unreachable!(),
-                    }
-                };
+                    },
+                    |expr| self.lower_expr(builder, expr),
+                );
 
                 let value_id = builder.declare_var(value);
                 self.scope.set(name, &value_id);
