@@ -8,7 +8,7 @@ use crate::{
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
     scope: Scope<ValueID>,
-    variable_counter: u32,
+    next_variable: u32,
 }
 
 impl HirToMir {
@@ -136,8 +136,8 @@ impl HirToMir {
                     }
                 };
 
-                self.variable_counter += 1;
-                let variable = self.variable_counter;
+                self.next_variable += 1;
+                let variable = self.next_variable;
 
                 let value_id = builder.declare_variable(variable, value);
                 self.scope.set(name, &value_id);
