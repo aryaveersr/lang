@@ -3,15 +3,15 @@ use crate::mir::{Gen, Register, VarID};
 impl Register {
     pub fn is_var(&self) -> bool {
         match self {
-            Register::Var(_, _) => true,
-            _ => false,
+            Self::Var(..) => true,
+            Self::Temp(..) => false,
         }
     }
 
     pub fn as_var(&self) -> Option<(VarID, Gen)> {
         match self {
-            Register::Var(var_id, genn) => Some((*var_id, *genn)),
-            _ => None,
+            Self::Var(var_id, genn) => Some((*var_id, *genn)),
+            Self::Temp(..) => None,
         }
     }
 
@@ -21,8 +21,8 @@ impl Register {
 
     pub fn as_temp(&self) -> Option<usize> {
         match self {
-            Register::Temp(id) => Some(*id),
-            _ => None,
+            Self::Temp(id) => Some(*id),
+            Self::Var(..) => None,
         }
     }
 }

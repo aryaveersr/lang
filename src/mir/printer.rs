@@ -105,8 +105,8 @@ impl Display for Term {
 impl Display for Register {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Register::Var(var_id, genn) => write!(f, "v{var_id}:{genn}"),
-            Register::Temp(temp_id) => write!(f, "%{temp_id}"),
+            Self::Var(var_id, genn) => write!(f, "v{var_id}:{genn}"),
+            Self::Temp(temp_id) => write!(f, "%{temp_id}"),
         }
     }
 }
