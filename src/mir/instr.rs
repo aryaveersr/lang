@@ -1,38 +1,22 @@
 use crate::mir::{Instr, InstrKind, Value};
 
 impl Instr {
-    pub fn operands(&mut self) -> OperandIter<'_> {
-        let mut operands = Vec::new();
-
+    pub fn update_operands<F: FnMut(&mut Value)>(&mut self, mut f: F) {
         match &mut self.kind {
             InstrKind::ConstBool { .. } | InstrKind::ConstNum { .. } => {}
 
             InstrKind::Copy { src } | InstrKind::Unary { arg: src, .. } => {
-                operands.push(src);
+                f(src);
             }
 
             InstrKind::Binary { lhs, rhs, .. } => {
-                operands.push(lhs);
-                operands.push(rhs);
+                f(lhs);
+                f(rhs);
             }
 
             InstrKind::Call { args, .. } => {
-                operands.extend(args.iter_mut());
+                args.iter_mut().for_each(f);
             }
         }
-
-        OperandIter { operands }
-    }
-}
-
-pub struct OperandIter<'instr> {
-    operands: Vec<&'instr mut Value>,
-}
-
-impl<'instr> Iterator for OperandIter<'instr> {
-    type Item = &'instr mut Value;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.operands.pop()
     }
 }

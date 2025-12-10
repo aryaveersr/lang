@@ -199,13 +199,13 @@ impl Builder {
     }
 
     fn push_instr(&mut self, mut instr: Instr) {
-        for value in instr.operands() {
+        instr.update_operands(|value| {
             if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
                 && let Some(new_value) = self.read_var(var_id, self.active_id)
             {
                 *value = Value::Reg(new_value.1);
             }
-        }
+        });
 
         self.active_block().instrs.push(instr);
     }
