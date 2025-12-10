@@ -11,9 +11,9 @@ pub struct Builder {
     active_id: BlockID,
     sealed_blocks: Vec<BlockID>,
     definitions: Vec<Vec<Reg>>,
-    incomplete_phis: HashMap<BlockID, Vec<Reg>>,
-    var_gens: HashMap<VarID, Gen>,
+    incomplete_phis: Vec<Reg>,
     cfg: Cfg,
+    var_gens: HashMap<VarID, Gen>,
     next_temp: usize,
     next_var_id: usize,
 }
@@ -30,7 +30,7 @@ impl Builder {
             active_id: entry,
             sealed_blocks: vec![entry],
             definitions: vec![Vec::new()],
-            incomplete_phis: HashMap::new(),
+            incomplete_phis: Vec::new(),
             var_gens: HashMap::new(),
             cfg: Cfg::default(),
             next_temp: 0,
@@ -48,10 +48,19 @@ impl Builder {
     }
 
     pub fn seal_block(&mut self, id: BlockID) {
-        if let Some(phis) = self.incomplete_phis.remove(&id) {
-            for dest in phis {
-                self.add_phi_operands(id, dest);
+        let mut dests = Vec::new();
+
+        self.incomplete_phis.retain(|dest| {
+            if self.definitions[id].contains(dest) {
+                dests.push(*dest);
+                false
+            } else {
+                true
             }
+        });
+
+        for dest in dests {
+            self.add_phi_operands(id, dest);
         }
 
         self.sealed_blocks.push(id);
@@ -68,10 +77,14 @@ impl Builder {
     }
 
     pub fn finish(mut self) -> MirFun {
-        for (id, phis) in self.incomplete_phis.drain().collect_vec() {
-            for dest in phis {
-                self.add_phi_operands(id, dest);
-            }
+        for dest in std::mem::take(&mut self.incomplete_phis) {
+            let id = self
+                .definitions
+                .iter()
+                .position(|defs| defs.contains(&dest))
+                .unwrap();
+
+            self.add_phi_operands(BlockID(id), dest);
         }
 
         if self.active_block().term.is_none() {
@@ -161,7 +174,7 @@ impl Builder {
         } else {
             let dest = self.fresh_var(var_id);
 
-            self.incomplete_phis.entry(block).or_default().push(dest);
+            self.incomplete_phis.push(dest);
             self.definitions[block].push(dest);
             self.fun
                 .get_block_mut(block)
