@@ -23,11 +23,17 @@ pub struct MirFun {
     pub return_ty: Option<MirType>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct BlockID(pub usize);
+type Variable = usize;
+type Generation = usize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Register(usize, usize);
+pub enum Register {
+    Variable(Variable, Generation),
+    Temporary(usize),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct BlockID(pub usize);
 
 #[derive(Debug, Clone)]
 pub struct BasicBlock {

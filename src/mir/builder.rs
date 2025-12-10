@@ -6,9 +6,6 @@ use crate::{
     ops::{BinOp, UnOp},
 };
 
-pub type Variable = usize;
-type Generation = usize;
-
 pub struct Builder {
     fun: MirFun,
     active_id: BlockID,

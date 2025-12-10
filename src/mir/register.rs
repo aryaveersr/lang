@@ -1,30 +1,24 @@
-use crate::mir::Register;
+use crate::mir::{Generation, Register, Variable};
 
 impl Register {
-    pub fn temporary(id: usize) -> Self {
-        Self(0, id)
-    }
-
-    pub fn variable(variable: usize, generation: usize) -> Self {
-        debug_assert!(variable != 0);
-        Self(variable, generation)
-    }
-
-    pub fn is_temporary(&self) -> bool {
-        self.0 == 0
-    }
-
     pub fn is_variable(&self) -> bool {
-        self.0 != 0
+        match self {
+            Register::Variable(_, _) => true,
+            _ => false,
+        }
     }
 
-    pub fn get_variable(&self) -> usize {
-        debug_assert!(self.0 != 0);
-        self.0
+    pub fn as_variable(&self) -> Option<(Variable, Generation)> {
+        match self {
+            Register::Variable(variable, generation) => Some((*variable, *generation)),
+            _ => None,
+        }
     }
 
-    pub fn get_generation(&self) -> usize {
-        debug_assert!(self.0 != 0);
-        self.1
+    pub fn as_temporary(&self) -> Option<usize> {
+        match self {
+            Register::Temporary(id) => Some(*id),
+            _ => None,
+        }
     }
 }
