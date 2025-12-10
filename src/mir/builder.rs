@@ -2,7 +2,9 @@ use itertools::Itertools as _;
 use std::collections::HashMap;
 
 use crate::{
-    mir::{BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, Phi, Reg, Term, VarID, cfg::Cfg},
+    mir::{
+        BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, Phi, Reg, Term, Value, VarID, cfg::Cfg,
+    },
     ops::{BinOp, UnOp},
 };
 
@@ -94,7 +96,7 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_var(&mut self, value: Reg) -> Reg {
+    pub fn declare_var(&mut self, value: Value) -> Reg {
         let new_id = Reg::new_var(self.next_var_id, 0);
 
         self.var_gens.insert(self.next_var_id, 1);
@@ -110,7 +112,7 @@ impl Builder {
         new_id
     }
 
-    pub fn assign_var(&mut self, var: Reg, value: Reg) {
+    pub fn assign_var(&mut self, var: Reg, value: Value) {
         let new_id = self.fresh_var(var.get_var_id().unwrap());
 
         self.definitions[self.active_id].push(new_id);
@@ -198,10 +200,10 @@ impl Builder {
 
     fn push_instr(&mut self, mut instr: Instr) {
         for value in instr.operands() {
-            if let Some(var_id) = value.get_var_id()
+            if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
                 && let Some(new_value) = self.read_var(var_id, self.active_id)
             {
-                *value = new_value.1;
+                *value = Value::Reg(new_value.1);
             }
         }
 
@@ -210,10 +212,10 @@ impl Builder {
 
     fn push_term(&mut self, mut term: Term) {
         if let Some(value) = term.operand()
-            && let Some(var_id) = value.get_var_id()
+            && let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
             && let Some(new_value) = self.read_var(var_id, self.active_id)
         {
-            *value = new_value.1;
+            *value = Value::Reg(new_value.1);
         }
 
         self.active_block().term = Some(term);
@@ -245,7 +247,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_unary(&mut self, op: UnOp, arg: Reg) -> Reg {
+    pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -256,7 +258,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_binary(&mut self, op: BinOp, lhs: Reg, rhs: Reg) -> Reg {
+    pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -267,7 +269,7 @@ impl Builder {
         dest
     }
 
-    pub fn build_call(&mut self, name: String, args: Vec<Reg>) -> Reg {
+    pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Reg {
         let dest = self.fresh_temp();
 
         self.push_instr(Instr {
@@ -284,7 +286,7 @@ impl Builder {
         self.push_term(Term::Jump { target });
     }
 
-    pub fn build_branch(&mut self, cond: Reg, then_block: BlockID, else_block: BlockID) {
+    pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
         self.add_flow(then_block);
         self.add_flow(else_block);
 
@@ -295,7 +297,7 @@ impl Builder {
         });
     }
 
-    pub fn build_return(&mut self, value: Option<Reg>) {
+    pub fn build_return(&mut self, value: Option<Value>) {
         self.push_term(Term::Return { value });
     }
 }

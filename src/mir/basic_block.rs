@@ -16,28 +16,4 @@ impl BasicBlock {
             .find(|phi| phi.dest == dest)
             .expect("No phi exists for the destination.")
     }
-
-    pub fn values_mut<F: FnMut(&mut Reg)>(&mut self, mut f: F) {
-        for phi in &mut self.phis {
-            f(&mut phi.dest);
-
-            for (_, src) in &mut phi.srcs {
-                f(src);
-            }
-        }
-
-        for instr in &mut self.instrs {
-            f(&mut instr.dest);
-
-            for op in instr.operands() {
-                f(op);
-            }
-        }
-
-        if let Some(term) = &mut self.term
-            && let Some(operand) = term.operand()
-        {
-            f(operand);
-        }
-    }
 }

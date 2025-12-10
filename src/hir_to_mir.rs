@@ -1,6 +1,6 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Reg, builder::Builder},
+    mir::{BlockID, MirFun, MirModule, MirType, Reg, Value, builder::Builder},
     scope::Scope,
 };
 
@@ -128,8 +128,8 @@ impl HirToMir {
                     self.lower_expr(builder, expr)
                 } else {
                     match ty.unwrap() {
-                        HirType::Bool => builder.build_const_bool(false),
-                        HirType::Num => builder.build_const_num(0),
+                        HirType::Bool => Value::Bool(false),
+                        HirType::Num => Value::Num(0),
 
                         HirType::Void => unreachable!(),
                     }
@@ -152,24 +152,24 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr(&mut self, builder: &mut Builder, expr: Expr) -> Reg {
+    fn lower_expr(&mut self, builder: &mut Builder, expr: Expr) -> Value {
         match expr {
-            Expr::Bool { value } => builder.build_const_bool(value),
-            Expr::Num { value } => builder.build_const_num(value),
-            Expr::Var { name } => self.scope.get(name).unwrap().to_owned(),
-            Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
+            Expr::Bool { value } => Value::Bool(value),
+            Expr::Num { value } => Value::Num(value),
+            Expr::Var { name } => Value::Reg(self.scope.get(name).unwrap().to_owned()),
+            Expr::Call { name, args } => Value::Reg(self.lower_expr_call(builder, name, args)),
 
             Expr::Unary { op, expr } => {
                 let arg = self.lower_expr(builder, *expr);
 
-                builder.build_unary(op, arg)
+                Value::Reg(builder.build_unary(op, arg))
             }
 
             Expr::Binary { op, lhs, rhs } => {
                 let lhs = self.lower_expr(builder, *lhs);
                 let rhs = self.lower_expr(builder, *rhs);
 
-                builder.build_binary(op, lhs, rhs)
+                Value::Reg(builder.build_binary(op, lhs, rhs))
             }
         }
     }
