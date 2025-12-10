@@ -23,12 +23,12 @@ pub struct MirFun {
     pub return_ty: Option<MirType>,
 }
 
-type Variable = usize;
+type VariableID = usize;
 type Generation = usize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Register {
-    Variable(Variable, Generation),
+    Variable(VariableID, Generation),
     Temporary(usize),
 }
 
