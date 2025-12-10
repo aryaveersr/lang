@@ -28,7 +28,7 @@ type Gen = usize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Reg {
-    Var(VarID, Gen),
+    Var { var_id: VarID, genn: Gen },
     Temp(usize),
 }
 

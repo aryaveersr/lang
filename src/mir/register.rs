@@ -1,16 +1,20 @@
 use crate::mir::{Gen, Reg, VarID};
 
 impl Reg {
+    pub fn new_var(var_id: VarID, genn: Gen) -> Self {
+        Self::Var { var_id, genn }
+    }
+
     pub fn is_var(&self) -> bool {
         match self {
-            Self::Var(..) => true,
+            Self::Var { .. } => true,
             Self::Temp(..) => false,
         }
     }
 
     pub fn as_var(&self) -> Option<(VarID, Gen)> {
         match self {
-            Self::Var(var_id, genn) => Some((*var_id, *genn)),
+            Self::Var { var_id, genn } => Some((*var_id, *genn)),
             Self::Temp(..) => None,
         }
     }
@@ -22,7 +26,7 @@ impl Reg {
     pub fn as_temp(&self) -> Option<usize> {
         match self {
             Self::Temp(id) => Some(*id),
-            Self::Var(..) => None,
+            Self::Var { .. } => None,
         }
     }
 }

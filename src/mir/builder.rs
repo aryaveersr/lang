@@ -82,7 +82,8 @@ impl Builder {
     }
 
     pub fn declare_var(&mut self, value: Reg) -> Reg {
-        let new_id = Reg::Var(self.next_var_id, 0);
+        let new_id = Reg::new_var(self.next_var_id, 0);
+
         self.var_gens.insert(self.next_var_id, 1);
         self.next_var_id += 1;
 
@@ -108,7 +109,7 @@ impl Builder {
     }
 
     fn fresh_var(&mut self, var_id: VarID) -> Reg {
-        let new_id = Reg::Var(var_id, self.var_gens[&var_id]);
+        let new_id = Reg::new_var(var_id, self.var_gens[&var_id]);
         self.var_gens.entry(var_id).and_modify(|g| *g += 1);
 
         new_id
