@@ -211,12 +211,13 @@ impl Builder {
     }
 
     fn push_term(&mut self, mut term: Term) {
-        if let Some(value) = term.operand()
-            && let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
-            && let Some(new_value) = self.read_var(var_id, self.active_id)
-        {
-            *value = Value::Reg(new_value.1);
-        }
+        term.update_operand(|value| {
+            if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
+                && let Some(new_value) = self.read_var(var_id, self.active_id)
+            {
+                *value = Value::Reg(new_value.1);
+            }
+        });
 
         self.active_block().term = Some(term);
     }

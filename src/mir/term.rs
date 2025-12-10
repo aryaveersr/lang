@@ -1,11 +1,10 @@
 use crate::mir::{Term, Value};
 
 impl Term {
-    pub fn operand(&mut self) -> Option<&mut Value> {
+    pub fn update_operand<F: FnMut(&mut Value)>(&mut self, mut f: F) {
         match self {
-            Self::Jump { .. } => None,
-            Self::Branch { cond, .. } => Some(cond),
-            Self::Return { value } => value.as_mut(),
+            Self::Jump { .. } | Self::Return { value: None } => {}
+            Self::Return { value: Some(cond) } | Self::Branch { cond, .. } => f(cond),
         }
     }
 }
