@@ -15,6 +15,7 @@ pub struct Builder {
     var_gens: HashMap<VarID, Gen>,
     cfg: Cfg,
     next_temp: usize,
+    next_var_id: usize,
 }
 
 impl Builder {
@@ -33,6 +34,7 @@ impl Builder {
             var_gens: HashMap::new(),
             cfg: Cfg::default(),
             next_temp: 0,
+            next_var_id: 0,
         }
     }
 
@@ -79,9 +81,10 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_var(&mut self, var_id: VarID, value: Reg) -> Reg {
-        self.var_gens.insert(var_id, 1);
-        let new_id = Reg::Var(var_id, 0);
+    pub fn declare_var(&mut self, value: Reg) -> Reg {
+        let new_id = Reg::Var(self.next_var_id, 0);
+        self.var_gens.insert(self.next_var_id, 1);
+        self.next_var_id += 1;
 
         self.definitions[self.active_id].push(new_id);
 
