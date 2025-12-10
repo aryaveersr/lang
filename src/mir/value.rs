@@ -16,6 +16,18 @@ impl Value {
     }
 }
 
+impl From<i32> for Value {
+    fn from(value: i32) -> Self {
+        Self::Num(value)
+    }
+}
+
+impl From<bool> for Value {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
 impl From<Reg> for Value {
     fn from(reg: Reg) -> Self {
         Self::Reg(reg)
