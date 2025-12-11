@@ -96,7 +96,7 @@ impl Builder {
             self.add_phi_operands(BlockID(id), dest);
         }
 
-        if self.active_block().term.is_none() {
+        if self.fun.blocks[self.active_id].term.is_none() {
             self.build_return(None);
         }
 
@@ -194,34 +194,26 @@ impl Builder {
             Some((block, Value::Reg(dest)))
         }
     }
-}
 
-impl Builder {
     fn add_flow(&mut self, to: BlockID) {
-        debug_assert!(!self.sealed_blocks.contains(&to));
+        assert!(!self.sealed_blocks.contains(&to));
         self.cfg.add_edge(self.active_id, to);
     }
 
-    fn active_block(&mut self) -> &mut BasicBlock {
-        &mut self.fun.blocks[self.active_id]
-    }
-
     fn push_instr(&mut self, instr: Instr) {
-        self.active_block().instrs.push(instr);
+        self.fun.blocks[self.active_id].instrs.push(instr);
     }
 
     fn push_term(&mut self, term: Term) {
-        self.active_block().term = Some(term);
+        self.fun.blocks[self.active_id].term = Some(term);
     }
 
-    fn use_value(&mut self, value: Value) -> Value {
+    fn resolve_value(&mut self, value: &mut Value) {
         if let Value::Reg(reg) = value
             && let Some(var_id) = reg.get_var_id()
             && let Some(new_value) = self.read_var(var_id, self.active_id)
         {
-            new_value.1
-        } else {
-            value
+            *value = new_value.1;
         }
     }
 
@@ -229,8 +221,8 @@ impl Builder {
         self.fun.blocks[self.active_id].term.is_some()
     }
 
-    pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
-        let arg = self.use_value(arg);
+    pub fn build_unary(&mut self, op: UnOp, mut arg: Value) -> Value {
+        self.resolve_value(&mut arg);
 
         if arg.is_const() {
             match op {
@@ -249,9 +241,9 @@ impl Builder {
         }
     }
 
-    pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Value {
-        let lhs = self.use_value(lhs);
-        let rhs = self.use_value(rhs);
+    pub fn build_binary(&mut self, op: BinOp, mut lhs: Value, mut rhs: Value) -> Value {
+        self.resolve_value(&mut lhs);
+        self.resolve_value(&mut rhs);
 
         if lhs.is_const() && rhs.is_const() {
             match op {
@@ -280,9 +272,12 @@ impl Builder {
         }
     }
 
-    pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Value {
+    pub fn build_call(&mut self, name: String, mut args: Vec<Value>) -> Value {
+        for arg in &mut args {
+            self.resolve_value(arg);
+        }
+
         let dest = self.fresh_temp();
-        let args = args.into_iter().map(|arg| self.use_value(arg)).collect();
 
         self.push_instr(Instr {
             dest,
@@ -294,12 +289,11 @@ impl Builder {
 
     pub fn build_jump(&mut self, target: BlockID) {
         self.add_flow(target);
-
         self.push_term(Term::Jump { target });
     }
 
-    pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
-        let cond = self.use_value(cond);
+    pub fn build_branch(&mut self, mut cond: Value, then_block: BlockID, else_block: BlockID) {
+        self.resolve_value(&mut cond);
 
         if cond.is_const() {
             self.build_jump(if cond.as_bool() {
@@ -319,8 +313,10 @@ impl Builder {
         }
     }
 
-    pub fn build_return(&mut self, value: Option<Value>) {
-        let value = value.map(|value| self.use_value(value));
+    pub fn build_return(&mut self, mut value: Option<Value>) {
+        if let Some(value) = &mut value {
+            self.resolve_value(value);
+        }
 
         self.push_term(Term::Return { value });
     }
