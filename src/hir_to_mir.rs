@@ -148,9 +148,9 @@ impl HirToMir {
 
     fn lower_expr(&mut self, builder: &mut Builder, expr: Expr) -> Value {
         match expr {
-            Expr::Bool { value } => value.into(),
-            Expr::Num { value } => value.into(),
-            Expr::Var { name } => self.scope.get(name).unwrap().to_owned().into(),
+            Expr::Bool { value } => Value::Bool(value),
+            Expr::Num { value } => Value::Num(value),
+            Expr::Var { name } => Value::Reg(self.scope.get(name).unwrap().to_owned()),
             Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
 
             Expr::Unary { op, expr } => {

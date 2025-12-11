@@ -149,7 +149,7 @@ impl Builder {
                 return Some((block, *value));
             }
 
-            return Some((block, (*reg).into()));
+            return Some((block, Value::Reg(*reg)));
         }
 
         if self.sealed_blocks.contains(&block) {
@@ -173,7 +173,7 @@ impl Builder {
                     self.definitions[block].push(dest);
                     self.fun.blocks[block].phis.push(Phi { dest, srcs });
 
-                    Some((block, dest.into()))
+                    Some((block, Value::Reg(dest)))
                 }
             }
         } else {
@@ -183,7 +183,7 @@ impl Builder {
             self.definitions[block].push(dest);
             self.fun.blocks[block].phis.push(Phi { dest, srcs: vec![] });
 
-            Some((block, dest.into()))
+            Some((block, Value::Reg(dest)))
         }
     }
 }
