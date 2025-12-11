@@ -1,13 +1,13 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Value, builder::Builder},
+    mir::{BlockID, MirFun, MirModule, MirType, Reg, Value, builder::Builder},
     scope::Scope,
 };
 
 #[derive(Default)]
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
-    scope: Scope<Value>,
+    scope: Scope<Reg>,
 }
 
 impl HirToMir {
@@ -150,7 +150,7 @@ impl HirToMir {
         match expr {
             Expr::Bool { value } => value.into(),
             Expr::Num { value } => value.into(),
-            Expr::Var { name } => self.scope.get(name).unwrap().to_owned(),
+            Expr::Var { name } => self.scope.get(name).unwrap().to_owned().into(),
             Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
 
             Expr::Unary { op, expr } => {

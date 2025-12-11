@@ -15,17 +15,10 @@ impl Value {
         }
     }
 
-    pub fn as_reg(&self) -> Option<Reg> {
+    pub fn as_reg(&self) -> Reg {
         match self {
-            Self::Reg(reg) => Some(*reg),
-            Self::Bool(..) | Self::Num(..) => None,
-        }
-    }
-
-    pub fn as_reg_mut(&mut self) -> Option<&mut Reg> {
-        match self {
-            Self::Reg(reg) => Some(reg),
-            Self::Bool(..) | Self::Num(..) => None,
+            Self::Reg(reg) => *reg,
+            Self::Bool(..) | Self::Num(..) => unreachable!(),
         }
     }
 }

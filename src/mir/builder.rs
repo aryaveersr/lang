@@ -103,18 +103,18 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_var(&mut self, value: Value) -> Value {
-        let var = Value::Reg(Reg::new_var(self.next_var_id, 0));
+    pub fn declare_var(&mut self, value: Value) -> Reg {
+        let reg = Reg::new_var(self.next_var_id, 0);
 
         self.var_gens.insert(self.next_var_id, 0);
-        self.assign_var(var, value);
+        self.assign_var(reg, value);
         self.next_var_id += 1;
 
-        var
+        reg
     }
 
-    pub fn assign_var(&mut self, var: Value, value: Value) {
-        let new_id = self.fresh_var(var.as_reg().unwrap().get_var_id().unwrap());
+    pub fn assign_var(&mut self, reg: Reg, value: Value) {
+        let new_id = self.fresh_var(reg.get_var_id().unwrap());
 
         self.definitions[self.active_id].push(new_id);
         self.consts
@@ -207,7 +207,8 @@ impl Builder {
     }
 
     fn use_value(&mut self, value: Value) -> Value {
-        if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
+        if let Value::Reg(reg) = value
+            && let Some(var_id) = reg.get_var_id()
             && let Some(new_value) = self.read_var(var_id, self.active_id)
         {
             new_value.1
@@ -217,9 +218,11 @@ impl Builder {
     }
 
     fn as_const(&self, value: Value) -> Option<Value> {
-        value
-            .as_reg()
-            .map_or(Some(value), |reg| self.consts.get(&reg).copied())
+        if let Value::Reg(reg) = value {
+            self.consts.get(&reg).copied()
+        } else {
+            Some(value)
+        }
     }
 
     pub fn is_terminated(&self) -> bool {
