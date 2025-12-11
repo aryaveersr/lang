@@ -117,8 +117,16 @@ impl Builder {
         let new_id = self.fresh_var(reg.get_var_id().unwrap());
 
         self.definitions[self.active_id].push(new_id);
-        self.consts
-            .insert(new_id, self.resolve_constant(value).unwrap_or(value));
+        self.consts.insert(
+            new_id,
+            if let Value::Reg(reg) = value
+                && let Some(const_value) = self.consts.get(&reg)
+            {
+                *const_value
+            } else {
+                value
+            },
+        );
     }
 
     fn fresh_var(&mut self, var_id: VarID) -> Reg {
@@ -217,14 +225,6 @@ impl Builder {
         }
     }
 
-    fn resolve_constant(&self, value: Value) -> Option<Value> {
-        if let Value::Reg(reg) = value {
-            self.consts.get(&reg).copied()
-        } else {
-            Some(value)
-        }
-    }
-
     pub fn is_terminated(&self) -> bool {
         self.fun.blocks[self.active_id].term.is_some()
     }
@@ -232,8 +232,7 @@ impl Builder {
     pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
         let arg = self.use_value(arg);
 
-        #[expect(clippy::option_if_let_else)]
-        if let Some(arg) = self.resolve_constant(arg) {
+        if arg.is_const() {
             match op {
                 UnOp::Negate => Value::Num(-arg.as_num()),
                 UnOp::Not => Value::Bool(!arg.as_bool()),
@@ -254,9 +253,7 @@ impl Builder {
         let lhs = self.use_value(lhs);
         let rhs = self.use_value(rhs);
 
-        if let Some(lhs) = self.resolve_constant(lhs)
-            && let Some(rhs) = self.resolve_constant(rhs)
-        {
+        if lhs.is_const() && rhs.is_const() {
             match op {
                 BinOp::Add => Value::Num(lhs.as_num() + rhs.as_num()),
                 BinOp::Sub => Value::Num(lhs.as_num() - rhs.as_num()),
@@ -304,7 +301,7 @@ impl Builder {
     pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
         let cond = self.use_value(cond);
 
-        if let Some(cond) = self.resolve_constant(cond) {
+        if cond.is_const() {
             self.build_jump(if cond.as_bool() {
                 then_block
             } else {

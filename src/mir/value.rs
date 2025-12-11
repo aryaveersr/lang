@@ -21,4 +21,11 @@ impl Value {
             Self::Bool(..) | Self::Num(..) => unreachable!(),
         }
     }
+
+    pub fn is_const(&self) -> bool {
+        match self {
+            Self::Num(..) | Self::Bool(..) => true,
+            Self::Reg(..) => false,
+        }
+    }
 }
