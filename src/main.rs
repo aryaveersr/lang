@@ -8,19 +8,10 @@ use lang::{
 };
 
 fn compile(source: &str) {
-    println!("== Tokens ==");
-
-    for token in Lexer::new(source) {
-        println!("{token}");
-    }
-
     let mut hir = match Parser::new(Lexer::new(source)).parse() {
         Ok(hir) => hir,
         Err(err) => return println!("Parse Error:\n{err}"),
     };
-
-    println!("\n== HIR ==");
-    println!("{}", serde_yaml::to_string(&hir).unwrap());
 
     if let Err(err) = TypeResolver::new().resolve(&mut hir) {
         println!("Type Resolver Error:\n{err}");
