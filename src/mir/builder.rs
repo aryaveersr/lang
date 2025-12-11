@@ -145,11 +145,11 @@ impl Builder {
             .rev()
             .find(|v| v.get_var_id() == Some(var_id))
         {
-            return Some(
-                self.consts
-                    .get(reg)
-                    .map_or_else(|| (block, (*reg).into()), |value| (block, *value)),
-            );
+            if let Some(value) = self.consts.get(reg) {
+                return Some((block, *value));
+            }
+
+            return Some((block, (*reg).into()));
         }
 
         if self.sealed_blocks.contains(&block) {

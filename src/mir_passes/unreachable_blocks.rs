@@ -90,10 +90,8 @@ impl<'fun> UnreachableBlocks<'fun> {
                     while let Some(target) = self.renamed_blocks.get(id) {
                         *id = *target;
                     }
-                } else {
-                    if let Some(target) = self.renamed_blocks.get(id) {
-                        *id = *target;
-                    }
+                } else if let Some(target) = self.renamed_blocks.get(id) {
+                    *id = *target;
                 }
             };
 
