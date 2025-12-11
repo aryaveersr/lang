@@ -149,6 +149,7 @@ impl Builder {
     fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Value)> {
         if let Some(value) = self.definitions[block]
             .iter()
+            .rev()
             .find(|v| v.get_var_id() == Some(var_id))
         {
             return Some((block, (*value).into()));
@@ -167,7 +168,7 @@ impl Builder {
 
                 if srcs.is_empty() {
                     None
-                } else if srcs.len() == 1 {
+                } else if srcs.iter().all(|src| src.1 == srcs[0].1) {
                     Some((block, srcs[0].1))
                 } else {
                     let dest = self.fresh_var(var_id);

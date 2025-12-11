@@ -57,7 +57,7 @@ pub struct Instr {
     pub kind: InstrKind,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Value {
     Bool(bool),
     Num(i32),
