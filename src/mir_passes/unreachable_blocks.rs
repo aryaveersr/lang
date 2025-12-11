@@ -44,6 +44,7 @@ impl<'fun> UnreachableBlocks<'fun> {
 
         if block.instrs.is_empty()
             && block.phis.is_empty()
+            && id != BlockID(0)
             && let Some(Term::Jump { target }) = block.term
         {
             self.renamed_blocks.insert(id, target);
