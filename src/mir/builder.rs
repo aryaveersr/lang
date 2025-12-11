@@ -201,28 +201,22 @@ impl Builder {
         &mut self.fun.blocks[self.active_id]
     }
 
-    fn push_instr(&mut self, mut instr: Instr) {
-        instr.update_operands(|value| {
-            if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
-                && let Some(new_value) = self.read_var(var_id, self.active_id)
-            {
-                *value = new_value.1;
-            }
-        });
-
+    fn push_instr(&mut self, instr: Instr) {
         self.active_block().instrs.push(instr);
     }
 
-    fn push_term(&mut self, mut term: Term) {
-        term.update_operand(|value| {
-            if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
-                && let Some(new_value) = self.read_var(var_id, self.active_id)
-            {
-                *value = new_value.1;
-            }
-        });
-
+    fn push_term(&mut self, term: Term) {
         self.active_block().term = Some(term);
+    }
+
+    fn use_value(&mut self, value: Value) -> Value {
+        if let Some(var_id) = value.as_reg().and_then(|reg| reg.get_var_id())
+            && let Some(new_value) = self.read_var(var_id, self.active_id)
+        {
+            new_value.1
+        } else {
+            value
+        }
     }
 
     pub fn is_terminated(&self) -> bool {
@@ -253,6 +247,7 @@ impl Builder {
 
     pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Reg {
         let dest = self.fresh_temp();
+        let arg = self.use_value(arg);
 
         self.push_instr(Instr {
             dest,
@@ -264,6 +259,8 @@ impl Builder {
 
     pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Reg {
         let dest = self.fresh_temp();
+        let lhs = self.use_value(lhs);
+        let rhs = self.use_value(rhs);
 
         self.push_instr(Instr {
             dest,
@@ -275,6 +272,7 @@ impl Builder {
 
     pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Reg {
         let dest = self.fresh_temp();
+        let args = args.into_iter().map(|arg| self.use_value(arg)).collect();
 
         self.push_instr(Instr {
             dest,
@@ -291,6 +289,8 @@ impl Builder {
     }
 
     pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
+        let cond = self.use_value(cond);
+
         self.add_flow(then_block);
         self.add_flow(else_block);
 
@@ -302,6 +302,8 @@ impl Builder {
     }
 
     pub fn build_return(&mut self, value: Option<Value>) {
+        let value = value.map(|value| self.use_value(value));
+
         self.push_term(Term::Return { value });
     }
 }

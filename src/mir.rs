@@ -5,10 +5,8 @@ mod block_id;
 pub mod builder;
 mod cfg;
 mod fun;
-mod instr;
 mod printer;
 mod register;
-mod term;
 mod r#type;
 mod value;
 
