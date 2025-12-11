@@ -102,19 +102,12 @@ impl Builder {
     }
 
     pub fn declare_var(&mut self, value: Value) -> Value {
-        let new_id = Reg::new_var(self.next_var_id, 0);
+        let var = Value::Reg(Reg::new_var(self.next_var_id, 0));
 
-        self.var_gens.insert(self.next_var_id, 1);
-        self.next_var_id += 1;
+        self.var_gens.insert(self.next_var_id, 0);
+        self.assign_var(var, value);
 
-        self.definitions[self.active_id].push(new_id);
-
-        self.push_instr(Instr {
-            dest: new_id,
-            kind: InstrKind::Copy { src: value },
-        });
-
-        Value::Reg(new_id)
+        var
     }
 
     pub fn assign_var(&mut self, var: Value, value: Value) {
