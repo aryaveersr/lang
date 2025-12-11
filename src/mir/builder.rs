@@ -118,7 +118,7 @@ impl Builder {
 
         self.definitions[self.active_id].push(new_id);
         self.consts
-            .insert(new_id, self.as_const(value).unwrap_or(value));
+            .insert(new_id, self.resolve_constant(value).unwrap_or(value));
     }
 
     fn fresh_var(&mut self, var_id: VarID) -> Reg {
@@ -217,7 +217,7 @@ impl Builder {
         }
     }
 
-    fn as_const(&self, value: Value) -> Option<Value> {
+    fn resolve_constant(&self, value: Value) -> Option<Value> {
         if let Value::Reg(reg) = value {
             self.consts.get(&reg).copied()
         } else {
@@ -232,30 +232,30 @@ impl Builder {
     pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
         let arg = self.use_value(arg);
 
-        self.as_const(arg).map_or_else(
-            || {
-                let dest = self.fresh_temp();
-
-                self.push_instr(Instr {
-                    dest,
-                    kind: InstrKind::Unary { op, arg },
-                });
-
-                Value::Reg(dest)
-            },
-            |arg| match op {
+        #[expect(clippy::option_if_let_else)]
+        if let Some(arg) = self.resolve_constant(arg) {
+            match op {
                 UnOp::Negate => Value::Num(-arg.as_num()),
                 UnOp::Not => Value::Bool(!arg.as_bool()),
-            },
-        )
+            }
+        } else {
+            let dest = self.fresh_temp();
+
+            self.push_instr(Instr {
+                dest,
+                kind: InstrKind::Unary { op, arg },
+            });
+
+            Value::Reg(dest)
+        }
     }
 
     pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Value {
         let lhs = self.use_value(lhs);
         let rhs = self.use_value(rhs);
 
-        if let Some(lhs) = self.as_const(lhs)
-            && let Some(rhs) = self.as_const(rhs)
+        if let Some(lhs) = self.resolve_constant(lhs)
+            && let Some(rhs) = self.resolve_constant(rhs)
         {
             match op {
                 BinOp::Add => Value::Num(lhs.as_num() + rhs.as_num()),
@@ -304,12 +304,12 @@ impl Builder {
     pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
         let cond = self.use_value(cond);
 
-        if let Some(cond) = self.as_const(cond) {
-            if cond.as_bool() {
-                self.build_jump(then_block);
+        if let Some(cond) = self.resolve_constant(cond) {
+            self.build_jump(if cond.as_bool() {
+                then_block
             } else {
-                self.build_jump(else_block);
-            }
+                else_block
+            });
         } else {
             self.add_flow(then_block);
             self.add_flow(else_block);
