@@ -64,9 +64,6 @@ pub enum Value {
 
 #[derive(Debug, Clone)]
 pub enum InstrKind {
-    ConstBool { value: bool },
-    ConstNum { value: i32 },
-    Copy { src: Value },
     Unary { op: UnOp, arg: Value },
     Binary { op: BinOp, lhs: Value, rhs: Value },
     Call { name: String, args: Vec<Value> },
