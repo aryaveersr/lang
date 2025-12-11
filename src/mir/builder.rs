@@ -3,7 +3,8 @@ use std::collections::HashMap;
 
 use crate::{
     mir::{
-        BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, Phi, Reg, Term, Value, VarID, cfg::Cfg,
+        BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, MirType, Phi, Reg, Term, Value, VarID,
+        cfg::Cfg,
     },
     ops::{BinOp, UnOp},
 };
@@ -70,6 +71,10 @@ impl Builder {
 
     pub fn set_active(&mut self, id: BlockID) {
         self.active_id = id;
+    }
+
+    pub fn set_return_type(&mut self, ty: Option<MirType>) {
+        self.fun.return_ty = ty;
     }
 
     pub fn fresh_temp(&mut self) -> Reg {

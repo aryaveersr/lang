@@ -1,4 +1,4 @@
-use crate::mir::{MirFun, MirType};
+use crate::mir::MirFun;
 
 impl MirFun {
     pub fn new(name: String) -> Self {
@@ -8,11 +8,5 @@ impl MirFun {
             blocks: Vec::new(),
             return_ty: None,
         }
-    }
-
-    #[must_use]
-    pub fn with_return_type(mut self, ty: Option<MirType>) -> Self {
-        self.return_ty = ty;
-        self
     }
 }
