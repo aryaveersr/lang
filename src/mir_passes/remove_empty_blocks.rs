@@ -15,7 +15,12 @@ pub fn remove_empty_blocks(fun: &mut MirFun) {
             && let Some(Term::Jump { target }) = block.term
         {
             let renamed_to = renamed_blocks.get(&target).copied().unwrap_or(target);
+
             renamed_blocks.insert(block.id, renamed_to);
+            renamed_blocks
+                .values_mut()
+                .filter(|id| **id == block.id)
+                .for_each(|id| *id = renamed_to);
         }
     }
 
