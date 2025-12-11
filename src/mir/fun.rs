@@ -1,4 +1,4 @@
-use crate::mir::{BasicBlock, BlockID, MirFun, MirType};
+use crate::mir::{MirFun, MirType};
 
 impl MirFun {
     pub fn new(name: String) -> Self {
@@ -8,20 +8,6 @@ impl MirFun {
             blocks: Vec::new(),
             return_ty: None,
         }
-    }
-
-    pub fn get_block(&self, id: BlockID) -> &BasicBlock {
-        self.blocks
-            .iter()
-            .find(|block| block.id == id)
-            .expect("Invalid Block ID.")
-    }
-
-    pub fn get_block_mut(&mut self, id: BlockID) -> &mut BasicBlock {
-        self.blocks
-            .iter_mut()
-            .find(|block| block.id == id)
-            .expect("Invalid Block ID.")
     }
 
     #[must_use]

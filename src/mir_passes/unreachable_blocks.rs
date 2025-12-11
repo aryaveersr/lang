@@ -29,6 +29,8 @@ impl<'fun> UnreachableBlocks<'fun> {
         self.sweep();
         self.rename_blocks();
         self.remove_phi_sources();
+        self.preserve_index_invariant();
+        self.rename_blocks();
     }
 
     fn mark_block(&mut self, id: BlockID) {
@@ -36,7 +38,7 @@ impl<'fun> UnreachableBlocks<'fun> {
             return;
         }
 
-        let block = self.fun.get_block_mut(id);
+        let block = &self.fun.blocks[id];
 
         if block.instrs.is_empty()
             && block.phis.is_empty()
@@ -107,6 +109,17 @@ impl<'fun> UnreachableBlocks<'fun> {
                 for (src, _) in &mut phi.srcs {
                     try_rename(src);
                 }
+            }
+        }
+    }
+
+    fn preserve_index_invariant(&mut self) {
+        self.renamed_blocks.clear();
+
+        for (i, block) in self.fun.blocks.iter_mut().enumerate() {
+            if block.id != BlockID(i) {
+                self.renamed_blocks.insert(block.id, BlockID(i));
+                block.id = BlockID(i);
             }
         }
     }

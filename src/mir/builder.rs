@@ -136,7 +136,7 @@ impl Builder {
 
         for pred in preds {
             if let Some(src) = self.read_var(var_id, pred) {
-                self.fun.get_block_mut(id).get_phi_mut(dest).srcs.push(src);
+                self.fun.blocks[id].get_phi_mut(dest).srcs.push(src);
             }
         }
     }
@@ -168,7 +168,7 @@ impl Builder {
                     let dest = self.fresh_var(var_id);
 
                     self.definitions[block].push(dest);
-                    self.fun.get_block_mut(block).phis.push(Phi { dest, srcs });
+                    self.fun.blocks[block].phis.push(Phi { dest, srcs });
 
                     Some((block, dest.into()))
                 }
@@ -178,10 +178,7 @@ impl Builder {
 
             self.incomplete_phis.push(dest);
             self.definitions[block].push(dest);
-            self.fun
-                .get_block_mut(block)
-                .phis
-                .push(Phi { dest, srcs: vec![] });
+            self.fun.blocks[block].phis.push(Phi { dest, srcs: vec![] });
 
             Some((block, dest.into()))
         }
@@ -195,7 +192,7 @@ impl Builder {
     }
 
     fn active_block(&mut self) -> &mut BasicBlock {
-        self.fun.get_block_mut(self.active_id)
+        &mut self.fun.blocks[self.active_id]
     }
 
     fn push_instr(&mut self, mut instr: Instr) {
@@ -223,7 +220,7 @@ impl Builder {
     }
 
     pub fn is_terminated(&self) -> bool {
-        self.fun.get_block(self.active_id).term.is_some()
+        self.fun.blocks[self.active_id].term.is_some()
     }
 
     pub fn build_const_bool(&mut self, value: bool) -> Reg {
