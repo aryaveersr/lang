@@ -1,4 +1,4 @@
-use crate::mir::{Reg, Value};
+use crate::mir::Value;
 
 impl Value {
     pub fn as_num(&self) -> i32 {
@@ -12,13 +12,6 @@ impl Value {
         match self {
             Self::Bool(value) => *value,
             Self::Num(..) | Self::Reg(..) => unreachable!(),
-        }
-    }
-
-    pub fn as_reg(&self) -> Reg {
-        match self {
-            Self::Reg(reg) => *reg,
-            Self::Bool(..) | Self::Num(..) => unreachable!(),
         }
     }
 
