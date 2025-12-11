@@ -1,13 +1,13 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Reg, Value, builder::Builder},
+    mir::{BlockID, MirFun, MirModule, MirType, Value, builder::Builder},
     scope::Scope,
 };
 
 #[derive(Default)]
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
-    scope: Scope<Reg>,
+    scope: Scope<Value>,
 }
 
 impl HirToMir {
@@ -150,25 +150,25 @@ impl HirToMir {
         match expr {
             Expr::Bool { value } => value.into(),
             Expr::Num { value } => value.into(),
-            Expr::Var { name } => self.scope.get(name).unwrap().to_owned().into(),
-            Expr::Call { name, args } => self.lower_expr_call(builder, name, args).into(),
+            Expr::Var { name } => self.scope.get(name).unwrap().to_owned(),
+            Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
 
             Expr::Unary { op, expr } => {
                 let arg = self.lower_expr(builder, *expr);
 
-                builder.build_unary(op, arg).into()
+                builder.build_unary(op, arg)
             }
 
             Expr::Binary { op, lhs, rhs } => {
                 let lhs = self.lower_expr(builder, *lhs);
                 let rhs = self.lower_expr(builder, *rhs);
 
-                builder.build_binary(op, lhs, rhs).into()
+                builder.build_binary(op, lhs, rhs)
             }
         }
     }
 
-    fn lower_expr_call(&mut self, builder: &mut Builder, name: String, args: Vec<Expr>) -> Reg {
+    fn lower_expr_call(&mut self, builder: &mut Builder, name: String, args: Vec<Expr>) -> Value {
         let args = args
             .into_iter()
             .map(|e| self.lower_expr(builder, e))

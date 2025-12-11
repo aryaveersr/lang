@@ -101,7 +101,7 @@ impl Builder {
         self.fun
     }
 
-    pub fn declare_var(&mut self, value: Value) -> Reg {
+    pub fn declare_var(&mut self, value: Value) -> Value {
         let new_id = Reg::new_var(self.next_var_id, 0);
 
         self.var_gens.insert(self.next_var_id, 1);
@@ -114,11 +114,11 @@ impl Builder {
             kind: InstrKind::Copy { src: value },
         });
 
-        new_id
+        Value::Reg(new_id)
     }
 
-    pub fn assign_var(&mut self, var: Reg, value: Value) {
-        let new_id = self.fresh_var(var.get_var_id().unwrap());
+    pub fn assign_var(&mut self, var: Value, value: Value) {
+        let new_id = self.fresh_var(var.as_reg().unwrap().get_var_id().unwrap());
 
         self.definitions[self.active_id].push(new_id);
 
@@ -223,29 +223,7 @@ impl Builder {
         self.fun.blocks[self.active_id].term.is_some()
     }
 
-    pub fn build_const_bool(&mut self, value: bool) -> Reg {
-        let dest = self.fresh_temp();
-
-        self.push_instr(Instr {
-            dest,
-            kind: InstrKind::ConstBool { value },
-        });
-
-        dest
-    }
-
-    pub fn build_const_num(&mut self, value: i32) -> Reg {
-        let dest = self.fresh_temp();
-
-        self.push_instr(Instr {
-            dest,
-            kind: InstrKind::ConstNum { value },
-        });
-
-        dest
-    }
-
-    pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Reg {
+    pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
         let dest = self.fresh_temp();
         let arg = self.use_value(arg);
 
@@ -254,10 +232,10 @@ impl Builder {
             kind: InstrKind::Unary { op, arg },
         });
 
-        dest
+        Value::Reg(dest)
     }
 
-    pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Reg {
+    pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Value {
         let dest = self.fresh_temp();
         let lhs = self.use_value(lhs);
         let rhs = self.use_value(rhs);
@@ -267,10 +245,10 @@ impl Builder {
             kind: InstrKind::Binary { op, lhs, rhs },
         });
 
-        dest
+        Value::Reg(dest)
     }
 
-    pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Reg {
+    pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Value {
         let dest = self.fresh_temp();
         let args = args.into_iter().map(|arg| self.use_value(arg)).collect();
 
@@ -279,7 +257,7 @@ impl Builder {
             kind: InstrKind::Call { name, args },
         });
 
-        dest
+        Value::Reg(dest)
     }
 
     pub fn build_jump(&mut self, target: BlockID) {
