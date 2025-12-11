@@ -117,11 +117,8 @@ impl Builder {
         let new_id = self.fresh_var(var.as_reg().unwrap().get_var_id().unwrap());
 
         self.definitions[self.active_id].push(new_id);
-
-        self.push_instr(Instr {
-            dest: new_id,
-            kind: InstrKind::Copy { src: value },
-        });
+        self.consts
+            .insert(new_id, self.as_const(value).unwrap_or(value));
     }
 
     fn fresh_var(&mut self, var_id: VarID) -> Reg {
@@ -143,12 +140,16 @@ impl Builder {
     }
 
     fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Value)> {
-        if let Some(value) = self.definitions[block]
+        if let Some(reg) = self.definitions[block]
             .iter()
             .rev()
             .find(|v| v.get_var_id() == Some(var_id))
         {
-            return Some((block, (*value).into()));
+            return Some(
+                self.consts
+                    .get(reg)
+                    .map_or_else(|| (block, (*reg).into()), |value| (block, *value)),
+            );
         }
 
         if self.sealed_blocks.contains(&block) {
@@ -300,10 +301,8 @@ impl Builder {
     pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
         let cond = self.use_value(cond);
 
-        if let Some(cond) = self.as_const(cond)
-            && let Value::Bool(cond) = cond
-        {
-            if cond {
+        if let Some(cond) = self.as_const(cond) {
+            if cond.as_bool() {
                 self.build_jump(then_block);
             } else {
                 self.build_jump(else_block);
