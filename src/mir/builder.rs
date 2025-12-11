@@ -9,6 +9,8 @@ use crate::{
     ops::{BinOp, UnOp},
 };
 
+mod const_folding;
+
 pub struct Builder {
     fun: MirFun,
     active_id: BlockID,
@@ -225,10 +227,7 @@ impl Builder {
         self.resolve_value(&mut arg);
 
         if arg.is_const() {
-            match op {
-                UnOp::Negate => Value::Num(-arg.as_num()),
-                UnOp::Not => Value::Bool(!arg.as_bool()),
-            }
+            op.fold(arg)
         } else {
             let dest = self.fresh_temp();
 
@@ -246,20 +245,7 @@ impl Builder {
         self.resolve_value(&mut rhs);
 
         if lhs.is_const() && rhs.is_const() {
-            match op {
-                BinOp::Add => Value::Num(lhs.as_num() + rhs.as_num()),
-                BinOp::Sub => Value::Num(lhs.as_num() - rhs.as_num()),
-                BinOp::Mul => Value::Num(lhs.as_num() * rhs.as_num()),
-                BinOp::Div => Value::Num(lhs.as_num() / rhs.as_num()),
-                BinOp::Eq => Value::Bool(lhs == rhs),
-                BinOp::NotEq => Value::Bool(lhs != rhs),
-                BinOp::Lesser => Value::Bool(lhs.as_num() < rhs.as_num()),
-                BinOp::LesserEq => Value::Bool(lhs.as_num() <= rhs.as_num()),
-                BinOp::Greater => Value::Bool(lhs.as_num() > rhs.as_num()),
-                BinOp::GreaterEq => Value::Bool(lhs.as_num() >= rhs.as_num()),
-                BinOp::And => Value::Bool(lhs.as_bool() && rhs.as_bool()),
-                BinOp::Or => Value::Bool(lhs.as_bool() || rhs.as_bool()),
-            }
+            op.fold(lhs, rhs)
         } else {
             let dest = self.fresh_temp();
 
