@@ -216,11 +216,9 @@ impl Builder {
     }
 
     fn as_const(&self, value: Value) -> Option<Value> {
-        if let Some(reg) = value.as_reg() {
-            self.consts.get(&reg).cloned()
-        } else {
-            Some(value)
-        }
+        value
+            .as_reg()
+            .map_or(Some(value), |reg| self.consts.get(&reg).copied())
     }
 
     pub fn is_terminated(&self) -> bool {
@@ -230,21 +228,22 @@ impl Builder {
     pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
         let arg = self.use_value(arg);
 
-        if let Some(arg) = self.as_const(arg) {
-            match op {
+        self.as_const(arg).map_or_else(
+            || {
+                let dest = self.fresh_temp();
+
+                self.push_instr(Instr {
+                    dest,
+                    kind: InstrKind::Unary { op, arg },
+                });
+
+                Value::Reg(dest)
+            },
+            |arg| match op {
                 UnOp::Negate => Value::Num(-arg.as_num()),
                 UnOp::Not => Value::Bool(!arg.as_bool()),
-            }
-        } else {
-            let dest = self.fresh_temp();
-
-            self.push_instr(Instr {
-                dest,
-                kind: InstrKind::Unary { op, arg },
-            });
-
-            Value::Reg(dest)
-        }
+            },
+        )
     }
 
     pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Value {
