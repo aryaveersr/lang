@@ -15,6 +15,7 @@ pub struct Builder {
     sealed_blocks: Vec<BlockID>,
     definitions: Vec<Vec<Reg>>,
     incomplete_phis: Vec<Reg>,
+    consts: HashMap<Reg, Value>,
     cfg: Cfg,
     var_gens: HashMap<VarID, Gen>,
     next_temp: usize,
@@ -34,6 +35,7 @@ impl Builder {
             sealed_blocks: vec![entry],
             definitions: vec![Vec::new()],
             incomplete_phis: Vec::new(),
+            consts: HashMap::new(),
             var_gens: HashMap::new(),
             cfg: Cfg::default(),
             next_temp: 0,
@@ -106,6 +108,7 @@ impl Builder {
 
         self.var_gens.insert(self.next_var_id, 0);
         self.assign_var(var, value);
+        self.next_var_id += 1;
 
         var
     }
@@ -212,33 +215,69 @@ impl Builder {
         }
     }
 
+    fn as_const(&self, value: Value) -> Option<Value> {
+        if let Some(reg) = value.as_reg() {
+            self.consts.get(&reg).cloned()
+        } else {
+            Some(value)
+        }
+    }
+
     pub fn is_terminated(&self) -> bool {
         self.fun.blocks[self.active_id].term.is_some()
     }
 
     pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
-        let dest = self.fresh_temp();
         let arg = self.use_value(arg);
 
-        self.push_instr(Instr {
-            dest,
-            kind: InstrKind::Unary { op, arg },
-        });
+        if let Some(arg) = self.as_const(arg) {
+            match op {
+                UnOp::Negate => Value::Num(-arg.as_num()),
+                UnOp::Not => Value::Bool(!arg.as_bool()),
+            }
+        } else {
+            let dest = self.fresh_temp();
 
-        Value::Reg(dest)
+            self.push_instr(Instr {
+                dest,
+                kind: InstrKind::Unary { op, arg },
+            });
+
+            Value::Reg(dest)
+        }
     }
 
     pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Value {
-        let dest = self.fresh_temp();
         let lhs = self.use_value(lhs);
         let rhs = self.use_value(rhs);
 
-        self.push_instr(Instr {
-            dest,
-            kind: InstrKind::Binary { op, lhs, rhs },
-        });
+        if let Some(lhs) = self.as_const(lhs)
+            && let Some(rhs) = self.as_const(rhs)
+        {
+            match op {
+                BinOp::Add => Value::Num(lhs.as_num() + rhs.as_num()),
+                BinOp::Sub => Value::Num(lhs.as_num() - rhs.as_num()),
+                BinOp::Mul => Value::Num(lhs.as_num() * rhs.as_num()),
+                BinOp::Div => Value::Num(lhs.as_num() / rhs.as_num()),
+                BinOp::Eq => Value::Bool(lhs == rhs),
+                BinOp::NotEq => Value::Bool(lhs != rhs),
+                BinOp::Lesser => Value::Bool(lhs.as_num() < rhs.as_num()),
+                BinOp::LesserEq => Value::Bool(lhs.as_num() <= rhs.as_num()),
+                BinOp::Greater => Value::Bool(lhs.as_num() > rhs.as_num()),
+                BinOp::GreaterEq => Value::Bool(lhs.as_num() >= rhs.as_num()),
+                BinOp::And => Value::Bool(lhs.as_bool() && rhs.as_bool()),
+                BinOp::Or => Value::Bool(lhs.as_bool() || rhs.as_bool()),
+            }
+        } else {
+            let dest = self.fresh_temp();
 
-        Value::Reg(dest)
+            self.push_instr(Instr {
+                dest,
+                kind: InstrKind::Binary { op, lhs, rhs },
+            });
+
+            Value::Reg(dest)
+        }
     }
 
     pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Value {
@@ -262,14 +301,24 @@ impl Builder {
     pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
         let cond = self.use_value(cond);
 
-        self.add_flow(then_block);
-        self.add_flow(else_block);
+        if let Some(cond) = self.as_const(cond)
+            && let Value::Bool(cond) = cond
+        {
+            if cond {
+                self.build_jump(then_block);
+            } else {
+                self.build_jump(else_block);
+            }
+        } else {
+            self.add_flow(then_block);
+            self.add_flow(else_block);
 
-        self.push_term(Term::Branch {
-            cond,
-            then_block,
-            else_block,
-        });
+            self.push_term(Term::Branch {
+                cond,
+                then_block,
+                else_block,
+            });
+        }
     }
 
     pub fn build_return(&mut self, value: Option<Value>) {
