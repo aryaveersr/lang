@@ -27,10 +27,12 @@ impl<'fun> UnreachableBlocks<'fun> {
         }
 
         self.sweep();
-        self.rename_blocks();
+        self.rename_blocks(true);
         self.remove_phi_sources();
+
+        self.renamed_blocks.clear();
         self.preserve_index_invariant();
-        self.rename_blocks();
+        self.rename_blocks(false);
     }
 
     fn mark_block(&mut self, id: BlockID) {
@@ -81,11 +83,17 @@ impl<'fun> UnreachableBlocks<'fun> {
         }
     }
 
-    fn rename_blocks(&mut self) {
+    fn rename_blocks(&mut self, recursive: bool) {
         for block in &mut self.fun.blocks {
             let try_rename = |id: &mut BlockID| {
-                while let Some(target) = self.renamed_blocks.get(id) {
-                    *id = *target;
+                if recursive {
+                    while let Some(target) = self.renamed_blocks.get(id) {
+                        *id = *target;
+                    }
+                } else {
+                    if let Some(target) = self.renamed_blocks.get(id) {
+                        *id = *target;
+                    }
                 }
             };
 
@@ -114,8 +122,6 @@ impl<'fun> UnreachableBlocks<'fun> {
     }
 
     fn preserve_index_invariant(&mut self) {
-        self.renamed_blocks.clear();
-
         for (i, block) in self.fun.blocks.iter_mut().enumerate() {
             if block.id != BlockID(i) {
                 self.renamed_blocks.insert(block.id, BlockID(i));
