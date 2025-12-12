@@ -1,5 +1,6 @@
 use crate::mir::{Value, VarID};
 
+#[derive(Debug, Clone, Copy)]
 pub enum Operand {
     Value(Value),
     Variable(VarID),
@@ -7,12 +8,12 @@ pub enum Operand {
 
 impl From<Value> for Operand {
     fn from(value: Value) -> Self {
-        Operand::Value(value)
+        Self::Value(value)
     }
 }
 
 impl From<VarID> for Operand {
     fn from(value: VarID) -> Self {
-        Operand::Variable(value)
+        Self::Variable(value)
     }
 }
