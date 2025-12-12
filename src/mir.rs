@@ -2,6 +2,7 @@ use crate::ops::{BinOp, UnOp};
 
 mod basic_block;
 mod block_id;
+mod const_folding;
 mod display;
 mod fun;
 mod r#type;

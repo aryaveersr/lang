@@ -8,7 +8,6 @@ use crate::{
     ops::{BinOp, UnOp},
 };
 
-mod const_folding;
 pub mod operand;
 
 pub type VarID = usize;
@@ -127,36 +126,14 @@ impl MirBuilder {
     pub fn build_unary(&mut self, op: UnOp, arg: Operand) -> Value {
         let arg = self.resolve_operand(arg);
 
-        if arg.is_const() {
-            op.fold(arg)
-        } else {
-            let dest = self.fresh_temp();
-
-            self.push_instr(Instr {
-                dest,
-                kind: InstrKind::Unary { op, arg },
-            });
-
-            Value::Reg(dest)
-        }
+        self.build_instr(InstrKind::Unary { op, arg })
     }
 
     pub fn build_binary(&mut self, op: BinOp, lhs: Operand, rhs: Operand) -> Value {
         let lhs = self.resolve_operand(lhs);
         let rhs = self.resolve_operand(rhs);
 
-        if lhs.is_const() && rhs.is_const() {
-            op.fold(lhs, rhs)
-        } else {
-            let dest = self.fresh_temp();
-
-            self.push_instr(Instr {
-                dest,
-                kind: InstrKind::Binary { op, lhs, rhs },
-            });
-
-            Value::Reg(dest)
-        }
+        self.build_instr(InstrKind::Binary { op, lhs, rhs })
     }
 
     pub fn build_call(&mut self, name: String, args: Vec<Operand>) -> Value {
@@ -165,14 +142,7 @@ impl MirBuilder {
             .map(|arg| self.resolve_operand(arg))
             .collect();
 
-        let dest = self.fresh_temp();
-
-        self.push_instr(Instr {
-            dest,
-            kind: InstrKind::Call { name, args },
-        });
-
-        Value::Reg(dest)
+        self.build_instr(InstrKind::Call { name, args })
     }
 
     pub fn build_jump(&mut self, target: BlockID) {
@@ -277,8 +247,19 @@ impl MirBuilder {
         self.cfg.add_edge(self.active_id, to);
     }
 
-    fn push_instr(&mut self, instr: Instr) {
-        self.fun.blocks[self.active_id].instrs.push(instr);
+    fn build_instr(&mut self, instr_kind: InstrKind) -> Value {
+        if let Some(value) = instr_kind.try_fold() {
+            value
+        } else {
+            let dest = self.fresh_temp();
+
+            self.fun.blocks[self.active_id].instrs.push(Instr {
+                dest,
+                kind: instr_kind,
+            });
+
+            Value::Reg(dest)
+        }
     }
 
     fn push_term(&mut self, term: Term) {
