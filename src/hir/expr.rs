@@ -4,19 +4,19 @@ use crate::{
 };
 
 impl Expr {
-    pub fn bool(value: bool) -> Expr {
-        Expr::Bool { value }
+    pub fn bool(value: bool) -> Self {
+        Self::Bool { value }
     }
 
-    pub fn unary(op: UnOp, expr: Expr) -> Expr {
-        Expr::Unary {
+    pub fn unary(op: UnOp, expr: Self) -> Self {
+        Self::Unary {
             op,
             expr: Box::new(expr),
         }
     }
 
-    pub fn binary(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {
-        Expr::Binary {
+    pub fn binary(op: BinOp, lhs: Self, rhs: Self) -> Self {
+        Self::Binary {
             op,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
