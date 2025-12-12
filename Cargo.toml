@@ -5,12 +5,16 @@ edition = "2024"
 
 [dependencies]
 itertools = "0.14"
-serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 thiserror = "2.0"
 
-[dev-dependencies]
-insta = { version = "1.43", features = ["glob", "yaml"] }
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
+
+[dev-dependencies.insta]
+version = "1.43"
+features = ["glob", "yaml"]
 
 [lints.clippy]
 allow_attributes = "warn"
