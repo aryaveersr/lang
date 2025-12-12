@@ -15,11 +15,7 @@ impl Parser<'_> {
 
         while self.eat(TokenKind::Or).is_some() {
             let rhs = self.parse_expr_and()?;
-            lhs = Expr::Binary {
-                op: BinOp::Or,
-                lhs: Box::new(lhs),
-                rhs: Box::new(rhs),
-            };
+            lhs = Expr::binary(BinOp::Or, lhs, rhs);
         }
 
         Ok(lhs)
@@ -30,11 +26,7 @@ impl Parser<'_> {
 
         while self.eat(TokenKind::And).is_some() {
             let rhs = self.parse_expr_eq()?;
-            lhs = Expr::Binary {
-                op: BinOp::And,
-                lhs: Box::new(lhs),
-                rhs: Box::new(rhs),
-            };
+            lhs = Expr::binary(BinOp::And, lhs, rhs);
         }
 
         Ok(lhs)
@@ -49,11 +41,7 @@ impl Parser<'_> {
             _ => None,
         }) {
             let rhs = self.parse_expr_cmp()?;
-            lhs = Expr::Binary {
-                op,
-                lhs: Box::new(lhs),
-                rhs: Box::new(rhs),
-            };
+            lhs = Expr::binary(op, lhs, rhs);
         }
 
         Ok(lhs)
@@ -70,11 +58,7 @@ impl Parser<'_> {
             _ => None,
         }) {
             let rhs = self.parse_expr_term()?;
-            lhs = Expr::Binary {
-                op,
-                lhs: Box::new(lhs),
-                rhs: Box::new(rhs),
-            };
+            lhs = Expr::binary(op, lhs, rhs);
         }
 
         Ok(lhs)
@@ -89,11 +73,7 @@ impl Parser<'_> {
             _ => None,
         }) {
             let rhs = self.parse_expr_factor()?;
-            lhs = Expr::Binary {
-                op,
-                lhs: Box::new(lhs),
-                rhs: Box::new(rhs),
-            };
+            lhs = Expr::binary(op, lhs, rhs);
         }
 
         Ok(lhs)
@@ -108,11 +88,7 @@ impl Parser<'_> {
             _ => None,
         }) {
             let rhs = self.parse_expr_unary()?;
-            lhs = Expr::Binary {
-                op,
-                lhs: Box::new(lhs),
-                rhs: Box::new(rhs),
-            };
+            lhs = Expr::binary(op, lhs, rhs);
         }
 
         Ok(lhs)
@@ -125,10 +101,7 @@ impl Parser<'_> {
             _ => None,
         }) {
             let expr = self.parse_expr_unary()?;
-            Ok(Expr::Unary {
-                op,
-                expr: Box::new(expr),
-            })
+            Ok(Expr::unary(op, expr))
         } else {
             self.parse_expr_primary()
         }
@@ -138,11 +111,11 @@ impl Parser<'_> {
         let next = self.next("expression")?;
 
         Ok(match next.kind {
+            TokenKind::True => Expr::bool(true),
+            TokenKind::False => Expr::bool(false),
             TokenKind::Numeric => self.parse_expr_numeric(next)?,
             TokenKind::Identifier => self.parse_expr_identifier(next)?,
             TokenKind::LeftParen => self.parse_expr_group()?,
-            TokenKind::True => Expr::Bool { value: true },
-            TokenKind::False => Expr::Bool { value: false },
 
             _ => return Err(ParseError::invalid_expr(next)),
         })

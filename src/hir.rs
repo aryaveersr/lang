@@ -3,6 +3,8 @@ use std::{collections::HashMap, fmt::Display};
 
 use crate::ops::{BinOp, UnOp};
 
+mod expr;
+
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct HirModule {
     pub funs: HashMap<String, HirFun>,
