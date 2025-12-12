@@ -1,7 +1,7 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Value, VarID},
-    mir_builder::{MirBuilder, operand::Operand},
+    mir::{BlockID, MirFun, MirModule, MirType, Value},
+    mir_builder::{MirBuilder, VarID, operand::Operand},
     scope::Scope,
 };
 

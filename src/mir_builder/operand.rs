@@ -1,4 +1,4 @@
-use crate::mir::{Value, VarID};
+use crate::{mir::Value, mir_builder::VarID};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Operand {

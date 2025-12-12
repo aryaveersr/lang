@@ -4,7 +4,6 @@ mod basic_block;
 mod block_id;
 mod display;
 mod fun;
-mod register;
 mod r#type;
 mod value;
 
@@ -21,14 +20,8 @@ pub struct MirFun {
     pub return_ty: Option<MirType>,
 }
 
-pub type VarID = usize;
-pub type Gen = usize;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Reg {
-    Var { var_id: VarID, genn: Gen },
-    Temp(usize),
-}
+pub struct Reg(pub usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BlockID(pub usize);

@@ -3,9 +3,7 @@ use std::collections::HashMap;
 
 use crate::{
     cfg::Cfg,
-    mir::{
-        BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, MirType, Phi, Reg, Term, Value, VarID,
-    },
+    mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirType, Phi, Reg, Term, Value},
     mir_builder::operand::Operand,
     ops::{BinOp, UnOp},
 };
@@ -13,12 +11,15 @@ use crate::{
 mod const_folding;
 pub mod operand;
 
+pub type VarID = usize;
+type Gen = usize;
+
 pub struct MirBuilder {
     fun: MirFun,
     active_id: BlockID,
     sealed_blocks: Vec<BlockID>,
-    definitions: Vec<Vec<Reg>>,
-    incomplete_phis: Vec<Reg>,
+    definitions: Vec<Vec<(VarID, Gen, Reg)>>,
+    incomplete_phis: Vec<(BlockID, VarID, Reg)>,
     consts: HashMap<Reg, Value>,
     cfg: Cfg,
     var_gens: HashMap<VarID, Gen>,
@@ -57,19 +58,19 @@ impl MirBuilder {
     }
 
     pub fn seal_block(&mut self, id: BlockID) {
-        let mut dests = Vec::new();
+        let mut incomplete_phis = Vec::new();
 
-        self.incomplete_phis.retain(|dest| {
-            if self.definitions[id].contains(dest) {
-                dests.push(*dest);
+        self.incomplete_phis.retain(|&(block_id, var_id, dest)| {
+            if block_id == id {
+                incomplete_phis.push((var_id, dest));
                 false
             } else {
                 true
             }
         });
 
-        for dest in dests {
-            self.add_phi_operands(id, dest);
+        for (var_id, dest) in incomplete_phis {
+            self.add_phi_operands(id, var_id, dest);
         }
 
         self.sealed_blocks.push(id);
@@ -84,20 +85,14 @@ impl MirBuilder {
     }
 
     pub fn fresh_temp(&mut self) -> Reg {
-        let id = Reg::Temp(self.next_temp);
+        let id = Reg(self.next_temp);
         self.next_temp += 1;
         id
     }
 
     pub fn finish(mut self) -> MirFun {
-        for dest in std::mem::take(&mut self.incomplete_phis) {
-            let id = self
-                .definitions
-                .iter()
-                .position(|defs| defs.contains(&dest))
-                .unwrap();
-
-            self.add_phi_operands(BlockID(id), dest);
+        for (block_id, var_id, dest) in std::mem::take(&mut self.incomplete_phis) {
+            self.add_phi_operands(block_id, var_id, dest);
         }
 
         if self.fun.blocks[self.active_id].term.is_none() {
@@ -117,10 +112,11 @@ impl MirBuilder {
     }
 
     pub fn assign_var(&mut self, var_id: VarID, value: Operand) {
-        let reg = self.fresh_var(var_id);
         let value = self.resolve_operand(value);
+        let reg = self.fresh_temp();
+        let genn = self.fresh_gen(var_id);
 
-        self.definitions[self.active_id].push(reg);
+        self.definitions[self.active_id].push((var_id, genn, reg));
         self.consts.insert(reg, value);
     }
 
@@ -211,16 +207,8 @@ impl MirBuilder {
         self.push_term(Term::Return { value });
     }
 
-    fn fresh_var(&mut self, var_id: VarID) -> Reg {
-        let new_id = Reg::new_var(var_id, self.var_gens[&var_id]);
-        self.var_gens.entry(var_id).and_modify(|g| *g += 1);
-
-        new_id
-    }
-
-    fn add_phi_operands(&mut self, id: BlockID, dest: Reg) {
+    fn add_phi_operands(&mut self, id: BlockID, var_id: VarID, dest: Reg) {
         let preds = self.cfg.predecessors(id);
-        let var_id = dest.get_var_id().unwrap();
 
         for pred in preds {
             if let Some(src) = self.read_var(var_id, pred) {
@@ -230,10 +218,10 @@ impl MirBuilder {
     }
 
     fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Value)> {
-        if let Some(reg) = self.definitions[block]
+        if let Some((_, _, reg)) = self.definitions[block]
             .iter()
-            .rev()
-            .find(|v| v.get_var_id() == Some(var_id))
+            .filter(|&&(id, _, _)| id == var_id)
+            .max_by_key(|&&(_, genn, _)| genn)
         {
             if let Some(value) = self.consts.get(reg) {
                 return Some((block, *value));
@@ -258,23 +246,30 @@ impl MirBuilder {
                 } else if srcs.iter().all(|src| src.1 == srcs[0].1) {
                     Some((block, srcs[0].1))
                 } else {
-                    let dest = self.fresh_var(var_id);
+                    let genn = self.fresh_gen(var_id);
+                    let dest = self.fresh_temp();
 
-                    self.definitions[block].push(dest);
+                    self.definitions[block].push((var_id, genn, dest));
                     self.fun.blocks[block].phis.push(Phi { dest, srcs });
 
                     Some((block, Value::Reg(dest)))
                 }
             }
         } else {
-            let dest = self.fresh_var(var_id);
+            let genn = self.fresh_gen(var_id);
+            let dest = self.fresh_temp();
 
-            self.incomplete_phis.push(dest);
-            self.definitions[block].push(dest);
+            self.incomplete_phis.push((block, var_id, dest));
+            self.definitions[block].push((var_id, genn, dest));
             self.fun.blocks[block].phis.push(Phi { dest, srcs: vec![] });
 
             Some((block, Value::Reg(dest)))
         }
+    }
+
+    fn fresh_gen(&mut self, var_id: VarID) -> Gen {
+        *self.var_gens.get_mut(&var_id).unwrap() += 1;
+        self.var_gens[&var_id] - 1
     }
 
     fn mark_flow(&mut self, to: BlockID) {

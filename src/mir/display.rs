@@ -111,10 +111,7 @@ impl Display for Value {
 
 impl Display for Reg {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Var { var_id, genn } => write!(f, "v{var_id}:{genn}"),
-            Self::Temp(temp_id) => write!(f, "%{temp_id}"),
-        }
+        write!(f, "%{}", self.0)
     }
 }
 
