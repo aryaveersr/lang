@@ -130,8 +130,10 @@ impl HirToMir {
                     self.lower_type(&ty.unwrap()).unwrap().default_value()
                 };
 
-                let value_id = builder.declare_var(value);
+                let value_id = builder.declare_var();
                 self.scope.set(name, &value_id);
+
+                builder.assign_var(value_id, value);
             }
 
             Stmt::Assign { name, expr } => {

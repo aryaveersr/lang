@@ -105,11 +105,10 @@ impl MirBuilder {
         self.fun
     }
 
-    pub fn declare_var(&mut self, value: Value) -> Reg {
+    pub fn declare_var(&mut self) -> Reg {
         let reg = Reg::new_var(self.next_var_id, 0);
 
         self.var_gens.insert(self.next_var_id, 0);
-        self.assign_var(reg, value);
         self.next_var_id += 1;
 
         reg
