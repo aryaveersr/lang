@@ -6,10 +6,12 @@ use crate::{
     mir::{
         BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, MirType, Phi, Reg, Term, Value, VarID,
     },
+    mir_builder::operand::Operand,
     ops::{BinOp, UnOp},
 };
 
 mod const_folding;
+pub mod operand;
 
 pub struct MirBuilder {
     fun: MirFun,
@@ -105,37 +107,29 @@ impl MirBuilder {
         self.fun
     }
 
-    pub fn declare_var(&mut self) -> Reg {
-        let reg = Reg::new_var(self.next_var_id, 0);
-
-        self.var_gens.insert(self.next_var_id, 0);
+    pub fn declare_var(&mut self) -> VarID {
+        let id = self.next_var_id;
         self.next_var_id += 1;
 
-        reg
+        self.var_gens.insert(id, 0);
+
+        id
     }
 
-    pub fn assign_var(&mut self, reg: Reg, value: Value) {
-        let new_id = self.fresh_var(reg.get_var_id().unwrap());
+    pub fn assign_var(&mut self, var_id: VarID, value: Operand) {
+        let reg = self.fresh_var(var_id);
+        let value = self.resolve_operand(value);
 
-        self.definitions[self.active_id].push(new_id);
-        self.consts.insert(
-            new_id,
-            if let Value::Reg(reg) = value
-                && let Some(const_value) = self.consts.get(&reg)
-            {
-                *const_value
-            } else {
-                value
-            },
-        );
+        self.definitions[self.active_id].push(reg);
+        self.consts.insert(reg, value);
     }
 
     pub fn is_terminated(&self) -> bool {
         self.fun.blocks[self.active_id].term.is_some()
     }
 
-    pub fn build_unary(&mut self, op: UnOp, mut arg: Value) -> Value {
-        self.resolve_value(&mut arg);
+    pub fn build_unary(&mut self, op: UnOp, arg: Operand) -> Value {
+        let arg = self.resolve_operand(arg);
 
         if arg.is_const() {
             op.fold(arg)
@@ -151,9 +145,9 @@ impl MirBuilder {
         }
     }
 
-    pub fn build_binary(&mut self, op: BinOp, mut lhs: Value, mut rhs: Value) -> Value {
-        self.resolve_value(&mut lhs);
-        self.resolve_value(&mut rhs);
+    pub fn build_binary(&mut self, op: BinOp, lhs: Operand, rhs: Operand) -> Value {
+        let lhs = self.resolve_operand(lhs);
+        let rhs = self.resolve_operand(rhs);
 
         if lhs.is_const() && rhs.is_const() {
             op.fold(lhs, rhs)
@@ -169,10 +163,11 @@ impl MirBuilder {
         }
     }
 
-    pub fn build_call(&mut self, name: String, mut args: Vec<Value>) -> Value {
-        for arg in &mut args {
-            self.resolve_value(arg);
-        }
+    pub fn build_call(&mut self, name: String, args: Vec<Operand>) -> Value {
+        let args = args
+            .into_iter()
+            .map(|arg| self.resolve_operand(arg))
+            .collect();
 
         let dest = self.fresh_temp();
 
@@ -189,8 +184,8 @@ impl MirBuilder {
         self.push_term(Term::Jump { target });
     }
 
-    pub fn build_branch(&mut self, mut cond: Value, then_block: BlockID, else_block: BlockID) {
-        self.resolve_value(&mut cond);
+    pub fn build_branch(&mut self, cond: Operand, then_block: BlockID, else_block: BlockID) {
+        let cond = self.resolve_operand(cond);
 
         if cond.is_const() {
             self.build_jump(if cond.as_bool() {
@@ -210,10 +205,8 @@ impl MirBuilder {
         }
     }
 
-    pub fn build_return(&mut self, mut value: Option<Value>) {
-        if let Some(value) = &mut value {
-            self.resolve_value(value);
-        }
+    pub fn build_return(&mut self, value: Option<Operand>) {
+        let value = value.map(|operand| self.resolve_operand(operand));
 
         self.push_term(Term::Return { value });
     }
@@ -297,12 +290,10 @@ impl MirBuilder {
         self.fun.blocks[self.active_id].term = Some(term);
     }
 
-    fn resolve_value(&mut self, value: &mut Value) {
-        if let Value::Reg(reg) = value
-            && let Some(var_id) = reg.get_var_id()
-            && let Some(new_value) = self.read_var(var_id, self.active_id)
-        {
-            *value = new_value.1;
+    fn resolve_operand(&mut self, operand: Operand) -> Value {
+        match operand {
+            Operand::Value(value) => value,
+            Operand::Variable(var_id) => self.read_var(var_id, self.active_id).unwrap().1,
         }
     }
 }

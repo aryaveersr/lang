@@ -1,14 +1,14 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Reg, Value},
-    mir_builder::MirBuilder,
+    mir::{BlockID, MirFun, MirModule, MirType, Value, VarID},
+    mir_builder::{MirBuilder, operand::Operand},
     scope::Scope,
 };
 
 #[derive(Default)]
 pub struct HirToMir {
     loop_stack: Vec<BlockID>,
-    scope: Scope<Reg>,
+    scope: Scope<VarID>,
 }
 
 impl HirToMir {
@@ -127,13 +127,16 @@ impl HirToMir {
                 let value = if let Some(expr) = expr {
                     self.lower_expr(builder, expr)
                 } else {
-                    self.lower_type(&ty.unwrap()).unwrap().default_value()
+                    self.lower_type(&ty.unwrap())
+                        .unwrap()
+                        .default_value()
+                        .into()
                 };
 
-                let value_id = builder.declare_var();
-                self.scope.set(name, &value_id);
+                let var_id = builder.declare_var();
+                self.scope.set(name, &var_id);
 
-                builder.assign_var(value_id, value);
+                builder.assign_var(var_id, value);
             }
 
             Stmt::Assign { name, expr } => {
@@ -149,24 +152,24 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr(&mut self, builder: &mut MirBuilder, expr: Expr) -> Value {
+    fn lower_expr(&mut self, builder: &mut MirBuilder, expr: Expr) -> Operand {
         match expr {
-            Expr::Bool { value } => Value::Bool(value),
-            Expr::Num { value } => Value::Num(value),
-            Expr::Var { name } => Value::Reg(self.scope.get(name).unwrap().to_owned()),
-            Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
+            Expr::Bool { value } => Value::Bool(value).into(),
+            Expr::Num { value } => Value::Num(value).into(),
+            Expr::Var { name } => self.scope.get(name).unwrap().to_owned().into(),
+            Expr::Call { name, args } => self.lower_expr_call(builder, name, args).into(),
 
             Expr::Unary { op, expr } => {
                 let arg = self.lower_expr(builder, *expr);
 
-                builder.build_unary(op, arg)
+                builder.build_unary(op, arg).into()
             }
 
             Expr::Binary { op, lhs, rhs } => {
                 let lhs = self.lower_expr(builder, *lhs);
                 let rhs = self.lower_expr(builder, *rhs);
 
-                builder.build_binary(op, lhs, rhs)
+                builder.build_binary(op, lhs, rhs).into()
             }
         }
     }
