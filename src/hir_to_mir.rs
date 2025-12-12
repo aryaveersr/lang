@@ -1,6 +1,7 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Reg, Value, builder::Builder},
+    mir::{BlockID, MirFun, MirModule, MirType, Reg, Value},
+    mir_builder::MirBuilder,
     scope::Scope,
 };
 
@@ -28,7 +29,7 @@ impl HirToMir {
     fn lower_fun(&mut self, name: String, fun: HirFun) -> MirFun {
         debug_assert!(self.loop_stack.is_empty());
 
-        let mut builder = Builder::new(name);
+        let mut builder = MirBuilder::new(name);
         builder.set_return_type(self.lower_type(&fun.ty.returns));
 
         self.lower_block(&mut builder, fun.body);
@@ -36,7 +37,7 @@ impl HirToMir {
         builder.finish()
     }
 
-    fn lower_block(&mut self, builder: &mut Builder, stmts: Vec<Stmt>) {
+    fn lower_block(&mut self, builder: &mut MirBuilder, stmts: Vec<Stmt>) {
         self.scope.create();
 
         for stmt in stmts {
@@ -46,7 +47,7 @@ impl HirToMir {
         self.scope.pop();
     }
 
-    fn lower_stmt(&mut self, builder: &mut Builder, stmt: Stmt) {
+    fn lower_stmt(&mut self, builder: &mut MirBuilder, stmt: Stmt) {
         match stmt {
             Stmt::Block { body } => self.lower_block(builder, body),
 
@@ -146,7 +147,7 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr(&mut self, builder: &mut Builder, expr: Expr) -> Value {
+    fn lower_expr(&mut self, builder: &mut MirBuilder, expr: Expr) -> Value {
         match expr {
             Expr::Bool { value } => Value::Bool(value),
             Expr::Num { value } => Value::Num(value),
@@ -168,7 +169,12 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr_call(&mut self, builder: &mut Builder, name: String, args: Vec<Expr>) -> Value {
+    fn lower_expr_call(
+        &mut self,
+        builder: &mut MirBuilder,
+        name: String,
+        args: Vec<Expr>,
+    ) -> Value {
         let args = args
             .into_iter()
             .map(|e| self.lower_expr(builder, e))

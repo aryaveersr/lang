@@ -11,7 +11,7 @@ use crate::{
 
 mod const_folding;
 
-pub struct Builder {
+pub struct MirBuilder {
     fun: MirFun,
     active_id: BlockID,
     sealed_blocks: Vec<BlockID>,
@@ -24,7 +24,7 @@ pub struct Builder {
     next_var_id: usize,
 }
 
-impl Builder {
+impl MirBuilder {
     pub fn new(name: String) -> Self {
         let entry = BlockID(0);
 

@@ -2,8 +2,7 @@ use crate::ops::{BinOp, UnOp};
 
 mod basic_block;
 mod block_id;
-pub mod builder;
-mod cfg;
+pub mod cfg;
 mod display;
 mod fun;
 mod register;
@@ -23,8 +22,8 @@ pub struct MirFun {
     pub return_ty: Option<MirType>,
 }
 
-type VarID = usize;
-type Gen = usize;
+pub type VarID = usize;
+pub type Gen = usize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Reg {

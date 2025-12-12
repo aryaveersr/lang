@@ -25,6 +25,7 @@ pub enum BinOp {
     And,
     Or,
 }
+
 impl Display for UnOp {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
