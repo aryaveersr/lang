@@ -64,14 +64,7 @@ impl Parser<'_> {
 
         body.insert(
             0,
-            Stmt::If {
-                body: vec![Stmt::Break],
-                else_: None,
-                cond: Expr::Unary {
-                    op: UnOp::Not,
-                    expr: Box::new(expr),
-                },
-            },
+            Stmt::if_(Expr::unary(UnOp::Not, expr), vec![Stmt::Break], None),
         );
 
         Ok(Stmt::Loop { body })
@@ -114,20 +107,14 @@ impl Parser<'_> {
                 let expr = self.parse_expr()?;
                 self.expect(TokenKind::Semicolon, ";")?;
 
-                Ok(Stmt::Assign {
-                    name: token.slice.to_owned(),
-                    expr,
-                })
+                Ok(Stmt::assign(token.slice.to_owned(), expr))
             }
 
             TokenKind::LeftParen => {
                 let args = self.parse_args()?;
                 self.expect(TokenKind::Semicolon, ";")?;
 
-                Ok(Stmt::Call {
-                    name: token.slice.to_owned(),
-                    args,
-                })
+                Ok(Stmt::call(token.slice.to_owned(), args))
             }
 
             _ => Err(ParseError::unexpected_token("assignment or call", next)),

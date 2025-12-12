@@ -4,6 +4,7 @@ use std::{collections::HashMap, fmt::Display};
 use crate::ops::{BinOp, UnOp};
 
 mod expr;
+mod stmt;
 
 #[derive(Debug, PartialEq, Eq, Serialize)]
 pub struct HirModule {

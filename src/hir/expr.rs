@@ -8,6 +8,18 @@ impl Expr {
         Self::Bool { value }
     }
 
+    pub fn num(value: i32) -> Self {
+        Self::Num { value }
+    }
+
+    pub fn var(name: String) -> Self {
+        Self::Var { name }
+    }
+
+    pub fn call(name: String, args: Vec<Self>) -> Self {
+        Self::Call { name, args }
+    }
+
     pub fn unary(op: UnOp, expr: Self) -> Self {
         Self::Unary {
             op,

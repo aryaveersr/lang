@@ -130,7 +130,7 @@ impl Parser<'_> {
                 err,
             })?;
 
-        Ok(Expr::Num { value })
+        Ok(Expr::num(value))
     }
 
     fn parse_expr_group(&mut self) -> Result<Expr> {
@@ -146,9 +146,9 @@ impl Parser<'_> {
         let expr = if self.eat(TokenKind::LeftParen).is_some() {
             let args = self.parse_args()?;
 
-            Expr::Call { name, args }
+            Expr::call(name, args)
         } else {
-            Expr::Var { name }
+            Expr::var(name)
         };
 
         Ok(expr)
