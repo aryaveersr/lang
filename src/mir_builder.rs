@@ -2,9 +2,9 @@ use itertools::Itertools as _;
 use std::collections::HashMap;
 
 use crate::{
+    cfg::Cfg,
     mir::{
         BasicBlock, BlockID, Gen, Instr, InstrKind, MirFun, MirType, Phi, Reg, Term, Value, VarID,
-        cfg::Cfg,
     },
     ops::{BinOp, UnOp},
 };

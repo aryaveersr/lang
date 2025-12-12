@@ -2,7 +2,6 @@ use crate::ops::{BinOp, UnOp};
 
 mod basic_block;
 mod block_id;
-pub mod cfg;
 mod display;
 mod fun;
 mod register;
