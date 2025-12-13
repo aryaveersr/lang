@@ -56,7 +56,7 @@ impl HirToMir {
                 builder.build_jump(*target);
 
                 let unreachable = builder.create_block();
-                builder.set_active(unreachable);
+                builder.set_active_block(unreachable);
                 builder.seal_block(unreachable);
             }
 
@@ -65,7 +65,7 @@ impl HirToMir {
                 builder.build_return(value);
 
                 let unreachable = builder.create_block();
-                builder.set_active(unreachable);
+                builder.set_active_block(unreachable);
                 builder.seal_block(unreachable);
             }
 
@@ -74,19 +74,19 @@ impl HirToMir {
                 let exit_block = builder.create_block();
 
                 builder.build_jump(body_block);
-                builder.set_active(body_block);
+                builder.set_active_block(body_block);
 
                 self.loop_stack.push(exit_block);
                 self.lower_block(builder, body);
                 self.loop_stack.pop();
 
-                if !builder.is_terminated() {
+                if !builder.has_terminator() {
                     builder.build_jump(body_block);
                 }
 
                 builder.seal_block(body_block);
                 builder.seal_block(exit_block);
-                builder.set_active(exit_block);
+                builder.set_active_block(exit_block);
             }
 
             Stmt::If { cond, body, else_ } => {
@@ -101,26 +101,26 @@ impl HirToMir {
                 builder.seal_block(then_block);
                 builder.seal_block(else_block);
 
-                builder.set_active(then_block);
+                builder.set_active_block(then_block);
 
                 self.lower_block(builder, body);
 
-                if !builder.is_terminated() {
+                if !builder.has_terminator() {
                     builder.build_jump(exit_block);
                 }
 
-                builder.set_active(else_block);
+                builder.set_active_block(else_block);
 
                 if let Some(else_body) = else_ {
                     self.lower_block(builder, else_body);
                 }
 
-                if !builder.is_terminated() {
+                if !builder.has_terminator() {
                     builder.build_jump(exit_block);
                 }
 
                 builder.seal_block(exit_block);
-                builder.set_active(exit_block);
+                builder.set_active_block(exit_block);
             }
 
             Stmt::Let { name, ty, expr } => {
