@@ -22,3 +22,15 @@ impl Operand {
         }
     }
 }
+
+impl From<bool> for Operand {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
+    }
+}
+
+impl From<i32> for Operand {
+    fn from(value: i32) -> Self {
+        Self::Num(value)
+    }
+}

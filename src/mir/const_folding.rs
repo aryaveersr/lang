@@ -33,23 +33,21 @@ impl InstrKind {
                 .or_else(|| {
                     (lhs.is_const() || rhs.is_const())
                         .then(|| {
-                            let (constant, non_const) = if lhs.is_const() {
+                            let (cons, nconst) = if lhs.is_const() {
                                 (*lhs, *rhs)
                             } else {
                                 (*rhs, *lhs)
                             };
 
                             match op {
-                                BinOp::Add if constant.as_num() == 0 => Some(non_const),
-                                BinOp::Sub if constant.as_num() == 0 => Some(non_const),
-                                BinOp::Mul if constant.as_num() == 0 => Some(Operand::Num(0)),
-                                BinOp::Mul if constant.as_num() == 1 => Some(non_const),
-                                BinOp::Div if constant.as_num() == 1 => Some(non_const),
+                                BinOp::Add | BinOp::Sub if cons.as_num() == 0 => Some(nconst),
+                                BinOp::Mul | BinOp::Div if cons.as_num() == 1 => Some(nconst),
+                                BinOp::Mul if cons.as_num() == 0 => Some(Operand::Num(0)),
 
-                                BinOp::And if constant.as_bool() => Some(non_const),
-                                BinOp::And if !constant.as_bool() => Some(Operand::Bool(false)),
-                                BinOp::Or if constant.as_bool() => Some(Operand::Bool(true)),
-                                BinOp::Or if !constant.as_bool() => Some(non_const),
+                                BinOp::And if cons.as_bool() => Some(nconst),
+                                BinOp::And if !cons.as_bool() => Some(Operand::Bool(false)),
+                                BinOp::Or if cons.as_bool() => Some(Operand::Bool(true)),
+                                BinOp::Or if !cons.as_bool() => Some(nconst),
 
                                 _ => None,
                             }
@@ -61,14 +59,10 @@ impl InstrKind {
                         .then(|| match op {
                             BinOp::Sub => Some(Operand::Num(0)),
                             BinOp::Div => Some(Operand::Num(1)),
-                            BinOp::Eq => Some(Operand::Bool(true)),
-                            BinOp::NotEq => Some(Operand::Bool(false)),
-                            BinOp::Lesser => Some(Operand::Bool(false)),
-                            BinOp::LesserEq => Some(Operand::Bool(true)),
-                            BinOp::Greater => Some(Operand::Bool(false)),
-                            BinOp::GreaterEq => Some(Operand::Bool(true)),
-                            BinOp::And => Some(*lhs),
-                            BinOp::Or => Some(*lhs),
+                            BinOp::And | BinOp::Or => Some(*lhs),
+                            BinOp::NotEq | BinOp::Lesser | BinOp::Greater => Some(false.into()),
+                            BinOp::Eq | BinOp::LesserEq | BinOp::GreaterEq => Some(true.into()),
+
                             _ => None,
                         })
                         .flatten()
