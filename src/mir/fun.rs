@@ -1,4 +1,4 @@
-use crate::mir::MirFun;
+use crate::{cfg::Cfg, mir::MirFun};
 
 impl MirFun {
     pub fn new(name: String) -> Self {
@@ -6,6 +6,7 @@ impl MirFun {
             name,
             params: Vec::new(),
             blocks: Vec::new(),
+            cfg: Cfg::default(),
             return_ty: None,
         }
     }

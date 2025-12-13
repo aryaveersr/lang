@@ -30,11 +30,10 @@ impl HirToMir {
         debug_assert!(self.loop_stack.is_empty());
 
         let mut builder = MirBuilder::new(name);
-        builder.set_return_type(self.lower_type(&fun.ty.returns));
 
         self.lower_block(&mut builder, fun.body);
 
-        builder.finish()
+        builder.finish(self.lower_type(&fun.ty.returns))
     }
 
     fn lower_block(&mut self, builder: &mut MirBuilder, stmts: Vec<Stmt>) {

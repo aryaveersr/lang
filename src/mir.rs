@@ -1,4 +1,7 @@
-use crate::ops::{BinOp, UnOp};
+use crate::{
+    cfg::Cfg,
+    ops::{BinOp, UnOp},
+};
 
 mod basic_block;
 mod block_id;
@@ -18,6 +21,7 @@ pub struct MirFun {
     pub name: String,
     pub params: Vec<(Reg, MirType)>,
     pub blocks: Vec<BasicBlock>,
+    pub cfg: Cfg,
     pub return_ty: Option<MirType>,
 }
 
