@@ -157,19 +157,19 @@ impl HirToMir {
             Expr::Bool { value } => Value::bool(value),
             Expr::Num { value } => Value::num(value),
             Expr::Var { name } => self.scope.get(name).unwrap().to_owned().into(),
-            Expr::Call { name, args } => self.lower_expr_call(builder, name, args).into(),
+            Expr::Call { name, args } => self.lower_expr_call(builder, name, args),
 
             Expr::Unary { op, expr } => {
                 let arg = self.lower_expr(builder, *expr);
 
-                builder.build_unary(op, arg).into()
+                builder.build_unary(op, arg)
             }
 
             Expr::Binary { op, lhs, rhs } => {
                 let lhs = self.lower_expr(builder, *lhs);
                 let rhs = self.lower_expr(builder, *rhs);
 
-                builder.build_binary(op, lhs, rhs).into()
+                builder.build_binary(op, lhs, rhs)
             }
         }
     }
