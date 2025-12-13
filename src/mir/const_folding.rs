@@ -55,6 +55,23 @@ impl InstrKind {
                             }
                         })
                         .flatten()
+                })
+                .or_else(|| {
+                    (lhs == rhs)
+                        .then(|| match op {
+                            BinOp::Sub => Some(Operand::Num(0)),
+                            BinOp::Div => Some(Operand::Num(1)),
+                            BinOp::Eq => Some(Operand::Bool(true)),
+                            BinOp::NotEq => Some(Operand::Bool(false)),
+                            BinOp::Lesser => Some(Operand::Bool(false)),
+                            BinOp::LesserEq => Some(Operand::Bool(true)),
+                            BinOp::Greater => Some(Operand::Bool(false)),
+                            BinOp::GreaterEq => Some(Operand::Bool(true)),
+                            BinOp::And => Some(*lhs),
+                            BinOp::Or => Some(*lhs),
+                            _ => None,
+                        })
+                        .flatten()
                 }),
         }
     }
