@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    mir::{MirFun, Value},
+    mir::{MirFun, Operand},
     mir_passes::rename_operands::rename_operands,
 };
 
@@ -17,18 +17,18 @@ pub fn remove_trivial_phis(fun: &mut MirFun) {
                 let trivial = phi
                     .srcs
                     .iter()
-                    .all(|src| src.1 == phi.srcs[0].1 || src.1 == Value::Reg(phi.dest));
+                    .all(|src| src.1 == phi.srcs[0].1 || src.1 == Operand::Reg(phi.dest));
 
                 if trivial {
                     let value = phi
                         .srcs
                         .iter()
-                        .find(|src| src.1 != Value::Reg(phi.dest))
+                        .find(|src| src.1 != Operand::Reg(phi.dest))
                         .unwrap()
                         .1;
 
                     changed = true;
-                    renames.insert(Value::Reg(phi.dest), value);
+                    renames.insert(Operand::Reg(phi.dest), value);
                 }
 
                 !trivial

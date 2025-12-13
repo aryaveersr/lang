@@ -1,10 +1,10 @@
-use crate::mir::{MirType, Value};
+use crate::mir::{MirType, Operand};
 
 impl MirType {
-    pub fn default_value(&self) -> Value {
+    pub fn default_value(&self) -> Operand {
         match self {
-            Self::Bool => Value::Bool(false),
-            Self::Num => Value::Num(0),
+            Self::Bool => Operand::Bool(false),
+            Self::Num => Operand::Num(0),
         }
     }
 }

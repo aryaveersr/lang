@@ -1,7 +1,7 @@
 use crate::{
     hir::{Expr, HirFun, HirModule, HirType, Stmt},
-    mir::{BlockID, MirFun, MirModule, MirType, Value},
-    mir_builder::{MirBuilder, VarID, operand::Operand},
+    mir::{BlockID, MirFun, MirModule, MirType},
+    mir_builder::{MirBuilder, VarID, value::Value},
     scope::Scope,
 };
 
@@ -152,10 +152,10 @@ impl HirToMir {
         }
     }
 
-    fn lower_expr(&mut self, builder: &mut MirBuilder, expr: Expr) -> Operand {
+    fn lower_expr(&mut self, builder: &mut MirBuilder, expr: Expr) -> Value {
         match expr {
-            Expr::Bool { value } => Value::Bool(value).into(),
-            Expr::Num { value } => Value::Num(value).into(),
+            Expr::Bool { value } => Value::bool(value),
+            Expr::Num { value } => Value::num(value),
             Expr::Var { name } => self.scope.get(name).unwrap().to_owned().into(),
             Expr::Call { name, args } => self.lower_expr_call(builder, name, args).into(),
 

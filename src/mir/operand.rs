@@ -1,6 +1,6 @@
-use crate::mir::Value;
+use crate::mir::Operand;
 
-impl Value {
+impl Operand {
     pub fn as_num(&self) -> i32 {
         match self {
             Self::Num(value) => *value,

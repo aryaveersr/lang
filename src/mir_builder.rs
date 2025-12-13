@@ -3,12 +3,12 @@ use std::collections::HashMap;
 
 use crate::{
     cfg::Cfg,
-    mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirType, Phi, Reg, Term, Value},
-    mir_builder::operand::Operand,
+    mir::{BasicBlock, BlockID, Instr, InstrKind, MirFun, MirType, Operand, Phi, Reg, Term},
+    mir_builder::value::Value,
     ops::{BinOp, UnOp},
 };
 
-pub mod operand;
+pub mod value;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct VarID(usize);
@@ -20,7 +20,7 @@ pub struct MirBuilder {
     sealed_blocks: Vec<BlockID>,
     definitions: Vec<Vec<(VarID, Gen, Reg)>>,
     incomplete_phis: Vec<(BlockID, VarID, Reg)>,
-    consts: HashMap<Reg, Value>,
+    consts: HashMap<Reg, Operand>,
     cfg: Cfg,
     var_gens: HashMap<VarID, Gen>,
     next_temp: usize,
@@ -111,8 +111,8 @@ impl MirBuilder {
         id
     }
 
-    pub fn assign_var(&mut self, var_id: VarID, value: Operand) {
-        let value = self.resolve_operand(value);
+    pub fn assign_var(&mut self, var_id: VarID, value: Value) {
+        let value = self.resolve_value(value);
         let reg = self.fresh_temp();
         let genn = self.fresh_gen(var_id);
 
@@ -124,23 +124,23 @@ impl MirBuilder {
         self.fun.blocks[self.active_id].term.is_some()
     }
 
-    pub fn build_unary(&mut self, op: UnOp, arg: Operand) -> Value {
-        let arg = self.resolve_operand(arg);
+    pub fn build_unary(&mut self, op: UnOp, arg: Value) -> Value {
+        let arg = self.resolve_value(arg);
 
         self.build_instr(InstrKind::Unary { op, arg })
     }
 
-    pub fn build_binary(&mut self, op: BinOp, lhs: Operand, rhs: Operand) -> Value {
-        let lhs = self.resolve_operand(lhs);
-        let rhs = self.resolve_operand(rhs);
+    pub fn build_binary(&mut self, op: BinOp, lhs: Value, rhs: Value) -> Value {
+        let lhs = self.resolve_value(lhs);
+        let rhs = self.resolve_value(rhs);
 
         self.build_instr(InstrKind::Binary { op, lhs, rhs })
     }
 
-    pub fn build_call(&mut self, name: String, args: Vec<Operand>) -> Value {
+    pub fn build_call(&mut self, name: String, args: Vec<Value>) -> Value {
         let args = args
             .into_iter()
-            .map(|arg| self.resolve_operand(arg))
+            .map(|arg| self.resolve_value(arg))
             .collect();
 
         self.build_instr(InstrKind::Call { name, args })
@@ -151,8 +151,8 @@ impl MirBuilder {
         self.push_term(Term::Jump { target });
     }
 
-    pub fn build_branch(&mut self, cond: Operand, then_block: BlockID, else_block: BlockID) {
-        let cond = self.resolve_operand(cond);
+    pub fn build_branch(&mut self, cond: Value, then_block: BlockID, else_block: BlockID) {
+        let cond = self.resolve_value(cond);
 
         if cond.is_const() {
             self.build_jump(if cond.as_bool() {
@@ -172,8 +172,8 @@ impl MirBuilder {
         }
     }
 
-    pub fn build_return(&mut self, value: Option<Operand>) {
-        let value = value.map(|operand| self.resolve_operand(operand));
+    pub fn build_return(&mut self, value: Option<Value>) {
+        let value = value.map(|value| self.resolve_value(value));
 
         self.push_term(Term::Return { value });
     }
@@ -188,7 +188,7 @@ impl MirBuilder {
         }
     }
 
-    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Value)> {
+    fn read_var(&mut self, var_id: VarID, block: BlockID) -> Option<(BlockID, Operand)> {
         if let Some((_, _, reg)) = self.definitions[block]
             .iter()
             .filter(|&&(id, _, _)| id == var_id)
@@ -198,7 +198,7 @@ impl MirBuilder {
                 return Some((block, *value));
             }
 
-            return Some((block, Value::Reg(*reg)));
+            return Some((block, Operand::Reg(*reg)));
         }
 
         if self.sealed_blocks.contains(&block) {
@@ -223,7 +223,7 @@ impl MirBuilder {
                     self.definitions[block].push((var_id, genn, dest));
                     self.fun.blocks[block].phis.push(Phi { dest, srcs });
 
-                    Some((block, Value::Reg(dest)))
+                    Some((block, Operand::Reg(dest)))
                 }
             }
         } else {
@@ -234,7 +234,7 @@ impl MirBuilder {
             self.definitions[block].push((var_id, genn, dest));
             self.fun.blocks[block].phis.push(Phi { dest, srcs: vec![] });
 
-            Some((block, Value::Reg(dest)))
+            Some((block, Operand::Reg(dest)))
         }
     }
 
@@ -250,7 +250,7 @@ impl MirBuilder {
 
     fn build_instr(&mut self, instr_kind: InstrKind) -> Value {
         if let Some(value) = instr_kind.try_fold() {
-            value
+            value.into()
         } else {
             let dest = self.fresh_temp();
 
@@ -259,7 +259,7 @@ impl MirBuilder {
                 kind: instr_kind,
             });
 
-            Value::Reg(dest)
+            Value::reg(dest)
         }
     }
 
@@ -267,10 +267,10 @@ impl MirBuilder {
         self.fun.blocks[self.active_id].term = Some(term);
     }
 
-    fn resolve_operand(&mut self, operand: Operand) -> Value {
-        match operand {
-            Operand::Value(value) => value,
-            Operand::Variable(var_id) => self.read_var(var_id, self.active_id).unwrap().1,
+    fn resolve_value(&mut self, value: Value) -> Operand {
+        match value {
+            Value::Operand(operand) => operand,
+            Value::Variable(var_id) => self.read_var(var_id, self.active_id).unwrap().1,
         }
     }
 }

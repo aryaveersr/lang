@@ -1,33 +1,33 @@
 use crate::{
-    mir::{InstrKind, Value},
+    mir::{InstrKind, Operand},
     ops::{BinOp, UnOp},
 };
 
 impl InstrKind {
-    pub fn try_fold(&self) -> Option<Value> {
+    pub fn try_fold(&self) -> Option<Operand> {
         match self {
             Self::Call { .. } => None,
 
             Self::Unary { op, arg } => arg.is_const().then(|| match op {
-                UnOp::Negate => Value::Num(-arg.as_num()),
-                UnOp::Not => Value::Bool(!arg.as_bool()),
+                UnOp::Negate => Operand::Num(-arg.as_num()),
+                UnOp::Not => Operand::Bool(!arg.as_bool()),
             }),
 
             Self::Binary { op, lhs, rhs } => (lhs.is_const() && rhs.is_const()).then(|| match op {
-                BinOp::Add => Value::Num(lhs.as_num() + rhs.as_num()),
-                BinOp::Sub => Value::Num(lhs.as_num() - rhs.as_num()),
-                BinOp::Mul => Value::Num(lhs.as_num() * rhs.as_num()),
-                BinOp::Div => Value::Num(lhs.as_num() / rhs.as_num()),
+                BinOp::Add => Operand::Num(lhs.as_num() + rhs.as_num()),
+                BinOp::Sub => Operand::Num(lhs.as_num() - rhs.as_num()),
+                BinOp::Mul => Operand::Num(lhs.as_num() * rhs.as_num()),
+                BinOp::Div => Operand::Num(lhs.as_num() / rhs.as_num()),
 
-                BinOp::And => Value::Bool(lhs.as_bool() && rhs.as_bool()),
-                BinOp::Or => Value::Bool(lhs.as_bool() || rhs.as_bool()),
+                BinOp::And => Operand::Bool(lhs.as_bool() && rhs.as_bool()),
+                BinOp::Or => Operand::Bool(lhs.as_bool() || rhs.as_bool()),
 
-                BinOp::Eq => Value::Bool(lhs == rhs),
-                BinOp::NotEq => Value::Bool(lhs != rhs),
-                BinOp::Lesser => Value::Bool(lhs.as_num() < rhs.as_num()),
-                BinOp::LesserEq => Value::Bool(lhs.as_num() <= rhs.as_num()),
-                BinOp::Greater => Value::Bool(lhs.as_num() > rhs.as_num()),
-                BinOp::GreaterEq => Value::Bool(lhs.as_num() >= rhs.as_num()),
+                BinOp::Eq => Operand::Bool(lhs == rhs),
+                BinOp::NotEq => Operand::Bool(lhs != rhs),
+                BinOp::Lesser => Operand::Bool(lhs.as_num() < rhs.as_num()),
+                BinOp::LesserEq => Operand::Bool(lhs.as_num() <= rhs.as_num()),
+                BinOp::Greater => Operand::Bool(lhs.as_num() > rhs.as_num()),
+                BinOp::GreaterEq => Operand::Bool(lhs.as_num() >= rhs.as_num()),
             }),
         }
     }

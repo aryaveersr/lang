@@ -5,8 +5,8 @@ mod block_id;
 mod const_folding;
 mod display;
 mod fun;
+mod operand;
 mod r#type;
-mod value;
 
 #[derive(Debug, Clone)]
 pub struct MirModule {
@@ -38,7 +38,7 @@ pub struct BasicBlock {
 #[derive(Debug, Clone)]
 pub struct Phi {
     pub dest: Reg,
-    pub srcs: Vec<(BlockID, Value)>,
+    pub srcs: Vec<(BlockID, Operand)>,
 }
 
 #[derive(Debug, Clone)]
@@ -48,7 +48,7 @@ pub struct Instr {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Value {
+pub enum Operand {
     Bool(bool),
     Num(i32),
     Reg(Reg),
@@ -56,9 +56,21 @@ pub enum Value {
 
 #[derive(Debug, Clone)]
 pub enum InstrKind {
-    Unary { op: UnOp, arg: Value },
-    Binary { op: BinOp, lhs: Value, rhs: Value },
-    Call { name: String, args: Vec<Value> },
+    Unary {
+        op: UnOp,
+        arg: Operand,
+    },
+
+    Binary {
+        op: BinOp,
+        lhs: Operand,
+        rhs: Operand,
+    },
+
+    Call {
+        name: String,
+        args: Vec<Operand>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -68,13 +80,13 @@ pub enum Term {
     },
 
     Branch {
-        cond: Value,
+        cond: Operand,
         then_block: BlockID,
         else_block: BlockID,
     },
 
     Return {
-        value: Option<Value>,
+        value: Option<Operand>,
     },
 }
 

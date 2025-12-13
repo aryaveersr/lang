@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
-use crate::mir::{InstrKind, MirFun, Term, Value};
+use crate::mir::{InstrKind, MirFun, Operand, Term};
 
-pub fn rename_operands(fun: &mut MirFun, mapping: &HashMap<Value, Value>) {
-    let rename = |value: &mut Value| {
-        if let Some(new_value) = mapping.get(value) {
-            *value = *new_value;
+pub fn rename_operands(fun: &mut MirFun, mapping: &HashMap<Operand, Operand>) {
+    let rename = |operand: &mut Operand| {
+        if let Some(new_operand) = mapping.get(operand) {
+            *operand = *new_operand;
         }
     };
 
