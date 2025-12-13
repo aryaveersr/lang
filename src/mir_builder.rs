@@ -10,7 +10,8 @@ use crate::{
 
 pub mod operand;
 
-pub type VarID = usize;
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct VarID(usize);
 type Gen = usize;
 
 pub struct MirBuilder {
@@ -102,7 +103,7 @@ impl MirBuilder {
     }
 
     pub fn declare_var(&mut self) -> VarID {
-        let id = self.next_var_id;
+        let id = VarID(self.next_var_id);
         self.next_var_id += 1;
 
         self.var_gens.insert(id, 0);
